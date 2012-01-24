@@ -1,0 +1,6 @@
+# For more details, please see /etc/apparmor.d/local/README.
+# Adding /mnt/mysql to allowed mysql directories
+  /mnt/mysql/ r,
+  /mnt/mysql/** rwk,
+  /opt/mysql/ r,
+  /opt/mysql/** rwk,
