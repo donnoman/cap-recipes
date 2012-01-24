@@ -1,0 +1,12 @@
+[mysqld]
+
+server-id                      = <%=slave_server_id%>
+expire_logs_days               = 20
+max_binlog_size                = 100M
+binlog_format                  = MIXED
+log-slave-updates              = TRUE
+log_bin                        = <%=mysql_data_dir%>/binlog/mysql-bin
+relay-log                      = <%=mysql_data_dir%>/binlog/relay-bin
+relay-log-index                = <%=mysql_data_dir%>/binlog/relay-bin.index
+relay-log-info-file            = <%=mysql_data_dir%>/binlog/relay-bin.info
+replicate-wild-ignore-table    = mysql.%

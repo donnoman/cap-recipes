@@ -1,0 +1,16 @@
+[mysqld]
+
+server-id                      = <%=server_id%>
+auto_increment_increment       = <%=increment_id%>
+auto_increment_offset          = <%=offset_id%>
+expire_logs_days               = 20
+max_binlog_size                = 100M
+binlog_format                  = MIXED
+log-slave-updates              = TRUE
+sync_binlog                    = 1
+innodb_flush_log_at_trx_commit = 1
+log_bin                        = <%=mysql_data_dir%>/binlog/mysql-bin
+relay-log                      = <%=mysql_data_dir%>/binlog/relay-bin
+relay-log-index                = <%=mysql_data_dir%>/binlog/relay-bin.index
+relay-log-info-file            = <%=mysql_data_dir%>/binlog/relay-bin.info
+replicate-wild-ignore-table    = mysql.%
