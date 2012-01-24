@@ -33,7 +33,7 @@ Capistrano::Configuration.instance(true).load do
     task :setup_master, :roles => :mysql_master do
       mysql_slave_internal_ip = capture("echo #{ipaddress(autossh_eth)}", :roles => :mysql_slave).chomp
       mysql_autossh_remote_host = capture("hostname -f || hostname", :roles => :mysql_slave).chomp
-      utilities.sudo_upload_template autossh_init, "/etc/init.d/autossh", :roles => :mysql_master
+      utilities.sudo_upload_template autossh_init, "/etc/init.d/autossh",  :mode => "755", :owner => 'root:root', :roles => :mysql_master
       sudo "sed -i s/##AUTOSSH_REMOTE##/#{mysql_autossh_remote_host}/g /etc/init.d/autossh"
       sudo "sed -i s/##MASTER##/#{mysql_slave_internal_ip}/g /etc/init.d/autossh"
       utilities.run_compressed %Q{
@@ -46,7 +46,7 @@ Capistrano::Configuration.instance(true).load do
     task :setup_slave, :roles => :mysql_slave do
       mysql_master_internal_ip = capture("echo #{ipaddress(autossh_eth)}", :roles => :mysql_master).chomp
       mysql_autossh_remote_host = capture("hostname -f || hostname", :roles => :mysql_master).chomp
-      utilities.sudo_upload_template autossh_init, "/etc/init.d/autossh", :roles => :mysql_slave
+      utilities.sudo_upload_template autossh_init, "/etc/init.d/autossh",  :mode => "755", :owner => 'root:root', :roles => :mysql_slave
       sudo "sed -i s/##AUTOSSH_REMOTE##/#{mysql_autossh_remote_host}/g /etc/init.d/autossh"
       sudo "sed -i s/##MASTER##/#{mysql_master_internal_ip}/g /etc/init.d/autossh"
       utilities.run_compressed %Q{

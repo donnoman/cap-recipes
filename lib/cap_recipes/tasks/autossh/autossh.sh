@@ -15,6 +15,11 @@
 # Rick Russell sysadmin.rick@gmail.com
 #
 
+depend() {
+      use logger dns
+      need net
+}
+
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 NAME=`basename $0`
@@ -33,7 +38,8 @@ export AUTOSSH_PIDFILE=${PIDFILE}
 
 test -x $DAEMON || exit 0
 
-ASOPT="-M "${MPORT}" -N -f -i "${KEYFILE}" "${TUNNEL}" "${REMOTEUSER}"@"${REMOTESERVER}
+ASOPT="-M "${MPORT}" -f -N "${TUNNEL}" "${REMOTEUSER}"@"${REMOTESERVER}
+
 
 #	Function that starts the daemon/service.
 d_start() {
