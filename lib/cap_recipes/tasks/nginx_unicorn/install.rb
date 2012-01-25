@@ -41,6 +41,7 @@ Capistrano::Configuration.instance(true).load do
       "--prefix=#{nginx_unicorn_root}",
       "--sbin-path=#{nginx_unicorn_sbin_file}",
       "--pid-path=#{nginx_unicorn_pid_file}",
+      "--conf-path=#{nginx_unicorn_conf_dir}/nginx.conf",
       "--with-debug",
       "--with-http_gzip_static_module",
       "--with-http_stub_status_module",
@@ -129,18 +130,18 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Write the application conf"
     task :configure, :roles => :app do
-      utilities.sudo_upload_template nginx_unicorn_app_conf_path, "#{nginx_unicorn_root}/conf/sites-available/#{application}.conf"
+      utilities.sudo_upload_template nginx_unicorn_app_conf_path, "#{nginx_unicorn_conf_dir}/sites-available/#{application}.conf"
       enable
     end
 
     desc "Enable the application conf"
     task :enable, :roles => :app do
-      sudo "ln -sf #{nginx_unicorn_root}/conf/sites-available/#{application}.conf #{nginx_unicorn_root}/conf/sites-enabled/#{application}.conf"
+      sudo "ln -sf #{nginx_unicorn_conf_dir}/sites-available/#{application}.conf #{nginx_unicorn_conf_dir}/sites-enabled/#{application}.conf"
     end
 
     desc "Disable the application conf"
     task :disable, :roles => :app do
-      sudo "rm #{nginx_unicorn_root}/conf/sites-enabled/#{application}.conf"
+      sudo "rm #{nginx_unicorn_conf_dir}/sites-enabled/#{application}.conf"
     end
 
     %w(start stop restart).each do |t|
