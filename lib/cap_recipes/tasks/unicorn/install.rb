@@ -16,6 +16,7 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_backup_socket_location, %q{#{File.expand_path('../../tmp/sockets/unicorn.sock', __FILE__)}} #this IS CORRECTLY a non-interpolated string, to be evaled later.
     set :unicorn_watcher, nil
     set :unicorn_suppress_runner, false
+    set :unicorn_suppress_configure, false
 
     desc "select watcher"
     task :watcher do
@@ -46,7 +47,10 @@ Capistrano::Configuration.instance(true).load do
     end
 
     task :configure, :roles => :app do
-      utilities.upload_template unicorn_template_path, "#{latest_release}/config/unicorn.rb"
+      # if you check in your unicorn.rb you can enable supressing this configure step
+      unless unicorn_suppress_configure do
+        utilities.upload_template unicorn_template_path, "#{latest_release}/config/unicorn.rb"
+      end
     end
 
     desc "decrement the number of unicorn worker processes by one"
@@ -58,11 +62,11 @@ Capistrano::Configuration.instance(true).load do
     task :ttin, :roles => :app do
       run "pkill -TTIN -f 'unicorn master';true"
     end
-    
+
     task :workers, :roles => :app do
       run "ps aux | grep -c '[u]nicorn worker';true"
     end
-    
+
     task :stop, :roles => :app do
       run "cd #{latest_release} && kill -QUIT `cat tmp/pids/unicorn.pid`;true"
     end
