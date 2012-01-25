@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2012-01-21"
+  s.date = "2012-01-25"
   s.description = "Battle-tested capistrano recipes for debian based distributions, passenger, apache, nginx, delayed_job, juggernaut, rubygems, backgroundrb, rails, riak, mongo and more"
   s.email = "nesquena@gmail.com donnoman@donovanbray.com"
   s.extra_rdoc_files = [
@@ -17,6 +17,9 @@ Gem::Specification.new do |s|
     "README.textile"
   ]
   s.files = [
+    ".rvmrc.template",
+    "Gemfile",
+    "Gemfile.lock",
     "LICENSE",
     "README.textile",
     "Rakefile",
@@ -31,10 +34,12 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/apache/hooks.rb",
     "lib/cap_recipes/tasks/apache/install.rb",
     "lib/cap_recipes/tasks/apache/manage.rb",
+    "lib/cap_recipes/tasks/apache/settings.rb",
     "lib/cap_recipes/tasks/apache2.rb",
-    "lib/cap_recipes/tasks/apache2/hooks.rb",
-    "lib/cap_recipes/tasks/apache2/install.rb",
-    "lib/cap_recipes/tasks/apache2/manage.rb",
+    "lib/cap_recipes/tasks/apparmor.rb",
+    "lib/cap_recipes/tasks/apparmor/hooks.rb",
+    "lib/cap_recipes/tasks/apparmor/install.rb",
+    "lib/cap_recipes/tasks/apparmor/usr.sbin.mysqld",
     "lib/cap_recipes/tasks/aptitude.rb",
     "lib/cap_recipes/tasks/aptitude/manage.rb",
     "lib/cap_recipes/tasks/autossh.rb",
@@ -107,6 +112,13 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/mysql/mysql_backup_s3.sh",
     "lib/cap_recipes/tasks/mysql/mysql_restore.sh",
     "lib/cap_recipes/tasks/mysql/tuner.rb",
+    "lib/cap_recipes/tasks/mysql_master.rb",
+    "lib/cap_recipes/tasks/mysql_master/default-storage-engine.cnf",
+    "lib/cap_recipes/tasks/mysql_master/hooks.rb",
+    "lib/cap_recipes/tasks/mysql_master/install.rb",
+    "lib/cap_recipes/tasks/mysql_master/my.cnf",
+    "lib/cap_recipes/tasks/mysql_master/replication.cnf",
+    "lib/cap_recipes/tasks/mysql_master/slave.cnf",
     "lib/cap_recipes/tasks/newrelic_rpm.rb",
     "lib/cap_recipes/tasks/newrelic_rpm/hooks.rb",
     "lib/cap_recipes/tasks/newrelic_rpm/install.rb",
@@ -254,7 +266,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/nesquena/cap-recipes"
   s.require_paths = ["lib"]
   s.rubyforge_project = "cap-recipes"
-  s.rubygems_version = "1.8.10"
+  s.rubygems_version = "1.8.12"
   s.summary = "Battle-tested capistrano recipes for debian based distributions"
 
   if s.respond_to? :specification_version then
