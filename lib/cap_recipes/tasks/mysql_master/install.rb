@@ -26,12 +26,12 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Setup All"
     task :setup, :roles => [:mysql_master, :mysql_slave] do
-      apparmor.setup
       mysql_master.install_master_repl_conf
       mysql_master.install_slave_repl_conf
       mysql_master.add_repl_user
       mysql_master.install_repl_keys
       mysql_master.grant_repl_mysql
+      apparmor.setup
       mysql_master.restart
       autossh.install
       autossh.setup
