@@ -48,7 +48,7 @@ Capistrano::Configuration.instance(true).load do
 
     task :configure, :roles => :app do
       # if you check in your unicorn.rb you can enable supressing this configure step
-      unless unicorn_suppress_configure do
+      unless unicorn_suppress_configure
         utilities.upload_template unicorn_template_path, "#{latest_release}/config/unicorn.rb"
       end
     end
