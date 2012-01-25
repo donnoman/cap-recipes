@@ -2,7 +2,7 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :apparmor do
   	set :mysql_apparmor_conf, File.join(File.dirname(__FILE__),'usr.sbin.mysqld')
-  	set :mysql_apparmor_path, "/etc/apparmor.d/local"
+  	set :mysql_apparmor_path, "/etc/apparmor.d"
 
   	desc "Call tasks to setup"
     task :setup, :roles => [:mysql_master, :mysql_slave] do
