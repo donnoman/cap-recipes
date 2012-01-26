@@ -9,11 +9,11 @@ Capistrano::Configuration.instance(true).load do
     set(:ruby_src){"ftp://ftp.ruby-lang.org/pub/ruby/1.9/#{ruby_ver}.tar.bz2"}
     set :base_ruby_path, '/usr'
 
-    # New Concept ':except => {:no_ruby => true}' to allow all systems by default 
+    # New Concept ':except => {:no_ruby => true}' to allow all systems by default
     # to have ruby installed to allow use of ruby gems like god on all systems
     # regardless of whether they have releases deployed to them, they may have other things
     # that we want god to watch on them.
-    
+
     desc "install ruby"
     task :install, :except => {:no_ruby => true} do
       utilities.apt_install %w[build-essential zlib1g-dev libssl-dev openssl libcurl4-openssl-dev libreadline6-dev bzip2]

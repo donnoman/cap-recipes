@@ -29,7 +29,7 @@ Capistrano::Configuration.instance(true).load do
     set :target_os, :ubuntu64
 
     desc "install ree"
-    task :install, :except => {:no_release => true} do
+    task :install, :except => {:no_ruby => true} do
       if ree_from_source
         install_from_source
       else
@@ -37,7 +37,7 @@ Capistrano::Configuration.instance(true).load do
       end
     end
 
-    task :install_from_source,  :except => {:no_release => true}  do
+    task :install_from_source, :except => {:no_ruby => true}  do
       utilities.apt_install %w[build-essential libssl-dev libmysqlclient15-dev libreadline5-dev wget]
       #this task doesn't deal with path issues yet
       run "cd /usr/local/src && #{sudo} wget --tries=2 -c --progress=bar:force #{ree_src} && #{sudo} tar xzf #{ree_ver}.tar.gz"
@@ -56,7 +56,7 @@ Capistrano::Configuration.instance(true).load do
       sudo cmd
     end
 
-    task :install_from_package,  :except => {:no_release => true} do
+    task :install_from_package, :except => {:no_ruby => true} do
       utilities.apt_install %w[wget]
       sudo "wget --tries=2 -c --directory-prefix=/usr/local/src --progress=bar:force #{ree_pkg}"
       sudo "dpkg -i /usr/local/src/#{ree_pkg_name}"
