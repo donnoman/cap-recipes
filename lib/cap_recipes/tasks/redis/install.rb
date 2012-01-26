@@ -4,6 +4,8 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :redis do
     roles[:redis] #make an empty role
+    roles[:redis_slave]
+    roles[:redis_backup]
     set :redis_ver, 'redis-2.2.11'
     set(:redis_src) {"http://redis.googlecode.com/files/#{redis_ver}.tar.gz"}
     set :redis_base_path, "/opt/redis"
@@ -14,6 +16,7 @@ Capistrano::Configuration.instance(true).load do
     set :redis_default_port, 6379
     set :redis_default_timeout, '300'
     set :redis_default_conf_path, File.join(File.dirname(__FILE__),'redis.conf')
+    set :redis_default_slave_conf_path, File.join(File.dirname(__FILE__),'redis-slave.conf')
     set :redis_default_backup, false
     set :redis_default_rdb_file, '/var/lib/redis/dump.rdb'
     set :redis_god_path, File.join(File.dirname(__FILE__),'redis.god')
@@ -28,6 +31,9 @@ Capistrano::Configuration.instance(true).load do
     set :redis_backup_script_path, "/root/script/redis_backup_s3.sh"
     set :redis_backup_location, "/mnt/redis_backups"
     set :redis_backup_chunk_size, "250M"
+    set :redis_master_host, nil
+    set :redis_masterauth, nil
+    set :redis_slave_serve_stale_data, true
 
     set(:redis_layout) {
       [{:path => redis_base_path }] #if there's only the default then use the root of the path.
@@ -44,7 +50,7 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "install redis-server"
-    task :install, :roles => :redis do
+    task :install, :roles => [:redis,:redis_slave] do
       utilities.apt_install %w[build-essential wget]
       utilities.addgroup "redis", :system => true
       utilities.adduser "redis" , :nohome => true, :group => "redis", :system => true, :disabled_login => true
@@ -81,39 +87,59 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "setup god to watch redis"
-    task :setup_god, :roles => :redis do
+    task :setup_god, :roles => [:redis,:redis_slave] do
       with_layout do
         god.upload redis_god_path, "#{redis_name}.god"
       end
     end
 
     desc "push a redis logrotate config"
-    task :logrotate, :roles => :redis do
+    task :logrotate, :roles => [:redis,:redis_slave] do
       utilities.sudo_upload_template redis_logrotate_path, "/etc/logrotate.d/redis", :owner => 'root:root'
     end
 
     desc "setup redis-server"
-    task :setup, :roles => :redis do
+    task :setup, :roles => [:redis,:redis_slave] do
       with_layout do
         sudo "touch /var/log/#{redis_name}.log"
         sudo "mkdir -p #{redis_path}"
         sudo "chown redis:redis /var/log/#{redis_name}.log"
         sudo "chown -R redis:redis #{redis_path}"
         utilities.sudo_upload_template redis_init_path, "/etc/init.d/#{redis_name}", :mode => "+x", :owner => 'root:root'
-        utilities.sudo_upload_template redis_conf_path, "#{redis_path}/#{redis_name}.conf", :owner => "redis:redis"
+      end
+
+      redis.setup_master
+      redis.setup_slave
+
+      with_layout do
         sudo "sed -i s/#{redis_bind}/#{ipaddress(redis_bind_eth)}/g #{redis_path}/#{redis_name}.conf"
         sudo "update-rc.d -f #{redis_name} defaults"
+      end
+
+    end
+
+    desc "setup redis-server master"
+    task :setup_master, :roles => :redis do
+      with_layout do
+        utilities.sudo_upload_template redis_conf_path, "#{redis_path}/#{redis_name}.conf", :owner => "redis:redis"
+      end
+    end
+
+    desc "setup redis-server slaves"
+    task :setup_slave, :roles => :redis_slave do
+      with_layout do
+        utilities.sudo_upload_template redis_slave_conf_path, "#{redis_path}/#{redis_name}.conf", :owner => "redis:redis"
       end
     end
 
     desc "verify the redis-server"
-    task :verify, :roles => :redis do
+    task :verify, :roles => [:redis,:redis_slave] do
       run "#{redis_base_path}/bin/redis-server -v"
     end
 
     %w(start stop restart).each do |t|
       desc "#{t.capitalize} redis server"
-      task t.to_sym, :roles => :redis do
+      task t.to_sym, :roles => [:redis,:redis_slave] do
         with_layout do
           #Process won't start unless protected by nohup
           sudo "nohup /etc/init.d/#{redis_name} #{t} > /dev/null"
@@ -203,6 +229,7 @@ Capistrano::Configuration.instance(true).load do
         set :redis_port,      layout[:port]         || redis_default_port
         set :redis_timeout,   layout[:timeout]      || redis_default_timeout
         set :redis_conf_path, layout[:conf_path]    || redis_default_conf_path
+        set :redis_slave_conf_path, layout[:slave_conf_path] || redis_default_slave_conf_path
         set :redis_bind_eth,  layout[:bind_eth]     || redis_default_bind_eth
         set :redis_backup,    layout[:backup]       || redis_default_backup
         set :redis_rdb_file,  layout[:rdb_file]     || redis_default_rdb_file
