@@ -7,6 +7,7 @@ Capistrano::Configuration.instance(true).load do
     # mysql configuration sets
     set :mysql_bind_address, "127.0.0.1"
     set :mysql_listen_interface, "eth0"
+    set :mysql_data_dir, "/var/lib/mysql"
     set :mysql_listen, "###ETH###"
     set(:mysql_repl_pass) { utilities.ask "mysql_repl_pass" }
     set :mysql_master_repl_conf, File.join(File.dirname(__FILE__),'replication.cnf')
@@ -26,19 +27,25 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Setup All"
     task :setup, :roles => [:mysql_master, :mysql_slave] do
+      mysql_master.setup_data_dir
       mysql_master.install_master_repl_conf
       mysql_master.install_slave_repl_conf
       mysql_master.add_repl_user
       mysql_master.install_repl_keys
       mysql_master.grant_repl_mysql
       apparmor.setup
-      mysql_master.restart
       autossh.install
       autossh.setup
     end
 
     def ipaddress(eth)
       %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
+    end
+
+    desc "Verify that the MySQL Datadir exists"
+    task :setup_data_dir, :roles => [:mysql_master, :mysql_slave] do
+      sudo "mkdir -p #{mysql_data_dir}"
+      sudo "chown -R  mysql:mysql #{mysql_data_dir}"
     end
 
     desc "Upload replication config"
@@ -80,7 +87,7 @@ Capistrano::Configuration.instance(true).load do
     %w(start stop restart reload).each do |t|
     desc "#{t} mysql"
       task t.to_sym, :roles => [:mysql_master, :mysql_slave] do
-        sudo "service mysql #{t}"
+        sudo "/etc/init.d/mysql #{t}"
       end
     end
 
