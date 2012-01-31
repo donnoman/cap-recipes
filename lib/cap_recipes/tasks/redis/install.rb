@@ -146,6 +146,7 @@ Capistrano::Configuration.instance(true).load do
     %w(start stop restart).each do |t|
       desc "#{t.capitalize} redis server"
       task t.to_sym, :roles => [:redis,:redis_slave] do
+        utilities.ask("Starting all of the redi at the same time could create a thundering herd, ctrl-c to abort.") unless t == 'stop'
         with_layout do
           #Process won't start unless protected by nohup
           sudo "nohup /etc/init.d/#{redis_name} #{t} > /dev/null"
