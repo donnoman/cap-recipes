@@ -7,7 +7,7 @@ Capistrano::Configuration.instance(true).load do
     roles[:sdagent]
     set :sdagent_root, "/etc/sd-agent"
     set :sdagent_bin, "/usr/bin/sd-agent"
-    set(:sdagent_plugins_dir) { File.join(sdagent_root,"plugins")}
+    set(:sdagent_plugins_dir) { "#{sdagent_root}/plugins" }
     set :sdagent_suppress_runner, false
     set :sdagent_watcher, nil
     set :sdagent_god_path, File.join(File.dirname(__FILE__),'sdagent.god')
@@ -17,7 +17,7 @@ Capistrano::Configuration.instance(true).load do
       sudo "wget http://www.serverdensity.com/downloads/boxedice-public.key"
       sudo "apt-key add boxedice-public.key; rm -f boxedice-public.key"
       put %Q{
-        deb http://www.serverdensity.com/downloads/linux/debian lenny main
+        deb http://www.serverdensity.com/downloads/linux/deb all main
       },'/tmp/serverdensity.list'
       sudo "mv /tmp/serverdensity.list /etc/apt/sources.list.d/serverdensity.list"
       sdagent.update
