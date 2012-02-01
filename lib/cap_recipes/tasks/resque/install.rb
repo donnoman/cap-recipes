@@ -60,6 +60,13 @@ Capistrano::Configuration.instance(true).load do
       utilities.gem_install "resque", resque_ver
     end
 
+    namespace :workers do
+      #stub the workers namespace to avoid errors because they are in hooks.rb even if there is no watcher set.
+      %w(start stop restart).each do |t|
+        task t.to_sym do; end
+      end
+    end
+
   end
 
 end
