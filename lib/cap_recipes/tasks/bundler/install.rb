@@ -67,6 +67,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       bundle bundler_deploy_dir
     end
 
+    desc "delete the bundle cache dir"
+    task :reset_cache, :except => {:no_release => true} do
+      run "rm -rf #{bundler_dir}"
+    end
+
   end
 
 end
