@@ -283,6 +283,12 @@ module Utilities
     end
   end
 
+  ##
+  # Use to raise warnings about deprecated items
+  # set(:var_no_longer_used) {utilities.deprecated(:var_no_longer_used,:var_that_should_be_used)}
+  def deprecated(name,replacement=nil)
+    raise Capistrano::Error, "#{name} is deprecated, #{replacement ? "see: #{replacment}" : "no replacement" }."
+  end
 
 end
 
