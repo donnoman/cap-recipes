@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2012-01-25"
+  s.date = "2012-02-13"
   s.description = "Battle-tested capistrano recipes for debian based distributions, passenger, apache, nginx, delayed_job, juggernaut, rubygems, backgroundrb, rails, riak, mongo and more"
   s.email = "nesquena@gmail.com donnoman@donovanbray.com"
   s.extra_rdoc_files = [
@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/aptitude/manage.rb",
     "lib/cap_recipes/tasks/autossh.rb",
     "lib/cap_recipes/tasks/autossh/autossh.sh",
+    "lib/cap_recipes/tasks/autossh/hooks.rb",
     "lib/cap_recipes/tasks/autossh/install.rb",
     "lib/cap_recipes/tasks/backgroundrb.rb",
     "lib/cap_recipes/tasks/backgroundrb/hooks.rb",
@@ -122,7 +123,11 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/newrelic_rpm.rb",
     "lib/cap_recipes/tasks/newrelic_rpm/hooks.rb",
     "lib/cap_recipes/tasks/newrelic_rpm/install.rb",
-    "lib/cap_recipes/tasks/newrelic_rpm/newrelic_rpm.god",
+    "lib/cap_recipes/tasks/newrelic_sysmond.rb",
+    "lib/cap_recipes/tasks/newrelic_sysmond/hooks.rb",
+    "lib/cap_recipes/tasks/newrelic_sysmond/install.rb",
+    "lib/cap_recipes/tasks/newrelic_sysmond/newrelic_sysmond.god",
+    "lib/cap_recipes/tasks/newrelic_sysmond/nrsysmond.cfg.erb",
     "lib/cap_recipes/tasks/nginx.rb",
     "lib/cap_recipes/tasks/nginx/app.conf",
     "lib/cap_recipes/tasks/nginx/hooks.rb",
@@ -172,6 +177,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/redis/install.rb",
     "lib/cap_recipes/tasks/redis/manage.rb",
     "lib/cap_recipes/tasks/redis/redis-cli-config.sh",
+    "lib/cap_recipes/tasks/redis/redis-slave.conf",
     "lib/cap_recipes/tasks/redis/redis.conf",
     "lib/cap_recipes/tasks/redis/redis.god",
     "lib/cap_recipes/tasks/redis/redis.init",
@@ -266,7 +272,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/nesquena/cap-recipes"
   s.require_paths = ["lib"]
   s.rubyforge_project = "cap-recipes"
-  s.rubygems_version = "1.8.12"
+  s.rubygems_version = "1.8.10"
   s.summary = "Battle-tested capistrano recipes for debian based distributions"
 
   if s.respond_to? :specification_version then
