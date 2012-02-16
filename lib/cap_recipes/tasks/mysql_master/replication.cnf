@@ -1,8 +1,8 @@
 [mysqld]
 
-server-id                      = <%=server_id%>
-auto_increment_increment       = <%=increment_id%>
-auto_increment_offset          = <%=offset_id%>
+server-id                      = <%=mysql_master_server_id%>
+auto_increment_increment       = <%=mysql_master_increment_id%>
+auto_increment_offset          = <%=mysql_master_offset_id%>
 expire_logs_days               = 20
 max_binlog_size                = 100M
 binlog_format                  = MIXED

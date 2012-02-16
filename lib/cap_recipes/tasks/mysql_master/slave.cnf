@@ -1,6 +1,6 @@
 [mysqld]
 
-server-id                      = <%=slave_server_id%>
+server-id                      = <%=mysql_slave_server_id%>
 expire_logs_days               = 20
 max_binlog_size                = 100M
 binlog_format                  = MIXED

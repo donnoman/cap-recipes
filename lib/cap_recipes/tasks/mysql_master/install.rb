@@ -9,6 +9,10 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_listen_interface, "eth0"
     set :mysql_data_dir, "/var/lib/mysql"
     set :mysql_listen, "###ETH###"
+    set(:mysql_master_server_id) { utilities.ask "mysql_master_server_id" }
+    set(:mysql_master_increment_id) { utilities.ask "mysql_master_increment_id" }
+    set(:mysql_master_offset_id) { utilities.ask "mysql_master_offset_id" }
+    set(:mysql_slave_server_id) { utilities.ask "mysql_slave_server_id" }
     set(:mysql_repl_pass) { utilities.ask "mysql_repl_pass" }
     set :mysql_master_repl_conf, File.join(File.dirname(__FILE__),'replication.cnf')
     set :mysql_master_repl_conf_path, "/etc/mysql/conf.d/replication.cnf"
@@ -44,8 +48,9 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Verify that the MySQL Datadir exists"
     task :setup_data_dir, :roles => [:mysql_master, :mysql_slave] do
-      sudo "mkdir -p #{mysql_data_dir}"
+      sudo "mkdir -p #{mysql_data_dir}/binlog"
       sudo "chown -R  mysql:mysql #{mysql_data_dir}"
+      sudo "mysql_install_db --user=mysql --basedir=/usr --datadir=#{mysql_data_dir};true"
     end
 
     desc "Upload replication config"
@@ -80,14 +85,14 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Grant the Replication User Access"
     task :grant_repl_mysql, :roles => [:mysql_master, :mysql_slave] do
-      sudo %Q{mysql -uroot -e "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO repl@'127.0.0.1' IDENTIFIED BY '#{mysql_repl_pass}';"}
-      sudo %Q{mysql -uroot -e "FLUSH PRIVILEGES;"}
+      mysql.restart
+      sudo %Q{mysql -uroot -e "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'repl'@'127.0.0.1' IDENTIFIED BY '#{mysql_repl_pass}';"}
     end
 
     %w(start stop restart reload).each do |t|
     desc "#{t} mysql"
       task t.to_sym, :roles => [:mysql_master, :mysql_slave] do
-        sudo "/etc/init.d/mysql #{t}"
+        sudo "service mysql #{t}"
       end
     end
 
