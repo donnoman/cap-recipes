@@ -19,12 +19,14 @@ SOURCE="<%=redis_backup_source_spec%>"
 DUMP_PATH="${CURRENT}/${DATE}"
 BUCKET="s3://<%=redis_backup_s3_bucket%>"
 DESTINATION="${BUCKET}/${SERVER}"
+PACKAGE="redis_${SERVER}_${DATE}.tar.gz"
 
 # Prep LOCATION for New Backup
 rm -rf "${LAST}"
 mkdir -p "${CURRENT}"
 mv "${CURRENT}" "${LAST}"
 mkdir -p "${CURRENT}/${DATE}"
+rm -rf ${LOCATION}/redis_${SERVER}*
 
 
 <% redis.with_layout do %>
@@ -39,12 +41,11 @@ echo "Force a synchronous save"
 <%=redis_path%>/bin/redis-cli -h <%=redis_bind%> -p <%=redis_port%> info > ${DUMP_PATH}/<%=redis_name%>/info.log
 echo ''
 cp <%=redis_rdb_file%> ${DUMP_PATH}/<%=redis_name%>
-  <% end %>
+<% end %>
 <% end %>
 echo "==========================="
 echo "  PACKAGING"
 echo "==========================="
-PACKAGE="redis_${SERVER}_${DATE}.tar.gz"
 
 # S3 has a 5GB limit so we break it up at 4GB.
 # Rejoin later with: cat *.gz.*|tar xzf -

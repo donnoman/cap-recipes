@@ -154,6 +154,28 @@ Capistrano::Configuration.instance(true).load do
       end
     end
 
+    ##
+    # Steps to restore are manual
+    # $ mkdir -p /mnt/redis_restore && cd /mnt/redis_restore
+    #
+    # get the url of the package you want to restore
+    # ie: https://s3.amazonaws.com/redis-backups-staging/server/2012/February/07/Thursday/redis_server_2012-02-16_00h49m.tar.gz/redis_nori_2012-02-16_00h49m.tar.gz.aa
+    #
+    # formulate the s3cmd to retrieve it
+    # $ s3cmd get S3://redis-backups-staging/server/2012/February/07/Thursday/redis_server_2012-02-16_00h49m.tar.gz/*
+    #
+    # join the parts
+    # $ cat *.gz.*|tar xzf -
+    #
+    # cd into the dir
+    # $ cd 2012-02-16_00h49m/
+    #
+    # stop redis
+    # mv *.rdb and *.aof to a backup location #if the aof is present it will be read instead of the .rdb
+    # cp the restored contents to the data directory of the redis being restored.
+    # start redis
+    # check a redis info command against the info.log
+
     namespace :backup do
 
       desc "Transfer backup script to host"
