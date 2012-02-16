@@ -10,13 +10,13 @@ DOM=`${DATEC} +%d`                              # Date of the Month e.g. 27
 MONTH=`${DATEC} +%B`                                # Month e.g January
 WEEK=`${DATEC} +%V`                                # Week Number e.g 37
 DOWEEKLY=7                                      # Which day do you want weekly backups? (1 to 7 where 1 is Monday)
-SERVER=`hostname`
-LOCATION="/mnt/mysql_backups"
+SERVER=`hostname -f || hostname 2> /dev/null`
+LOCATION="<%=mysql_backup_location%>"
 CURRENT="${LOCATION}/current"
 LAST="${LOCATION}/last"
 BUCKET="s3://<%=mysql_backup_s3_bucket%>"
 DESTINATION="${BUCKET}/${SERVER}"
-ROOT="/root/script"
+ROOT="<%=File.dirname(mysql_backup_script_path)%>"
 
 <% if mysql_backup_stop_sql_thread %>
 # Leave the IO_THREAD running for faster catchup

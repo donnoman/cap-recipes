@@ -23,6 +23,7 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_backup_script, File.join(File.dirname(__FILE__),'mysql_backup_s3.sh')
     set :mysql_backup_script_path, "/root/script/mysql_backup_s3.sh"
     set :mysql_backup_chunk_size, "250M"
+    set :mysql_backup_location, "/mnt/mysql_backups"
 
     def mysql_client_cmd(cmd)
       command = []
@@ -78,12 +79,31 @@ Capistrano::Configuration.instance(true).load do
       utilities.apt_install "libmysqlclient-dev"
     end
 
+
+    ##
+    # Steps to restore are manual
+    # $ mkdir -p /mnt/mysql_restore && cd /mnt/mysql_restore
+    #
+    # get the url of the package you want to restore
+    # ie: https://s3.amazonaws.com/prefix-mysql-backups-staging/server/2012/February/07/Wednesday/mysql_server_2012-02-15_23h02m.tar.gz/mysql_server_2012-02-15_23h02m.tar.gz.aa
+    #
+    # formulate the s3cmd to retrieve it
+    # $ s3cmd get S3://mysql-backups-staging/server/2012/February/07/Wednesday/mysql_server_2012-02-15_23h02m.tar.gz/*
+    #
+    # join the parts
+    # $ cat *.gz.*|tar xzf -
+    #
+    # cd into the dir
+    # $ cd 2012-02-15_23h02m/
+    #
+    # execute the script supplying the database you want to restore into
+    # $ ./mysql_restore.sh staging
+
     namespace :backup do
 
       desc "Transfer backup script to host"
       task :upload_backup_script, :roles => :mysqld_backup do
-        run "#{sudo} mkdir -p /root/script"
-        run "#{sudo} mkdir -p /mnt/mysql_backups"
+        run "#{sudo} mkdir -p /root/script #{mysql_backup_location}"
         utilities.apt_install "at"
         utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "654", :owner => 'root:root'
         utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "654", :owner => 'root:root'
@@ -93,7 +113,7 @@ Capistrano::Configuration.instance(true).load do
       task :trigger, :roles => :mysqld_backup do
         upload_backup_script
         remove_backup_log
-        sudo %Q{sh -c "echo '/root/script/mysql_backup_s3.sh > #{mysql_backup_log_path} 2>&1' | at now + 2 minutes"}
+        sudo %Q{sh -c "echo '#{mysql_backup_script_path} > #{mysql_backup_log_path} 2>&1' | at now + 2 minutes"}
       end
 
       desc "validate backup"

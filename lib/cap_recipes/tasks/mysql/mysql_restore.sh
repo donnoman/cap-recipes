@@ -20,6 +20,7 @@ SOURCEDB=<%=mysql_restore_source_name%>
 
 read -p "Are you sure you want to overwrite $1? " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]
+  mysql -uroot -e "DATABASE CREATE IF NOT EXISTS ${DBNAME}"
 then
     exit 1
 fi
