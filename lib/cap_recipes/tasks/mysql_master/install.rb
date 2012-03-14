@@ -31,7 +31,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Setup All"
     task :setup, :roles => [:mysql_master, :mysql_slave] do
-      mysql.master.install_raid_tools
+      mysql_master.install_raid_tools
       mysql_master.setup_data_dir
       mysql_master.install_master_repl_conf
       mysql_master.install_slave_repl_conf
