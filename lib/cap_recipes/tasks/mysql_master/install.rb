@@ -31,6 +31,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Setup All"
     task :setup, :roles => [:mysql_master, :mysql_slave] do
+      mysql.master.install_raid_tools
       mysql_master.setup_data_dir
       mysql_master.install_master_repl_conf
       mysql_master.install_slave_repl_conf
@@ -46,10 +47,17 @@ Capistrano::Configuration.instance(true).load do
       %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
     end
 
-    desc "Verify that the MySQL Datadir exists"
+    desc "Install Raid Tools"
+    task :install_raid_tools, :roles => [:mysql_master, :mysql_slave] do
+      utilities.apt_install "mdadm xfsprogs"
+    end
+
+    desc "Setup the MySQL Data and Log directories"
     task :setup_data_dir, :roles => [:mysql_master, :mysql_slave] do
-      sudo "mkdir -p #{mysql_data_dir}/binlog"
+      sudo "mkdir -p #{mysql_data_dir}"
       sudo "chown -R  mysql:mysql #{mysql_data_dir}"
+      sudo "mkdir -p #{mysql_log_dir}"
+      sudo "chown -R  mysql:mysql #{mysql_log_dir}"
       sudo "mysql_install_db --user=mysql --basedir=/usr --datadir=#{mysql_data_dir};true"
     end
 

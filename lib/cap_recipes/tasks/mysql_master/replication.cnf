@@ -9,8 +9,8 @@ binlog_format                  = MIXED
 log-slave-updates              = TRUE
 sync_binlog                    = 1
 innodb_flush_log_at_trx_commit = 1
-log_bin                        = <%=mysql_data_dir%>/binlog/mysql-bin
-relay-log                      = <%=mysql_data_dir%>/binlog/relay-bin
-relay-log-index                = <%=mysql_data_dir%>/binlog/relay-bin.index
-relay-log-info-file            = <%=mysql_data_dir%>/binlog/relay-bin.info
+log_bin                        = <%=mysql_log_dir%>/mysql-bin
+relay-log                      = <%=mysql_log_dir%>/relay-bin
+relay-log-index                = <%=mysql_log_dir%>/relay-bin.index
+relay-log-info-file            = <%=mysql_log_dir%>/relay-bin.info
 replicate-wild-ignore-table    = mysql.%

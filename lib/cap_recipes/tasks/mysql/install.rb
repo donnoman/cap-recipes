@@ -79,7 +79,6 @@ Capistrano::Configuration.instance(true).load do
       utilities.apt_install "libmysqlclient-dev"
     end
 
-
     ##
     # Steps to restore are manual
     # $ mkdir -p /mnt/mysql_restore && cd /mnt/mysql_restore
