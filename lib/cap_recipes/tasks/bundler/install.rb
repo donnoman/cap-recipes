@@ -42,11 +42,10 @@ Capistrano::Configuration.instance(:must_exist).load do
 
     desc "Update Rubygems to be compatible with bundler"
     task :update_rubygems, :except => { :no_release => true } do
-      gem_ver = capture("#{base_ruby_path}/bin/gem --version").chomp
+      gem_ver = capture("#{base_ruby_path}/bin/gem --version 2> /dev/null").chomp
       if gem_ver < bundler_rubygems_minimum_ver
         logger.important "RubyGems needs to be udpated, has gem --version #{gem_ver}"
-        sudo "#{base_ruby_path}/bin/gem update --system" #some rubygems versions don't support pinning the new version, so we update, then pin.
-        sudo "#{base_ruby_path}/bin/gem update --system #{bundler_rubygems_minimum_ver}"
+        run "#{sudo} #{base_ruby_path}/bin/gem update --system #{bundler_rubygems_minimum_ver} || #{sudo} #{base_ruby_path}/bin/gem update --system" #if pinned version fails update to the latest.
       end
     end
 
