@@ -112,7 +112,7 @@ module Utilities
   # utilities.sudo_upload_template('/local/path/to/file','remote/path/to/destination', options)
   def sudo_upload_template(src,dst,options = {})
     raise Capistrano::Error, "sudo_upload_template requires Source and Destination" if src.nil? or dst.nil?
-    put ERB.new(File.read(src)).result(binding), "/tmp/#{File.basename(dst)}"
+    put ERB.new(File.read(src),nil,'-').result(binding), "/tmp/#{File.basename(dst)}"
     sudo "mv /tmp/#{File.basename(dst)} #{dst}"
     sudo "chmod #{options[:mode]} #{dst}" if options[:mode]
     sudo "chown #{options[:owner]} #{dst}" if options[:owner]
