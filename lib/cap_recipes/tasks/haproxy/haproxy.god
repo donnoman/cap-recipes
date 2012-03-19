@@ -7,7 +7,7 @@ God.watch do |w|
   w.pid_file = "/var/run/haproxy.pid"
 
   # clean pid files before start if necessary
-  w.behavior(:clean_pid_file)
+  # w.behavior(:clean_pid_file) #suspect this was causing /var/run/haproxy.pid being emptied incorrectly.
 
   # determine the state on startup
   w.transition(:init, { true => :up, false => :start }) do |on|
