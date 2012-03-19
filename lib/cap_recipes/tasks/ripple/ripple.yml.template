@@ -1,8 +1,17 @@
 # Configure Riak connections for the Ripple library.
 <%=rails_env%>:
-  http_port: 8098
-  pb_port: 8087
+<%- if ripple_host.is_a?(Array) -%>
+  nodes:
+  <%- ripple_host.each do |rhost| -%>
+    - host: <%=rhost%>
+      http_port: <%=ripple_http_port%>
+      pb_port: <%=ripple_pb_port%>
+  <%- end -%>
+<%- else -%>
   host: <%=ripple_host%>
+  http_port: <%=ripple_http_port%>
+  pb_port: <%=ripple_pb_port%>
+<%- end -%>
 
 # The test environment has additional keys for configuring the
 # Riak::TestServer for your test/spec suite:
