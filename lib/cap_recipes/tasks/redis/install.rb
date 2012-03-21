@@ -6,7 +6,7 @@ Capistrano::Configuration.instance(true).load do
     roles[:redis] #make an empty role
     roles[:redis_slave]
     roles[:redis_backup]
-    set :redis_ver, 'redis-2.2.15'
+    set :redis_ver, 'redis-2.4.8'
     set(:redis_src) {"http://redis.googlecode.com/files/#{redis_ver}.tar.gz"}
     set :redis_base_path, "/opt/redis"
 
