@@ -25,6 +25,11 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_backup_chunk_size, "250M"
     set :mysql_backup_location, "/mnt/mysql_backups"
 
+    set :mysql_conf, File.join(File.dirname(__FILE__),'my.cnf.erb')
+    set :mysql_conf_path, "/etc/mysql/my.cnf"
+
+    set :mysql_datadir, "/var/lib/mysql"
+
     def mysql_client_cmd(cmd)
       command = []
       command << "#{sudo}" if mysql_client_use_sudo
@@ -74,9 +79,24 @@ Capistrano::Configuration.instance(true).load do
 
     end
 
+    task :setup, :roles => [:mysqld] do
+      run "#{sudo} service mysql stop;true"
+      utilities.sudo_upload_template mysql_conf, mysql_conf_path, :mode => "644", :owner => 'root:root'
+      mysql.setup_data_dir
+      apparmor.setup
+      mysql.start
+    end
+
     desc "Install Mysql Developement Libraries"
     task :install_client_libs, :except => {:no_release => true} do
       utilities.apt_install "libmysqlclient-dev"
+    end
+
+    desc "Setup the MySQL Data and Log directories"
+    task :setup_data_dir, :roles => [:mysqld] do
+      sudo "mkdir -p #{mysql_data_dir}"
+      sudo "chown -R  mysql:mysql #{mysql_data_dir}"
+      sudo "mysql_install_db --user=mysql --basedir=/usr --datadir=#{mysql_data_dir};true"
     end
 
     ##
