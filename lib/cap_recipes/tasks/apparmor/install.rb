@@ -5,19 +5,19 @@ Capistrano::Configuration.instance(true).load do
   	set :mysql_apparmor_path, "/etc/apparmor.d"
 
   	desc "Call tasks to setup"
-    task :setup, :roles => [:mysql_master, :mysql_slave] do
+    task :setup do
     	apparmor.setup_apparmor
 		  apparmor.restart
     end
 
     desc "Setup Apparmor to allow permission to custom directories in mysql"
-    task :setup_apparmor, :roles => [:mysql_master, :mysql_slave] do
+    task :setup_apparmor, :roles => [:mysql_master, :mysql_slave, :mysqld] do
       utilities.sudo_upload_template mysql_apparmor_conf, "#{mysql_apparmor_path}/usr.sbin.mysqld", :mode => "644", :owner => "root:root"
     end
 
     %w(start stop restart reload).each do |t|
       desc "#{t} apparmor"
-      task t.to_sym, :roles => [:mysql_master, :mysql_slave] do
+      task t.to_sym, :roles => [:mysql_master, :mysql_slave, :mysqld] do
         sudo "/etc/init.d/apparmor #{t}"
       end
     end
