@@ -8,6 +8,7 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_bind_address, "127.0.0.1"
     set :mysql_listen_interface, "eth0"
     set :mysql_data_dir, "/var/lib/mysql"
+    set :mysql_log_dir, "/var/log/mysql"
     set :mysql_listen, "###ETH###"
     set(:mysql_master_server_id) { utilities.ask "mysql_master_server_id" }
     set(:mysql_master_increment_id) { utilities.ask "mysql_master_increment_id" }
@@ -27,7 +28,6 @@ Capistrano::Configuration.instance(true).load do
     set :ssh_repl_key_path, "/home/repl/.ssh/"
     set(:ssh_repl_priv_key) { utilities.ask "ssh_repl_private_key" }
     set(:ssh_repl_pub_key) { utilities.ask "ssh_repl_public_key" }
-    set(:ssh_repl_auth_keys) { utilities.ask "ssh_repl_authorized_keys" }
 
     desc "Setup All"
     task :setup, :roles => [:mysql_master, :mysql_slave] do
@@ -86,9 +86,11 @@ Capistrano::Configuration.instance(true).load do
       sudo "mkdir -p #{ssh_repl_key_path}"
       sudo "chmod 700 #{ssh_repl_key_path}"
       sudo "chown repl:repl #{ssh_repl_key_path}"
-      utilities.sudo_upload_template ssh_repl_priv_key, "/home/repl/.ssh/id_rsa", :mode => "600", :owner => "repl:repl"
-      utilities.sudo_upload_template ssh_repl_pub_key, "/home/repl/.ssh/id_rsa.pub", :mode => "640", :owner => "repl:repl"
-      utilities.sudo_upload_template ssh_repl_auth_keys, "/home/repl/.ssh/authorized_keys", :mode => "640", :owner => "repl:repl"
+      unless ssh_repl_priv_key.empty?
+        utilities.sudo_upload_template ssh_repl_priv_key, "/home/repl/.ssh/id_rsa", :mode => "600", :owner => "repl:repl"
+        utilities.sudo_upload_template ssh_repl_pub_key, "/home/repl/.ssh/id_rsa.pub", :mode => "640", :owner => "repl:repl"
+        utilities.sudo_upload_template ssh_repl_pub_key, "/home/repl/.ssh/authorized_keys", :mode => "640", :owner => "repl:repl"
+      end
     end
 
     desc "Grant the Replication User Access"
