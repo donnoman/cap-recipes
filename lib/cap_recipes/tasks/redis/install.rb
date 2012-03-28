@@ -11,6 +11,8 @@ Capistrano::Configuration.instance(true).load do
     set :redis_base_path, "/opt/redis"
 
     set :redis_default_name, 'redis'
+    #TODO: there probably needs to be a default bind eth because otherwise
+    # setup will fail.
     set :redis_default_bind_eth, nil
     set :redis_default_bind, nil
     set :redis_default_port, 6379
