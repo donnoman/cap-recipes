@@ -17,7 +17,9 @@ DESC="God Monitoring Tool"
 NAME=god
 CONF=<%=god_config%>
 LEVEL=<%=god_log_level%>
+<% if god_log_path %>
 LOGFILE="<%=god_log_path%>" ; mkdir -p `dirname $LOGFILE`
+<% end %>
 PIDFILE="<%=god_pid_path%>" ; mkdir -p `dirname $PIDFILE`
 DAEMON=<%=god_daemon%>
 DAEMON_ARGS="-c $CONF -P $PIDFILE --log-level $LEVEL <%= god_log_path ? '--log $LOGFILE' : '' %>"
