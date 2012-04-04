@@ -2,7 +2,7 @@
 
 rails_env = "<%=rails_env%>"
 rails_root = "<%=unicorn_root%>"
-goup_name = "<%=unicorn_init_name%>"
+group_name = "<%=unicorn_init_name%>"
 
 God.watch do |w|
   w.group = group_name
