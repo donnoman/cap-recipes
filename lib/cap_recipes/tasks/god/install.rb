@@ -42,6 +42,8 @@ Capistrano::Configuration.instance(true).load do
       god.send("install_from_#{god_install_from}".to_sym)
       utilities.sudo_upload_template god_init_path, god_init, :mode => "+x"
       sudo "update-rc.d -f god defaults"
+      sudo "rm -rf #{god_confd}" #make sure the god_confd is clear for setup.
+      sudo "mkdir -p #{god_confd}"
     end
 
     desc "install god init"
@@ -62,8 +64,6 @@ Capistrano::Configuration.instance(true).load do
 
     desc "setup god"
     task :setup, :except => {:no_ruby => true} do
-      sudo "rm -rf #{god_confd}"
-      sudo "mkdir -p #{god_confd}"
       utilities.sudo_upload_template god_config_path, god_config
     end
 
