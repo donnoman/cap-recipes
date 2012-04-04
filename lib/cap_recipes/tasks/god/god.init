@@ -59,7 +59,9 @@ do_start()
     # Add code here, if necessary, that waits for the process to be ready
     # to handle requests from services started subsequently which depend
     # on this one.  As a last resort, sleep for some time.
-    [ "$OPEN_SOCKET" != no ] && sleep 3 && sh -c "chmod 0777 /tmp/god.*.sock;true"
+    if [ "$OPEN_SOCKET" != no ]; then
+      sleep 3 && sh -c "chmod 0777 /tmp/god.*.sock;true"
+    fi
 }
 
 # kills god + everything god is monitoring
