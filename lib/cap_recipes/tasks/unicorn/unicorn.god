@@ -2,10 +2,11 @@
 
 rails_env = "<%=rails_env%>"
 rails_root = "<%=unicorn_root%>"
+goup_name = "<%=unicorn_init_name%>"
 
 God.watch do |w|
-  w.group = "unicorn"
-  w.name = "unicorn_rails"
+  w.group = group_name
+  w.name = "#{group_name}_rails"
   w.interval = 10.seconds # 30 default
   w.env = {
     'UNICORN_WORKERS' =>  '<%=unicorn_workers%>'

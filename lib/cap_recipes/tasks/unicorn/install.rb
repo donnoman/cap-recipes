@@ -17,6 +17,7 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_watcher, nil
     set :unicorn_suppress_runner, false
     set :unicorn_suppress_configure, false
+    set :unicorn_init_name, "unicorn"
 
     desc "select watcher"
     task :watcher do
@@ -30,7 +31,7 @@ Capistrano::Configuration.instance(true).load do
       #rejigger the maintenance tasks to use god when god is in play
       %w(start stop restart).each do |t|
         task t.to_sym, :roles => :app do
-          god.cmd "#{t} unicorn" unless unicorn_suppress_runner
+          god.cmd "#{t} #{unicorn_init_name}" unless unicorn_suppress_runner
         end
       end
       after "god:setup", "unicorn:setup_god"
@@ -38,7 +39,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "setup god to watch unicorn"
     task :setup_god, :roles => :app do
-      god.upload unicorn_god_path, 'unicorn.god'
+      god.upload unicorn_god_path, "#{unicorn_init_name}.god"
     end
 
     desc 'Installs unicorn'
