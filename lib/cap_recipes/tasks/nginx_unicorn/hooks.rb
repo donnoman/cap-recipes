@@ -5,6 +5,7 @@ Capistrano::Configuration.instance(true).load do
   after "deploy:setup", "nginx_unicorn:setup"
   after "logrotate:rotate", "nginx_unicorn:reopen"
   after "sdagent:setup", "nginx_unicorn:setup_sdagent"
-  after "nginx_unicorn:install", "nginx_unicorn:setup", "nginx_unicorn:configure"
+  after "nginx_unicorn:install", "nginx_unicorn:setup"
+  after "nginx_unicorn:setup", "nginx_unicorn:configure"
   on :load, "nginx_unicorn:watcher"
 end
