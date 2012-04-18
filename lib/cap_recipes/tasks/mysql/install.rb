@@ -28,7 +28,7 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_conf, File.join(File.dirname(__FILE__),'my.cnf.erb')
     set :mysql_conf_path, "/etc/mysql/my.cnf"
 
-    set :mysql_datadir, "/var/lib/mysql"
+    set :mysql_data_dir, "/var/lib/mysql"
 
     def mysql_client_cmd(cmd)
       command = []
