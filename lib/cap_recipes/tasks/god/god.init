@@ -42,6 +42,8 @@ USE_TERMINATE_ON_KILL=<%= god_use_terminate_on_kill ? 'yes' : 'no' %>
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
+VERBOSE=yes
+
 #
 # Function that starts the daemon/service
 #
