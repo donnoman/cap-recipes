@@ -82,8 +82,8 @@ Capistrano::Configuration.instance(true).load do
     task :setup, :roles => [:mysqld] do
       run "#{sudo} service mysql stop;true"
       utilities.sudo_upload_template mysql_conf, mysql_conf_path, :mode => "644", :owner => 'root:root'
-      mysql.setup_data_dir
       apparmor.setup
+      mysql.setup_data_dir
       mysql.start
     end
 
