@@ -1,0 +1,18 @@
+# /etc/dphys-swapfile - user settings for dphys-swapfile package
+# author Neil Franklin, last modification 2006.09.15
+# copyright ETH Zuerich Physics Departement
+#   use under either modified/non-advertising BSD or GPL license
+# this file is sourced with . so full normal sh syntax applies
+
+# where we want the swapfile to be, this is the default
+CONF_SWAPFILE=<%=dphys_swapfile_location%>
+
+# size we want to force it to be, default (empty) gives 2*RAM
+CONF_SWAPSIZE=<%=dphys_swapfile_size%>
+
+##
+#  Give yourself three times the memory size of swap?
+#
+# mem=$(grep MemTotal /proc/meminfo |awk '{print $2}')
+# CONF_SWAPSIZE=$(expr $mem \* 3)
+#
