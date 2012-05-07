@@ -18,7 +18,7 @@ Capistrano::Configuration.instance(true).load do
     def cmd(command)
       sudo "monit #{command}"
     end
-    
+
     # Use this helper to upload monit conf.d files and reload monit
     # monit.upload dk_filter_monit_path, "dk-filter.monit"
     def upload(src,name)
