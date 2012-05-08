@@ -1,7 +1,6 @@
 Capistrano::Configuration.instance(true).load do
   #redis primer http://jramirez.tumblr.com/post/2589232577/prime-time-redis-101-set-up
   #redis primer http://library.linode.com/databases/redis/ubuntu-10.04-lucid
-
   namespace :redis do
     roles[:redis] #make an empty role
     roles[:redis_slave]
@@ -11,10 +10,8 @@ Capistrano::Configuration.instance(true).load do
     set :redis_base_path, "/opt/redis"
 
     set :redis_default_name, 'redis'
-    #TODO: there probably needs to be a default bind eth because otherwise
-    # setup will fail.
-    set :redis_default_bind_eth, nil
-    set :redis_default_bind, nil
+    set :redis_default_bind_daemon_eth, nil  # specifying a default eth overrides the regular bind_daemon ip address
+    set :redis_default_bind_daemon, nil
     set :redis_default_port, 6379
     set :redis_default_timeout, '300'
     set :redis_default_conf_path, File.join(File.dirname(__FILE__),'redis.conf')
@@ -50,7 +47,7 @@ Capistrano::Configuration.instance(true).load do
     set :redis_init_path, File.join(File.dirname(__FILE__),'redis.init')
     set :redis_logrotate_path, File.join(File.dirname(__FILE__),'redis.logrotate')
     set :redis_cli_helper_path, File.join(File.dirname(__FILE__),'redis-cli-config.sh')
-    #  set(:redis_cli_cmd) {"#{redis_path}/bin/redis-cli#{" -h #{redis_bind}" if redis_bind}#{" -p #{redis_port}" if redis_port} "}
+    #  set(:redis_cli_cmd) {"#{redis_path}/bin/redis-cli#{" -h #{redis_bind_daemon}" if redis_bind_daemon}#{" -p #{redis_port}" if redis_port} "}
 
 
     def ipaddress(eth)
@@ -120,7 +117,7 @@ Capistrano::Configuration.instance(true).load do
       redis.setup_slave
 
       with_layout do
-        sudo "sed -i s/#{redis_bind}/#{ipaddress(redis_bind_eth)}/g #{redis_path}/#{redis_name}.conf"
+        sudo "sed -i s/#{redis_bind_daemon}/#{ipaddress(redis_bind_daemon_eth)}/g #{redis_path}/#{redis_name}.conf"
         sudo "update-rc.d -f #{redis_name} defaults"
       end
 
@@ -187,7 +184,7 @@ Capistrano::Configuration.instance(true).load do
         utilities.apt_install "at"
         utilities.sudo_upload_template redis_backup_script, redis_backup_script_path, :mode => "654", :owner => 'root:root'
         with_layout do
-          sudo "sed -i s/#{redis_bind}/#{ipaddress(redis_bind_eth)}/g #{redis_backup_script_path}"
+          sudo "sed -i s/#{redis_bind_daemon}/#{ipaddress(redis_bind_daemon_eth)}/g #{redis_backup_script_path}"
         end
       end
 
@@ -254,17 +251,17 @@ Capistrano::Configuration.instance(true).load do
 
     def with_layout
       redis_layout.each do |layout|
-        set :redis_name,      layout[:name]         || redis_default_name
-        set :redis_path,      layout[:path]         || "#{redis_base_path}/#{redis_name}"
-        set :redis_bind,      layout[:bind]         || redis_default_bind
-        set :redis_port,      layout[:port]         || redis_default_port
-        set :redis_timeout,   layout[:timeout]      || redis_default_timeout
-        set :redis_conf_path, layout[:conf_path]    || redis_default_conf_path
-        set :redis_slave_conf_path, layout[:slave_conf_path] || redis_default_slave_conf_path
-        set :redis_bind_eth,  layout[:bind_eth]     || redis_default_bind_eth
-        set :redis_backup,    layout[:backup]       || redis_default_backup
-        set :redis_rdb_file,  layout[:rdb_file]     || redis_default_rdb_file
-        set :redis_bind, "###ETH###" if redis_bind_eth
+        set :redis_name,            layout[:name]             || redis_default_name
+        set :redis_path,            layout[:path]             || "#{redis_base_path}/#{redis_name}"
+        set :redis_bind_daemon,     layout[:bind]             || redis_default_bind_daemon
+        set :redis_port,            layout[:port]             || redis_default_port
+        set :redis_timeout,         layout[:timeout]          || redis_default_timeout
+        set :redis_conf_path,       layout[:conf_path]        || redis_default_conf_path
+        set :redis_slave_conf_path, layout[:slave_conf_path]  || redis_default_slave_conf_path
+        set :redis_bind_daemon_eth, layout[:bind_eth]         || redis_default_bind_daemon_eth
+        set :redis_backup,          layout[:backup]           || redis_default_backup
+        set :redis_rdb_file,        layout[:rdb_file]         || redis_default_rdb_file
+        set :redis_bind_daemon,     "###ETH###"               if redis_bind_daemon_eth
         yield layout if block_given?
       end
     end
