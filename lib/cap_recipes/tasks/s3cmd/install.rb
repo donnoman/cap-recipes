@@ -24,6 +24,8 @@ Capistrano::Configuration.instance(true).load do
 
     desc "setup s3cmd"
     task :setup do
+      run "#{sudo} mkdir -p #{root_home_path}"
+      run "mkdir -p #{user_home_path}"
       utilities.sudo_upload_template s3cmd_config_path, "#{root_home_path}/.s3cfg", :mode => '600'
       utilities.upload_template s3cmd_config_path, "#{user_home_path}/.s3cfg", :mode => '600' unless user == 'root'
     end
