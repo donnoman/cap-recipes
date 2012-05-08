@@ -5,7 +5,6 @@ Capistrano::Configuration.instance(true).load do
     roles[:mysql_slave]
 
     # mysql configuration sets
-    set :mysql_bind_address, "127.0.0.1"
     set :mysql_listen_interface, "eth0"
     set :mysql_data_dir, "/var/lib/mysql"
     set :mysql_log_dir, "/var/log/mysql"
