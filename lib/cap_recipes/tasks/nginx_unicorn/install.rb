@@ -22,7 +22,8 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_unicorn_stub_conf_path, File.join(File.dirname(__FILE__),'stub_status.conf')
     set :nginx_unicorn_god_path, File.join(File.dirname(__FILE__),'nginx_unicorn.god')
     set :nginx_unicorn_logrotate_path, File.join(File.dirname(__FILE__),'nginx_unicorn.logrotate')
-    set :nginx_unicorn_src, "http://nginx.org/download/nginx-1.0.6.tar.gz"
+    # must be above 1.1.7 http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-1180
+    set :nginx_unicorn_src, "http://nginx.org/download/nginx-1.2.0.tar.gz"
     set(:nginx_unicorn_ver) { nginx_unicorn_src.match(/\/([^\/]*)\.tar\.gz$/)[1] }
     set(:nginx_unicorn_source_dir) {"#{nginx_unicorn_root}/src/#{nginx_unicorn_ver}"}
     set(:nginx_unicorn_patch_dir) {"#{nginx_unicorn_root}/src"}
@@ -75,7 +76,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc 'Installs nginx for unicorn'
     task :install, :roles => :app do
-      utilities.apt_install "libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev"
+      utilities.apt_install "libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev git-core"
       sudo "mkdir -p #{nginx_unicorn_source_dir}"
       run "cd #{nginx_unicorn_root}/src && #{sudo} wget --tries=2 -c --progress=bar:force #{nginx_unicorn_src} && #{sudo} tar zxvf #{nginx_unicorn_ver}.tar.gz"
       utilities.git_clone_or_pull "git://github.com/yaoweibin/nginx_syslog_patch.git", "#{nginx_unicorn_patch_dir}/nginx_syslog_patch"

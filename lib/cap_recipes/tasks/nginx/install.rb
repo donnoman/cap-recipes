@@ -22,11 +22,11 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_stub_conf_path, File.join(File.dirname(__FILE__),'stub_status.conf')
     set :nginx_god_path, File.join(File.dirname(__FILE__),'nginx.god')
     set :nginx_logrotate_path, File.join(File.dirname(__FILE__),'nginx.logrotate')
-    set :nginx_src, "http://nginx.org/download/nginx-1.0.6.tar.gz"
+    # must be above 1.1.7 http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-1180
+    set :nginx_src, "http://nginx.org/download/nginx-1.2.0.tar.gz"
     set(:nginx_ver) { nginx_src.match(/\/([^\/]*)\.tar\.gz$/)[1] }
     set(:nginx_source_dir) {"#{nginx_root}/src/#{nginx_ver}"}
     set(:nginx_patch_dir) {"#{nginx_root}/src"}
-    set(:nginx_upstream_socket){"#{shared_path}/sockets/unicorn.sock"}
     set(:nginx_log_dir) {"#{nginx_root}/logs"}
     set(:nginx_pid_file) {"#{nginx_log_dir}/nginx.pid"}
     set :nginx_watcher, nil
@@ -87,7 +87,7 @@ Capistrano::Configuration.instance(true).load do
     desc 'Installs nginx for web'
     task :install, :roles => :web do
       uninstall_apt_nginx if fetch(:uninstall_apt_nginx)
-      utilities.apt_install "libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev"
+      utilities.apt_install "libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev git-core"
       sudo "mkdir -p #{nginx_source_dir}"
       run "cd #{nginx_root}/src && #{sudo} wget --tries=2 -c --progress=bar:force #{nginx_src} && #{sudo} tar zxvf #{nginx_ver}.tar.gz"
       utilities.git_clone_or_pull "git://github.com/yaoweibin/nginx_syslog_patch.git", "#{nginx_patch_dir}/nginx_syslog_patch"
