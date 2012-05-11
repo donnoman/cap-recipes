@@ -35,6 +35,7 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_port, '80'
     set :nginx_server_name, 'localhost'
     set :nginx_app_conf_path, File.join(File.dirname(__FILE__),'app.conf')
+    set :nginx_worker_processes, "1" # should be cpu's - 1
     set(:nginx_configure_flags) {[
       "--with-debug",
       "--with-http_gzip_static_module",

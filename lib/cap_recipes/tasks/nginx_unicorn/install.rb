@@ -38,6 +38,8 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_unicorn_server_name, 'localhost'
     set :nginx_unicorn_app_conf_path, File.join(File.dirname(__FILE__),'app.conf')
     set :nginx_unicorn_set_scheme, true
+    set :nginx_worker_processes, "1" # should be cpu's - 1
+
     set(:nginx_unicorn_configure_flags) {[
       "--prefix=#{nginx_unicorn_root}",
       "--sbin-path=#{nginx_unicorn_sbin_file}",
