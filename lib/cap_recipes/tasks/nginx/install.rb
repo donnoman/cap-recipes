@@ -15,6 +15,9 @@ require File.expand_path(File.dirname(__FILE__) + '/../unicorn')
 Capistrano::Configuration.instance(true).load do
 
   namespace :nginx do
+    roles[:nginx]
+    roles[:nginx_client]
+
     set :nginx_init_d, "nginx"
     set :nginx_root, "/opt/nginx"
     set :nginx_conf_path, File.join(File.dirname(__FILE__),'nginx.conf')
@@ -35,6 +38,7 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_port, '80'
     set :nginx_server_name, 'localhost'
     set :nginx_app_conf_path, File.join(File.dirname(__FILE__),'app.conf')
+    set(:nginx_app_conf_filename) { application }
     set(:nginx_configure_flags) {[
       "--with-debug",
       "--with-http_gzip_static_module",
@@ -87,7 +91,7 @@ Capistrano::Configuration.instance(true).load do
     desc 'Installs nginx for web'
     task :install, :roles => :web do
       uninstall_apt_nginx if fetch(:uninstall_apt_nginx)
-      utilities.apt_install "libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev git-core"
+      utilities.apt_install "build-essential libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev git-core"
       sudo "mkdir -p #{nginx_source_dir}"
       run "cd #{nginx_root}/src && #{sudo} wget --tries=2 -c --progress=bar:force #{nginx_src} && #{sudo} tar zxvf #{nginx_ver}.tar.gz"
       utilities.git_clone_or_pull "git://github.com/yaoweibin/nginx_syslog_patch.git", "#{nginx_patch_dir}/nginx_syslog_patch"
@@ -98,11 +102,11 @@ Capistrano::Configuration.instance(true).load do
 
     task :setup, :roles => :web do
       sudo "mkdir -p #{nginx_root}/conf/sites-available #{nginx_root}/conf/sites-enabled #{nginx_log_dir}"
-      utilities.sudo_upload_template nginx_conf_path,"#{nginx_root}/conf/nginx.conf"
-      utilities.sudo_upload_template nginx_stub_conf_path,"#{nginx_root}/conf/sites-available/stub_status.conf"
+      utilities.sudo_upload_template nginx_conf_path,"#{nginx_root}/conf/nginx.conf", :owner => "root:root"
+      utilities.sudo_upload_template nginx_stub_conf_path,"#{nginx_root}/conf/sites-available/stub_status.conf", :owner => "root:root"
       sudo "ln -sf #{nginx_root}/conf/sites-available/stub_status.conf #{nginx_root}/conf/sites-enabled/stub_status.conf"
-      utilities.sudo_upload_template nginx_init_d_path,"/etc/init.d/#{nginx_init_d}", :mode => "u+x"
-      utilities.sudo_upload_template nginx_logrotate_path,"/etc/logrotate.d/#{nginx_init_d}"
+      utilities.sudo_upload_template nginx_init_d_path,"/etc/init.d/#{nginx_init_d}", :owner => "root:root", :mode => "u+x"
+      utilities.sudo_upload_template nginx_logrotate_path,"/etc/logrotate.d/#{nginx_init_d}", :owner => "root:root"
     end
 
     desc "Nginx Unicorn Reload"
@@ -141,18 +145,18 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Write the application conf"
     task :configure, :roles => :web do
-      utilities.sudo_upload_template nginx_app_conf_path, "#{nginx_root}/conf/sites-available/#{application}.conf"
+      utilities.sudo_upload_template nginx_app_conf_path, "#{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf", :owner => "root:root"
       enable
     end
 
     desc "Enable the application conf"
     task :enable, :roles => :web do
-      sudo "ln -sf #{nginx_root}/conf/sites-available/#{application}.conf #{nginx_root}/conf/sites-enabled/#{application}.conf"
+      sudo "ln -sf #{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf #{nginx_root}/conf/sites-enabled/#{nginx_app_conf_filename}.conf"
     end
 
     desc "Disable the application conf"
     task :disable, :roles => :web do
-      sudo "rm #{nginx_root}/conf/sites-enabled/#{application}.conf"
+      sudo "rm #{nginx_root}/conf/sites-enabled/#{nginx_app_conf_filename}.conf"
     end
 
     %w(start stop restart).each do |t|
