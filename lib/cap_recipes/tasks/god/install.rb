@@ -21,7 +21,7 @@ Capistrano::Configuration.instance(true).load do
 
     def cmd(cmd,options={})
       r_env = options[:rails_env] || rails_env
-      sudo "PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} #{cmd}"
+      run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} #{cmd}"
     end
 
     # Use this helper to upload god conf.d files and reload god
