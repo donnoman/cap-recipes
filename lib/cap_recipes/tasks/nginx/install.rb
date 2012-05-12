@@ -54,6 +54,10 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_cert_path, nil
     set :uninstall_apt_nginx, false #false may cause problems with the init.d and leave orhpans, true will destroy the remnants of whatever used to be there.
 
+    def ipaddress(eth)
+      %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
+    end
+
     task :upload_certs, :roles => :web do
       if nginx_cert_name
         utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.key"), "#{nginx_root}/conf/https.key"
