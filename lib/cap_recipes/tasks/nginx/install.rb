@@ -39,7 +39,6 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_ssl_port, '443'
     set :nginx_bind_eth, nil
     set(:nginx_bind) {"###ETH###" if nginx_bind_eth}
-
     set(:nginx_listen) {"#{nginx_bind}:#{nginx_port}"}
     set(:nginx_ssl_listen) {"#{nginx_bind}:#{nginx_ssl_port} ssl"}
     set :nginx_server_name, 'localhost'
