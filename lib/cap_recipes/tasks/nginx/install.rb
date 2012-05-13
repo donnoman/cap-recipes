@@ -58,7 +58,7 @@ Capistrano::Configuration.instance(true).load do
       %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
     end
 
-    task :upload_certs, :roles => :web do
+    task :upload_certs, :roles => [:web,:nginx,:nginx_client] do
       if nginx_cert_name
         utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.key"), "#{nginx_root}/conf/https.key"
         utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.crt"), "#{nginx_root}/conf/https.crt"
@@ -82,19 +82,19 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "setup god to watch nginx"
-    task :setup_god, :roles => :web do
+    task :setup_god, :roles => [:web,:nginx] do
       god.upload nginx_god_path, 'nginx.god'
     end
 
     desc "remove nginx installed by apt-get if present"
-    task :uninstall_apt_nginx, :roles => :web do
+    task :uninstall_apt_nginx, :roles => [:web,:nginx] do
       run "#{sudo} /etc/init.d/nginx stop;true"
       utilities.apt_remove "nginx"
       sudo "rm -rf /etc/nginx"
     end
 
     desc 'Installs nginx for web'
-    task :install, :roles => :web do
+    task :install, :roles => [:web,:nginx] do
       uninstall_apt_nginx if fetch(:uninstall_apt_nginx)
       utilities.apt_install "build-essential libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev git-core"
       sudo "mkdir -p #{nginx_source_dir}"
@@ -105,7 +105,7 @@ Capistrano::Configuration.instance(true).load do
       run "cd #{nginx_source_dir} && #{sudo} ./configure --prefix=#{nginx_root} #{nginx_configure_flags.join(" ")} && #{sudo} make && #{sudo} make install"
     end
 
-    task :setup, :roles => :web do
+    task :setup, :roles => [:web,:nginx] do
       sudo "mkdir -p #{nginx_root}/conf/sites-available #{nginx_root}/conf/sites-enabled #{nginx_log_dir}"
       utilities.sudo_upload_template nginx_conf_path,"#{nginx_root}/conf/nginx.conf", :owner => "root:root"
       utilities.sudo_upload_template nginx_stub_conf_path,"#{nginx_root}/conf/sites-available/stub_status.conf", :owner => "root:root"
@@ -115,21 +115,21 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "Nginx Unicorn Reload"
-    task :reload, :roles => :web do
+    task :reload, :roles => [:web,:nginx,:nginx_client] do
       sudo "/etc/init.d/#{nginx_init_d} reload"
     end
 
     desc "Nginx Unicorn Reopen"
-    task :reopen, :roles => :web do
+    task :reopen, :roles => [:web,:nginx] do
       sudo "/etc/init.d/#{nginx_init_d} reopen"
     end
 
-    task :remove_default, :roles => :web do
+    task :remove_default, :roles => [:web,:nginx] do
       sudo "rm -f #{nginx_root}/sites-enabled/default"
     end
 
     desc "Watch Nginx and Unicorn Workers with GOD"
-    task :setup_god, :roles => :web do
+    task :setup_god, :roles => [:web,:nginx] do
       god.upload nginx_god_path, "nginx.god"
       # disable init from automatically starting and stopping these init controlled apps
       # god will be started by init, and in turn start these god controlled apps.
@@ -141,7 +141,7 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "Setup sd-agent to collect metrics for nginx"
-    task :setup_sdagent, :roles => :web do
+    task :setup_sdagent, :roles => [:web,:nginx] do
       # block executing this task if :sdagent isn't present on any :web servers.
       if (find_servers(:roles => :web).map{|d| d.host} && find_servers(:roles => :sdagent).map{|d| d.host}).any?
         sudo "sed -i 's/^.*nginx_status_url.*$/nginx_status_url: http:\\/\\/127.0.0.1\\/nginx_status/g' #{sdagent_root}/config.cfg"
@@ -149,24 +149,24 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "Write the application conf"
-    task :configure, :roles => :web do
+    task :configure, :roles => [:web,:nginx] do
       utilities.sudo_upload_template nginx_app_conf_path, "#{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf", :owner => "root:root"
       enable
     end
 
     desc "Enable the application conf"
-    task :enable, :roles => :web do
+    task :enable, :roles => [:web,:nginx,:nginx_client] do
       sudo "ln -sf #{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf #{nginx_root}/conf/sites-enabled/#{nginx_app_conf_filename}.conf"
     end
 
     desc "Disable the application conf"
-    task :disable, :roles => :web do
+    task :disable, :roles => [:web,:nginx,:nginx_client] do
       sudo "rm #{nginx_root}/conf/sites-enabled/#{nginx_app_conf_filename}.conf"
     end
 
     %w(start stop restart).each do |t|
       desc "#{t} nginx via init"
-      task t.to_sym, :roles => :web do
+      task t.to_sym, :roles => [:web,:nginx] do
         sudo "/etc/init.d/nginx #{t}" unless nginx_suppress_runner
       end
     end
