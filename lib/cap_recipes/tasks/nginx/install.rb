@@ -36,7 +36,14 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_user, "nobody"
     set :nginx_suppress_runner, false
     set :nginx_port, '80'
+    set :nginx_ssl_port, '443'
+    set :nginx_bind_eth, nil
+    set(:nginx_bind) {"###ETH###" if nginx_bind_eth}
+
+    set(:nginx_listen) {"#{nginx_bind}:#{nginx_port}"}
+    set(:nginx_ssl_listen) {"#{nginx_bind}:#{nginx_ssl_port} ssl"}
     set :nginx_server_name, 'localhost'
+    set(:nginx_server_names) {nginx_server_name}
     set :nginx_app_conf_path, File.join(File.dirname(__FILE__),'app.conf')
     set :nginx_worker_processes, "1" # should be cpu's - 1
     set(:nginx_app_conf_filename) { application }
@@ -52,16 +59,19 @@ Capistrano::Configuration.instance(true).load do
     ]}
     set :nginx_cert_name, nil
     set :nginx_cert_path, nil
+    set(:nginx_cert_location) { "#{nginx_root}/conf/keys"}
     set :uninstall_apt_nginx, false #false may cause problems with the init.d and leave orhpans, true will destroy the remnants of whatever used to be there.
+    set :nginx_redirect_www_to_base_domain, true
+    set :nginx_upload_certs, true
 
     def ipaddress(eth)
       %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
     end
 
     task :upload_certs, :roles => [:web,:nginx,:nginx_client] do
-      if nginx_cert_name
-        utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.key"), "#{nginx_root}/conf/https.key"
-        utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.crt"), "#{nginx_root}/conf/https.crt"
+      if nginx_cert_name and nginx_upload_certs
+        utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.key"), "#{nginx_cert_location}/#{nginx_cert_name}.key"
+        utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.crt"), "#{nginx_cert_location}/#{nginx_cert_name}.crt"
       end
     end
 
@@ -149,8 +159,9 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "Write the application conf"
-    task :configure, :roles => [:web,:nginx] do
+    task :configure, :roles => [:web,:nginx,:nginx_client] do
       utilities.sudo_upload_template nginx_app_conf_path, "#{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf", :owner => "root:root"
+      sudo %Q{sed -i "s/#{nginx_bind}/#{ipaddress(nginx_bind_eth)}/g" #{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf} if nginx_bind_eth
       enable
     end
 
