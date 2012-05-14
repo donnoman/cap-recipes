@@ -6,15 +6,15 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :ree do
 
-    set :ree_ver, 'ruby-enterprise-1.8.7-2011.03'
-    set :ree_src, "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-1.8.7-2011.03.tar.gz"
+    set :ree_ver, 'ruby-enterprise-1.8.7-2012.02'
+    set :ree_src, "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-1.8.7-2012.02.tar.gz"
 
     set(:ree_pkg) {
       case target_os
       when :debian64
-        "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2011.03_amd64_debian6.0.deb"
+        "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2012.02_amd64_debian6.0.deb"
       when :ubuntu64
-        "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2011.03_amd64_ubuntu10.04.deb"
+        "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2012.02_amd64_ubuntu10.04.deb"
       else
         raise Capistrano::Error "Unhandled target_os in :ree"
       end
