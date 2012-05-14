@@ -86,6 +86,10 @@ module Utilities
     sudo "#{apt_get} -qy autoremove"
   end
 
+  def apt_fix_missing
+    sudo "#{apt_get} -qy update --fix-missing"
+  end
+
   def apt_update
     sudo "#{apt_get} -qy update"
   end
