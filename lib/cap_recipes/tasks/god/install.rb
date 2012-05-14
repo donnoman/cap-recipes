@@ -68,7 +68,7 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "upload god contacts"
-    task :contacts do
+    task :contacts, :except => {:no_ruby => true} do
       god.upload god_contacts_path, 'contacts.god'
     end
 
