@@ -62,6 +62,8 @@ Capistrano::Configuration.instance(true).load do
     set :uninstall_apt_nginx, false #false may cause problems with the init.d and leave orhpans, true will destroy the remnants of whatever used to be there.
     set :nginx_redirect_www_to_base_domain, true
     set :nginx_upload_certs, true
+    set :nginx_max_fails, "10"
+    set :nginx_fail_timeout, "15"
 
     def ipaddress(eth)
       %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
