@@ -1,0 +1,10 @@
+/var/log/dovecot {
+  create 0640 root adm
+  missingok
+  weekly
+  rotate 7
+  compress
+  postrotate
+    /etc/init.d/dovecot restart > /dev/null
+  endscript
+}
