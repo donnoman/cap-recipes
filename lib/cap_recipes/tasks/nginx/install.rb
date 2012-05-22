@@ -64,6 +64,7 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_upload_certs, true
     set :nginx_max_fails, "10"
     set :nginx_fail_timeout, "15"
+    set :nginx_redirects, nil
 
     def ipaddress(eth)
       %Q{`ifconfig #{eth} | awk '/inet addr/ {split ($2,A,":"); print A[2]}'`}
