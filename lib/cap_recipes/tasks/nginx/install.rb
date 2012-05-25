@@ -161,7 +161,7 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "Write the application conf"
-    task :configure, :roles => [:web,:nginx,:nginx_client] do
+    task :configure, :roles => [:web,:nginx_client] do
       utilities.sudo_upload_template nginx_app_conf_path, "#{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf", :owner => "root:root"
       sudo %Q{sed -i "s/#{nginx_bind}/#{ipaddress(nginx_bind_eth)}/g" #{nginx_root}/conf/sites-available/#{nginx_app_conf_filename}.conf} if nginx_bind_eth
       enable
