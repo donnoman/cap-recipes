@@ -1,7 +1,7 @@
 Capistrano::Configuration.instance(true).load do
 
   namespace :monit do
-
+    roles[:monit]
     set :monit_root, "/etc/monit"
     set :monit_default_file, "/etc/default/monit"
     set(:monit_monitrc_file) {"#{monit_root}/monitrc"}
@@ -16,49 +16,49 @@ Capistrano::Configuration.instance(true).load do
     set :monit_start_delay_seconds, "60"
 
     def cmd(command)
-      sudo "monit #{command}"
+      sudo "monit #{command}", :roles => :monit
     end
 
     # Use this helper to upload monit conf.d files and reload monit
     # monit.upload dk_filter_monit_path, "dk-filter.monit"
     def upload(src,name)
-      utilities.sudo_upload_template src, "#{monit_confd}/#{name}"
+      utilities.sudo_upload_template src, "#{monit_confd}/#{name}", :roles => :monit
       monit.cmd "reload"
     end
 
     desc "Install Monit"
-    task :install do
+    task :install, :roles => :monit do
       utilities.apt_install "monit"
       monit.setup
     end
 
     desc "Install monitrc settings"
-    task :setup do
+    task :setup, :roles => :monit do
       utilities.sudo_upload_template monit_monitrc_path, monit_monitrc_file, :owner => "root:root", :mode => "0700"
       utilities.sudo_upload_template File.join(monit_path,'modebug'), "#{monit_file}/modebug", :owner => "root:root", :mode => "0700"
       utilities.sudo_upload_template File.join(monit_path,'morun'), "#{monit_file}/morun", :owner => "root:root", :mode => "0700"
     end
 
     desc "enable monit startup"
-    task :enable do
+    task :enable, :roles => :monit do
       sudo "sed -i 's/startup=.*/startup=1/g' #{monit_default_file}"
     end
 
     desc "disable monit startup"
-    task :disable do
+    task :disable, :roles => :monit do
       sudo "sed -i 's/startup=.*/startup=0/g' #{monit_default_file}"
     end
 
     %w(status summary reload validate).each do |t|
       desc "monit #{t}"
-      task t.to_sym do
+      task t.to_sym, :roles => :monit do
         sudo "monit #{t}"
       end
     end
 
     %w(start stop restart).each do |t|
       desc "#{t} monit"
-      task t.to_sym do
+      task t.to_sym, :roles => :monit do
         sudo "/etc/init.d/monit #{t}"
       end
     end
