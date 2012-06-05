@@ -1,3 +1,6 @@
+# http://dev.mysql.com/doc/refman/5.1/en/replication-howto-existingdata.html
+# http://dev.mysql.com/doc/refman/5.1/en/replication-howto-slaveinit.html
+
 [mysqld]
 
 server-id                      = <%=mysql_master_server_id%>
@@ -13,4 +16,4 @@ log_bin                        = <%=mysql_log_dir%>/mysql-bin
 relay-log                      = <%=mysql_log_dir%>/relay-bin
 relay-log-index                = <%=mysql_log_dir%>/relay-bin.index
 relay-log-info-file            = <%=mysql_log_dir%>/relay-bin.info
-replicate-wild-ignore-table    = mysql.%
+replicate-wild-ignore-table    = mysql.%,mysqlslap
