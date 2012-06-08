@@ -54,9 +54,9 @@ innodb_flush_log_at_trx_commit = 1
 
 # LOGGING #
 log_queries_not_using_indexes  = 1
-log_error                      = <%=mysql_data_dir%>/logs/error.log
+log_error                      = <%=mysql_log_dir%>/error.log
 slow_query_log                 = 1
-slow_query_log_file            = <%=mysql_data_dir%>/logs/slow.log
+slow_query_log_file            = <%=mysql_log_dir%>/slow.log
 
 skip-external-locking
 
