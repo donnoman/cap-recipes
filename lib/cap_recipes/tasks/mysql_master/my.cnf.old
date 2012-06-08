@@ -1,0 +1,52 @@
+#
+# The MySQL database server configuration file.
+#
+
+[client]
+port		= 3306
+socket		= /var/run/mysqld/mysqld.sock
+
+
+[mysqld_safe]
+socket		= /var/run/mysqld/mysqld.sock
+nice		= 0
+
+# mysqld options
+[mysqld]
+user		= mysql
+socket		= /var/run/mysqld/mysqld.sock
+port		= 3306
+basedir		= /usr
+datadir		= <%=mysql_data_dir%>
+tmpdir		= /tmp
+bind-address		= 0.0.0.0
+key_buffer			= 16M
+max_allowed_packet	= 16M
+thread_stack		= 256K
+thread_cache_size	= 16
+
+myisam-recover		= BACKUP
+max_connections		= 250
+
+query_cache_limit		= 8M
+query_cache_size		= 32M
+
+skip-external-locking
+
+# logging
+log_error		= /var/log/mysql/error.log
+
+# mysqldump options
+[mysqldump]
+quick
+quote-names
+max_allowed_packet		= 16M
+
+# mysql client options
+[mysql]
+
+[isamchk]
+key_buffer		= 16M
+
+ # Include confs in this dir
+!includedir /etc/mysql/conf.d/
