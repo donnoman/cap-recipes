@@ -3,17 +3,22 @@
 
 [mysqld]
 
-server-id                      = <%=mysql_master_server_id%>
-auto_increment_increment       = <%=mysql_master_increment_id%>
-auto_increment_offset          = <%=mysql_master_offset_id%>
-expire_logs_days               = 20
-max_binlog_size                = 100M
-binlog_format                  = MIXED
-log-slave-updates              = TRUE
-sync_binlog                    = 1
-innodb_flush_log_at_trx_commit = 1
-log_bin                        = <%=mysql_log_dir%>/mysql-bin
-relay-log                      = <%=mysql_log_dir%>/relay-bin
-relay-log-index                = <%=mysql_log_dir%>/relay-bin.index
-relay-log-info-file            = <%=mysql_log_dir%>/relay-bin.info
-replicate-wild-ignore-table    = mysql.%,mysqlslap
+server-id                       = <%=mysql_master_server_id%>
+auto_increment_increment        = <%=mysql_master_increment_id%>
+auto_increment_offset           = <%=mysql_master_offset_id%>
+expire_logs_days                = 20
+max_binlog_size                 = 1G
+binlog_format                   = MIXED
+log-slave-updates               = TRUE
+sync_binlog                     = 1
+innodb_flush_log_at_trx_commit  = 1
+
+relay_log_purge                 = 1
+# should be no less than 2x max_binlog_size/max_relay_log_size
+relay_log_space_limit           = 10G
+
+log_bin                         = <%=mysql_log_dir%>/mysql-bin
+relay-log                       = <%=mysql_log_dir%>/relay-bin
+relay-log-index                 = <%=mysql_log_dir%>/relay-bin.index
+relay-log-info-file             = <%=mysql_log_dir%>/relay-bin.info
+replicate-wild-ignore-table     = mysql.%,mysqlslap
