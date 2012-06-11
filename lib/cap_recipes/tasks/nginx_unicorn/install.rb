@@ -22,6 +22,7 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_unicorn_stub_conf_path, File.join(File.dirname(__FILE__),'stub_status.conf')
     set :nginx_unicorn_god_path, File.join(File.dirname(__FILE__),'nginx_unicorn.god')
     set :nginx_unicorn_logrotate_path, File.join(File.dirname(__FILE__),'nginx_unicorn.logrotate')
+    set :nginx_unicorn_mime_types_erb, File.join(File.dirname(__FILE__),'mime.types.erb')
     # must be above 1.1.7 http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-1180
     set :nginx_unicorn_src, "http://nginx.org/download/nginx-1.2.0.tar.gz"
     set(:nginx_unicorn_ver) { nginx_unicorn_src.match(/\/([^\/]*)\.tar\.gz$/)[1] }
@@ -93,6 +94,7 @@ Capistrano::Configuration.instance(true).load do
     task :setup, :roles => :app do
       sudo "mkdir -p #{nginx_unicorn_conf_dir}/sites-available #{nginx_unicorn_conf_dir}/sites-enabled #{nginx_unicorn_log_dir}"
       utilities.sudo_upload_template nginx_unicorn_conf_path,"#{nginx_unicorn_conf_dir}/nginx.conf"
+      utilities.sudo_upload_template nginx_unicorn_mime_types_erb,"#{nginx_unicorn_conf_dir}/mime.types"
       utilities.sudo_upload_template nginx_unicorn_stub_conf_path,"#{nginx_unicorn_conf_dir}/sites-available/stub_status.conf"
       sudo "ln -sf #{nginx_unicorn_conf_dir}/sites-available/stub_status.conf #{nginx_unicorn_conf_dir}/sites-enabled/stub_status.conf"
       utilities.sudo_upload_template nginx_unicorn_init_d_path,"/etc/init.d/#{nginx_unicorn_init_d}", :mode => "u+x"
