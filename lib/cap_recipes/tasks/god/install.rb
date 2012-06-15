@@ -13,7 +13,7 @@ Capistrano::Configuration.instance(true).load do
     set(:god_pid_path) {"/var/run/god.pid"}
     set :god_notify_list, "localhost"
     set :god_install_from, :package
-    set :god_git_ref, "v0.11.0"
+    set :god_git_ref, "v0.12.1"
     set :god_git_repo, "git://github.com/mojombo/god.git"
     set :god_log_level, "info" # [debug|info|warn|error|fatal]
     set :god_open_socket, false
@@ -53,6 +53,7 @@ Capistrano::Configuration.instance(true).load do
 
     task :install_from_git, :except => {:no_ruby => true} do
       utilities.gem_install "json"
+      utilities.gem_uninstall "god"
       utilities.git_clone_or_pull(god_git_repo,"/usr/local/src/god",god_git_ref)
       utilities.run_compressed %Q{
         cd /usr/local/src/god;
