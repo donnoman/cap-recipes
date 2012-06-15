@@ -5,7 +5,7 @@ God.watch do |w|
   w.start = "/etc/init.d/<%=redis_name%> start"
   w.stop = "/etc/init.d/<%=redis_name%> stop"
   w.restart = "/etc/init.d/<%=redis_name%> restart"
-  w.pid_file = "/var/run/redis/<%=redis_name%>.pid"
+  w.pid_file = "/var/run/<%=redis_name%>.pid"
 
   # clean pid files before start if necessary
   w.behavior(:clean_pid_file)

@@ -18,7 +18,7 @@ REDIS_CLI=`which redis-cli`
 CONFIG_FILE="<%="#{redis_path}/$NAME.conf"%>"
 DAEMON_ARGS="$CONFIG_FILE"
 DESC=$NAME
-PIDFILE=/var/run/redis/$NAME.pid
+PIDFILE=/var/run/$NAME.pid
 LOGFILE=/var/log/redis/$NAME.log
 
 test -x $DAEMON || exit 0
