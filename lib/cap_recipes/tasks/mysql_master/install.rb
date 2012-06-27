@@ -9,6 +9,8 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_data_dir, "/var/lib/mysql"
     set :mysql_log_dir, "/var/log/mysql"
     set :mysql_listen, "###ETH###"
+    set :mysql_max_connections, "250"
+    set :mysql_innodb_buffer_pool_size, "1GB"
     set(:mysql_master_server_id) { utilities.ask "mysql_master_server_id" }
     set(:mysql_master_increment_id) { utilities.ask "mysql_master_increment_id" }
     set(:mysql_master_offset_id) { utilities.ask "mysql_master_offset_id" }

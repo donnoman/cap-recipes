@@ -7,7 +7,7 @@ Capistrano::Configuration.instance(true).load do
 
     %w(start stop restart).each do |t|
       desc "#{t} mysql"
-      task t.to_sym, :roles => :db do
+      task t.to_sym, :roles => :mysqld do
         sudo "service mysql #{t}"
       end
     end
