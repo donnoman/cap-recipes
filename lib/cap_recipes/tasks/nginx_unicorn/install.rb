@@ -42,6 +42,8 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_unicorn_worker_processes, "1" # should be cpu's - 1
     set :nginx_unicorn_gzip, true
     set :nginx_unicorn_fail_timeout, nil
+    set :nginx_unicorn_syslog_patch, true
+    set :nginx_unicorn_rid_header_patch, true
 
     set(:nginx_unicorn_configure_flags) {[
       "--prefix=#{nginx_unicorn_root}",
@@ -52,8 +54,6 @@ Capistrano::Configuration.instance(true).load do
       "--with-http_gzip_static_module",
       "--with-http_stub_status_module",
       "--with-http_ssl_module",
-      "--add-module=#{nginx_unicorn_patch_dir}/nginx_syslog_patch",
-      "--add-module=#{nginx_unicorn_patch_dir}/nginx-x-rid-header",
       "--with-ld-opt=-lossp-uuid",
       "--with-cc-opt=-I/usr/include/ossp"
     ]}
@@ -84,9 +84,15 @@ Capistrano::Configuration.instance(true).load do
       utilities.apt_install "libssl-dev zlib1g-dev libcurl4-openssl-dev libpcre3-dev libossp-uuid-dev git-core"
       sudo "mkdir -p #{nginx_unicorn_source_dir}"
       run "cd #{nginx_unicorn_root}/src && #{sudo} wget --tries=2 -c --progress=bar:force #{nginx_unicorn_src} && #{sudo} tar zxvf #{nginx_unicorn_ver}.tar.gz"
-      utilities.git_clone_or_pull "git://github.com/yaoweibin/nginx_syslog_patch.git", "#{nginx_unicorn_patch_dir}/nginx_syslog_patch"
-      utilities.git_clone_or_pull "git://github.com/newobj/nginx-x-rid-header.git", "#{nginx_unicorn_patch_dir}/nginx-x-rid-header"
-      run "cd #{nginx_unicorn_source_dir} && #{sudo} sh -c 'patch -p1 < #{nginx_unicorn_patch_dir}/nginx_syslog_patch/syslog_#{nginx_unicorn_ver.split('-').last}.patch'"
+      if nginx_unicorn_syslog_patch
+        nginx_unicorn_configure_flags << "--add-module=#{nginx_unicorn_patch_dir}/nginx_syslog_patch"
+        utilities.git_clone_or_pull "git://github.com/yaoweibin/nginx_syslog_patch.git", "#{nginx_unicorn_patch_dir}/nginx_syslog_patch"
+        run "cd #{nginx_unicorn_source_dir} && #{sudo} sh -c 'patch -p1 < #{nginx_unicorn_patch_dir}/nginx_syslog_patch/syslog_#{nginx_unicorn_ver.split('-').last}.patch'"
+      end
+      if nginx_unicorn_rid_header_patch
+        nginx_unicorn_configure_flags << "--add-module=#{nginx_unicorn_patch_dir}/nginx-x-rid-header"
+        utilities.git_clone_or_pull "git://github.com/newobj/nginx-x-rid-header.git", "#{nginx_unicorn_patch_dir}/nginx-x-rid-header"
+      end
       run "cd #{nginx_unicorn_source_dir} && #{sudo} ./configure #{nginx_unicorn_configure_flags.join(" ")} && #{sudo} make"
       run "cd #{nginx_unicorn_source_dir} && #{sudo} make install"
     end
