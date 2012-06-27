@@ -30,7 +30,7 @@ Capistrano::Configuration.instance(true).load do
     set :redis_backup_script_path, "/root/script/redis_backup_s3.sh"
     set :redis_backup_location, "/mnt/redis_backups"
     set :redis_backup_chunk_size, "250M"
-
+    set :redis_no_conf, false
     set :redis_master_host, nil
     set :redis_masterauth, nil
     set :redis_slave_serve_stale_data, true
@@ -117,8 +117,10 @@ Capistrano::Configuration.instance(true).load do
       redis.setup_slave
 
       with_layout do
-        sudo "sed -i s/#{redis_bind_daemon}/#{ipaddress(redis_bind_daemon_eth)}/g #{redis_path}/#{redis_name}.conf"
-        sudo "update-rc.d -f #{redis_name} defaults"
+        unless redis_no_conf
+          sudo "sed -i s/#{redis_bind_daemon}/#{ipaddress(redis_bind_daemon_eth)}/g #{redis_path}/#{redis_name}.conf"
+          sudo "update-rc.d -f #{redis_name} defaults"
+        end
       end
 
     end
