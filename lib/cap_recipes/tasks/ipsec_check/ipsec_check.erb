@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+#
+
+IPSEC_RESTART="<%=ipsec_restart_command%>"
+
+E_FAILED=7
+E_TIMEOUT=28
+
+
+commands=( "curl --connect-timeout 5 https://10.115.1.48" \
+           "curl --connect-timeout 5 https://10.115.1.84" \
+           "curl --connect-timeout 5 https://10.115.1.154" \
+           "curl --connect-timeout 5 https://10.115.1.74" \
+           \
+           "curl --connect-timeout 5 https://10.115.1.181" \
+           "curl --connect-timeout 5 https://10.115.1.117" \
+           "curl --connect-timeout 5 https://10.115.1.157" \
+           "curl --connect-timeout 5 https://10.115.1.118" \
+           \
+           "curl --connect-timeout 5 https://10.115.1.185" \
+           "curl --connect-timeout 5 https://10.115.1.142" \
+           "curl --connect-timeout 5 https://10.115.1.159" \
+           "curl --connect-timeout 5 https://10.115.1.143" )
+
+failures=0
+for c in $(seq 0 $((${#commands[@]} - 1))); do
+  echo -n "EXECUTE: ${commands[$c]}"
+  `${commands[$c]} &> /dev/null`
+  result=$?
+  echo " (EXIT CODE: $result)"
+  if [ $result -eq $E_TIMEOUT ] || [ $result -eq $E_FAILED ]; then
+    ((failures++))
+  fi
+done
+
+echo "$failures of ${#commands[@]} CURL's failed."
+
+# Only restart IPSec if _all_ of the CURL's fail; we don't want to restart because of a network burp.
+if [ $failures -eq ${#commands[@]} ]; then
+  echo "ALL CURLS FAILED; RESTART IPSEC!"
+  `$IPSEC_RESTART`
+  exit $?
+else
+  echo "AT LEAST ONE CURL WAS OK; DO NOTHING!"
+  exit 0
+fi
