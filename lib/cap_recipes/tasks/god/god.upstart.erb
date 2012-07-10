@@ -1,0 +1,34 @@
+description "Ruby God Monitor"
+author "Donovan Bray donnoman@donovanbray.com"
+
+# When called as an rc.d Kill script use terminate instead of stop to stop all watched children as well.
+# USE_TERMINATE_ON_KILL=<%= god_use_terminate_on_kill ? 'yes' : 'no' %> # TODO
+
+# automatically start
+start on (hostname and syslog)
+
+stop on runlevel [016]
+
+# Run before process
+pre-start script
+  <% if god_log_path %>
+  mkdir -p `dirname <%=god_log_path%>`
+  <% end %>
+  mkdir -p `dirname <%=god_pid_path%>`
+end script
+
+# Essentially lets upstart know the process will detach itself to the background
+expect fork
+kill timeout 10
+respawn
+
+# command to run
+exec <%=god_daemon%> -c <%=god_config%> -P <%=god_pid_path%> --log-level <%=god_log_level%> <%= god_log_path ? "--log #{god_log_path}" : '' %>
+
+# Run after process
+post-start script
+  <% if god_open_socket %>
+    sleep 3 && sh -c "chmod 0777 /tmp/god.*.sock;true"
+  <% end %>
+end script
+

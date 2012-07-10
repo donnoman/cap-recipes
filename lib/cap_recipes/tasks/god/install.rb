@@ -7,7 +7,9 @@ Capistrano::Configuration.instance(true).load do
     set(:god_confd) {"/etc/god/conf.d"}
     set :god_config_path, File.join(File.dirname(__FILE__),'config.god')
     set(:god_init) {"/etc/init.d/god"}
+    set(:god_upstart_conf) {"/etc/init/god.conf"}
     set :god_init_path, File.join(File.dirname(__FILE__),'god.init')
+    set :god_upstart_erb, File.join(File.dirname(__FILE__),'god.upstart.erb')
     set :god_contacts_path, File.join(File.dirname(__FILE__),'contacts.god')
     set :god_log_path, nil # without a path assumes syslog
     set(:god_pid_path) {"/var/run/god.pid"}
@@ -18,6 +20,45 @@ Capistrano::Configuration.instance(true).load do
     set :god_log_level, "info" # [debug|info|warn|error|fatal]
     set :god_open_socket, false
     set :god_use_terminate_on_kill, false
+    set :god_watcher, nil
+    set :god_supress_runner, false
+
+    desc "select watcher"
+    task :watcher do
+      god.send("watch_with_#{god_watcher}".to_sym) unless god_watcher.nil?
+    end
+
+    desc "Use upstart as GOD's watcher"
+    task :watch_with_upstart do
+      #rejigger the maintenance tasks to use upstart
+      %w(start stop restart).each do |t|
+        task t.to_sym, :except => {:no_ruby => true} do
+          run "#{sudo} service god #{t}" unless god_supress_runner
+        end
+      end
+      task :install, :except => {:no_ruby => true} do
+        god.send("install_from_#{god_install_from}".to_sym)
+        run "#{sudo} /etc/init.d/god stop;true"
+        run "#{sudo} update-rc.d god remove -f;true"
+        run "#{sudo} rm -f /etc/init.d/god"
+        utilities.sudo_upload_template god_upstart_erb, god_upstart_conf, :owner => "root:root"
+        run "#{sudo} initctl reload-configuration"
+      end
+      task :force_restart, :except => {:no_ruby => true} do
+        god.cmd "quit;true"
+        run "#{sudo} service god stop;true" #just for good measure
+        run "#{sudo} service god start"
+      end
+      task :terminate, :except => {:no_ruby => true } do
+        # TODO see how to plumb terminate directly in the upstart this way is dangerous.
+        god.cmd "terminate; true"
+        sleep 10
+        run "#{sudo} service god stop;true" #just for good measure
+        sleep 10
+        run "pkill -9 -f god;true"
+      end
+    end
+
 
     def cmd(cmd,options={})
       r_env = options[:rails_env] || rails_env
@@ -42,8 +83,6 @@ Capistrano::Configuration.instance(true).load do
       god.send("install_from_#{god_install_from}".to_sym)
       utilities.sudo_upload_template god_init_path, god_init, :mode => "+x"
       sudo "update-rc.d -f god defaults"
-      sudo "rm -rf #{god_confd}" #make sure the god_confd is clear for setup.
-      sudo "mkdir -p #{god_confd}"
     end
 
     desc "install god init"
@@ -63,6 +102,12 @@ Capistrano::Configuration.instance(true).load do
       }
     end
 
+    desc "clear god conf.d directory"
+    task :clear_confd, :except => {:no_ruby => true} do
+      sudo "rm -rf #{god_confd}" #make sure the god_confd is clear for setup.
+      sudo "mkdir -p #{god_confd}"
+    end
+
     desc "setup god"
     task :setup, :except => {:no_ruby => true} do
       utilities.sudo_upload_template god_config_path, god_config
@@ -73,7 +118,7 @@ Capistrano::Configuration.instance(true).load do
       god.upload god_contacts_path, 'contacts.god'
     end
 
-    %w(start stop restart status).each do |t|
+    %w(start stop restart).each do |t|
       desc "#{t} God"
       task t.to_sym, :except => {:no_ruby => true} do
         sudo "/etc/init.d/god #{t}"
@@ -85,6 +130,11 @@ Capistrano::Configuration.instance(true).load do
       god.cmd "quit;true"
       sudo "/etc/init.d/god stop;true" #just for good measure
       sudo "/etc/init.d/god start"
+    end
+
+    desc "god status"
+    task :status, :except => {:no_ruby => true} do
+      god.cmd "status"
     end
 
     desc "reload the god config"
