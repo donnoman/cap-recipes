@@ -31,10 +31,13 @@ Capistrano::Configuration.instance(true).load do
     desc "Use upstart as GOD's watcher"
     task :watch_with_upstart do
       #rejigger the maintenance tasks to use upstart
-      %w(start stop restart).each do |t|
+      %w(start stop).each do |t|
         task t.to_sym, :except => {:no_ruby => true} do
-          run "#{sudo} service god #{t}" unless god_supress_runner
+          run "#{sudo} initctl #{t} god" unless god_supress_runner
         end
+      end
+      task :restart, :except => {:no_ruby => true} do
+        run "#{sudo} initctl stop god;#{sudo} initctl start god;" unless god_supress_runner
       end
       task :install, :except => {:no_ruby => true} do
         god.send("install_from_#{god_install_from}".to_sym)
@@ -46,14 +49,14 @@ Capistrano::Configuration.instance(true).load do
       end
       task :force_restart, :except => {:no_ruby => true} do
         god.cmd "quit;true"
-        run "#{sudo} service god stop;true" #just for good measure
-        run "#{sudo} service god start"
+        run "#{sudo} initctl stop god;true" #just for good measure
+        run "#{sudo} initctl start god"
       end
       task :terminate, :except => {:no_ruby => true } do
         # TODO see how to plumb terminate directly in the upstart this way is dangerous.
         god.cmd "terminate; true"
         sleep 10
-        run "#{sudo} service god stop;true" #just for good measure
+        run "#{sudo} initctl stop god;true" #just for good measure
         sleep 10
         run "pkill -9 -f god;true"
       end
