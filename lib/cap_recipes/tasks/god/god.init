@@ -62,23 +62,22 @@ do_start()
     # to handle requests from services started subsequently which depend
     # on this one.  As a last resort, sleep for some time.
     if [ "$OPEN_SOCKET" != no ]; then
-        C=$(ls /tmp/god.*.sock 2>/dev/null | wc -l)
-        if [ "$C" != "1" ]; then
-            echo -n "Waiting on the god socket to appear..."
-            I=0
-            until [ "$C" != "1" ]; do
-                I=$(($I+1))
-                sleep 1
-                echo -n "."
-                if [ $I -gt 30 ]; then
-                    echo -n "The god socket never appeared!"
-                    return "2"
-                fi
-            done
-        fi
+        echo -n "Waiting on the god socket to appear..."
+        I=0
+        while [ true ]; do
+            SOCKET=$(ls /tmp/god.*.sock 2>/dev/null)
+            if [ -S "$SOCKET" ]; then
+                break
+            fi
+            I=$(($I+1))
+            echo -n "." && sleep 1
+            if [ $I -gt 30 ]; then
+                echo -n "The god socket never appeared!"
+                return "2"
+            fi
+        done
         echo "done."
-        sleep 3
-        sh -c "chmod 0777 /tmp/god.*.sock;true"
+        sleep 3 && sh -c "chmod 0777 /tmp/god.*.sock;true"
     fi
 }
 
