@@ -128,6 +128,30 @@ Capistrano::Configuration.instance(true).load do
       sudo "rm -rf #{riak_backup_root}"
     end
 
+    desc "Remove riak"
+    task :remove, :roles => :riak do
+      begin
+        riak.stop
+      rescue
+      end
+      god.remove('riak.god')
+      god.restart
+      case riak_install_from
+      when :source
+        sudo "rm -rf #{riak_root}"
+      when :package
+        utilities.apt_remove "#{riak_ver};true"
+        sudo "rm -rf #{riak_root}"
+      when :git
+        sudo "rm -rf #{riak_root}"
+      end
+      run "#{sudo} deluser --force riak;true"
+      run "#{sudo} delgroup riak;true"
+      #utilities.deluser "riak" 
+      #utilities.delgroup "riak"
+      #sudo "rm -rf #{riak_root}"
+    end
+
     %w(start stop restart ping force-reload).each do |t|
       desc "#{t} riak"
       task t.to_sym, :roles => :riak do
