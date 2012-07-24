@@ -147,9 +147,6 @@ Capistrano::Configuration.instance(true).load do
       end
       run "#{sudo} deluser --force riak;true"
       run "#{sudo} delgroup riak;true"
-      #utilities.deluser "riak" 
-      #utilities.delgroup "riak"
-      #sudo "rm -rf #{riak_root}"
     end
 
     %w(start stop restart ping force-reload).each do |t|
