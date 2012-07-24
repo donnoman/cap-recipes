@@ -75,6 +75,12 @@ Capistrano::Configuration.instance(true).load do
       utilities.sudo_upload_template src, "#{god_confd}/#{name}"
     end
 
+    # Built this helper to remove the uploaded god conf.d files and reload god
+    # god.remove god_contacts_path, "contacts.god"
+    def remove(name)
+      sudo "rm -rf #{god_confd}/#{name}"
+    end
+
     # TODO: update rubies other than ruby19 to conform
     # New Concept ':except => {:no_ruby => true}' to allow all systems by default
     # to have ruby installed to allow use of ruby gems like god on all systems
