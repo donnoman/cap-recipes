@@ -139,7 +139,18 @@ module Utilities
     switches += " --uid #{options[:uid]} " if options[:uid]
     switches += " --gid #{options[:gid]} " if options[:gid]
     switches += " --ingroup #{options[:group]} " unless options[:group].nil?
-    invoke_command "grep '^#{user}:' /etc/passwd || sudo /usr/sbin/adduser #{user} #{switches}",
+    invoke_command "grep '^#{user}:' /etc/passwd || sudo /usr/sbin/adduser #{switches} #{user}",
+    :via => run_method
+  end
+
+  # utilities.deluser('deploy')
+  def deluser(user, options={})
+    switches = '--force'
+    switches += " --backup" if options[:backup]
+    switches += " --quiet" if options[:quiet]
+    switches += " --remove-home" if options[:removehome]
+    switches += " --group #{options[:group]} " unless options[:group].nil?
+    invoke_command "sudo /usr/sbin/deluser #{switches} #{user}",
     :via => run_method
   end
 
@@ -148,7 +159,14 @@ module Utilities
     switches = ''
     switches += " --system" if options[:system]
     switches += " --gid #{options[:gid]} " if options[:gid]
-    invoke_command "/usr/sbin/addgroup #{group} #{switches}", :via => run_method
+    invoke_command "/usr/sbin/addgroup  #{switches} #{group}", :via => run_method
+  end
+
+  #utilities.delgroup('deploy')
+  def delgroup(group,options={})
+    switches = '--force'
+    switches += " --only-if-empty" if options[:ifempty]
+    invoke_command "/usr/sbin/delgroup #{switches} #{group}", :via => run_method
   end
 
   # role = :app
