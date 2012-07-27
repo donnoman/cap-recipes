@@ -1,0 +1,1 @@
+Dir[File.join(File.dirname(__FILE__), 'leap_second/*.rb')].sort.each { |lib| require lib }
