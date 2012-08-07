@@ -6,8 +6,8 @@ Capistrano::Configuration.instance(true).load do
   namespace :statsd do
 
     roles[:statsd]
-    set :node_ref, 'v0.4.11'
-    set :statsd_ref, '116dfe3682'
+    set :node_ref, 'v0.8.4'
+    set :statsd_ref, '6cf541c9389b40'
     set :statsd_conf, File.join(File.dirname(__FILE__),'statsd.js')
     set :statsd_init, File.join(File.dirname(__FILE__),'statsd.init.sh')
     set :statsd_god_path, File.join(File.dirname(__FILE__),'statsd.god')
