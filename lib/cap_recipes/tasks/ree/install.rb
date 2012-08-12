@@ -7,14 +7,14 @@ Capistrano::Configuration.instance(true).load do
   namespace :ree do
 
     set :ree_ver, 'ruby-enterprise-1.8.7-2012.02'
-    set :ree_src, "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise-1.8.7-2012.02.tar.gz"
+    set(:ree_src) { "http://rubyenterpriseedition.googlecode.com/files/#{ree_ver}.tar.gz" }
 
     set(:ree_pkg) {
       case target_os
       when :debian64
-        "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2012.02_amd64_debian6.0.deb"
+        "http://rubyenterpriseedition.googlecode.com/files/#{ree_ver}_amd64_debian6.0.deb"
       when :ubuntu64
-        "http://rubyenterpriseedition.googlecode.com/files/ruby-enterprise_1.8.7-2012.02_amd64_ubuntu10.04.deb"
+        "http://rubyenterpriseedition.googlecode.com/files/#{}_amd64_ubuntu10.04.deb"
       else
         raise Capistrano::Error "Unhandled target_os in :ree"
       end
@@ -23,7 +23,7 @@ Capistrano::Configuration.instance(true).load do
     set :ree_from_source, false #if for some reason you can't use the pkg, build it from source
     set :ree_seg_fixup, false # Set to true if your logs are full of 4gb seg fixups and building from source.
     set :base_ruby_path, '/usr/local' #this interaction needs to be tested more, this could be a problem if they install from source
-    set :ree_cflags, ""
+    set :ree_cflags, "-g -O2"
     set :ree_cxxflags, ""
     set :ree_tcmalloc, true
     set :target_os, :ubuntu64
