@@ -17,13 +17,13 @@ pre-start script
   mkdir -p `dirname <%=god_pid_path%>`
 end script
 
-# Essentially lets upstart know the process will detach itself to the background
-expect fork
-kill timeout 10
+kill timeout 20
 respawn
 
+env PATH=<%=base_ruby_path%>/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 # command to run
-exec <%=god_daemon%> -c <%=god_config%> -P <%=god_pid_path%> --log-level <%=god_log_level%> <%= god_log_path ? "--log #{god_log_path}" : '' %>
+exec <%=god_daemon%> -D -c <%=god_config%> -P <%=god_pid_path%> --log-level <%=god_log_level%> <%= god_log_path ? "--log #{god_log_path}" : '' %>
 
 # Run after process
 post-start script
