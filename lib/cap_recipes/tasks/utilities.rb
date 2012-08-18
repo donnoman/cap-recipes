@@ -107,19 +107,19 @@ module Utilities
   # utilities.sudo_upload('/local/path/to/file', '/remote/path/to/destination', options)
   def sudo_upload(from, to, options={}, &block)
     top.upload from, "/tmp/#{File.basename(to)}", options, &block
-    sudo "mv /tmp/#{File.basename(to)} #{to}"
-    sudo "chmod #{options[:mode]} #{to}" if options[:mode]
-    sudo "chown #{options[:owner]} #{to}" if options[:owner]
+    sudo "mv /tmp/#{File.basename(to)} #{to}", options
+    sudo "chmod #{options[:mode]} #{to}", options if options[:mode]
+    sudo "chown #{options[:owner]} #{to}", options if options[:owner]
   end
 
   # Upload a file, running it through ERB
   # utilities.sudo_upload_template('/local/path/to/file','remote/path/to/destination', options)
   def sudo_upload_template(src,dst,options = {})
     raise Capistrano::Error, "sudo_upload_template requires Source and Destination" if src.nil? or dst.nil?
-    put ERB.new(File.read(src),nil,'-').result(binding), "/tmp/#{File.basename(dst)}"
-    sudo "mv /tmp/#{File.basename(dst)} #{dst}"
-    sudo "chmod #{options[:mode]} #{dst}" if options[:mode]
-    sudo "chown #{options[:owner]} #{dst}" if options[:owner]
+    put ERB.new(File.read(src),nil,'-').result(binding), "/tmp/#{File.basename(dst)}", options
+    sudo "mv /tmp/#{File.basename(dst)} #{dst}", options
+    sudo "chmod #{options[:mode]} #{dst}", options if options[:mode]
+    sudo "chown #{options[:owner]} #{dst}", options if options[:owner]
   end
 
   # Upload a file running it through ERB
