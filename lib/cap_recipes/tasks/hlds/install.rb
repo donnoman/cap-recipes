@@ -22,11 +22,12 @@ Capistrano::Configuration.instance(true).load do
     set :hlds_config_sv_contact, "Unset as of Yet"
     set :hlds_config_sv_region, "1"  # -1 is the world, 0 is USA east coast, 1 is USA west coast 2 south america, 3 europe, 4 asia, 5 australia, 6 middle east, 7 africa
     set(:hlds_config_rcon_password) {utilities.ask("rcon_password")}
+    set :hlds_config_tf_server_identity_account_id, nil
+    set :hlds_config_tf_server_identity_token, nil
 
     task :install, :roles => :hlds do
       run "#{sudo} mkdir -p #{hlds_source} #{hlds_root}"
       utilities.adduser hlds_user, :system => true
-      utilities.sudo_upload_template hlds_init_erb, hlds_init_dest, :owner => "root:root", :mode => "700"
       run "cd #{hlds_source} && #{sudo} wget --tries=2 -c --progress=bar:force #{hlds_update_tool_url} && #{sudo} chmod +x hldsupdatetool.bin"
       utilities.run_with_input "#cd #{hlds_source} && {sudo} ./hldsupdatetool.bin", /^decline:/, "yes\n"
       tries = 0
@@ -39,6 +40,7 @@ Capistrano::Configuration.instance(true).load do
     end
 
     task :setup, :roles => :hlds do
+      utilities.sudo_upload_template hlds_init_erb, hlds_init_dest, :owner => "root:root", :mode => "700"
       utilities.sudo_upload_template hlds_config_erb, hlds_config_dest
     end
 
