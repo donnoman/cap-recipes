@@ -123,7 +123,7 @@ Capistrano::Configuration.instance(true).load do
       desc "Transfer backup script to host"
       task :upload_backup_script, :roles => :mysqld_backup do
         run "#{sudo} mkdir -p /root/script #{mysql_backup_location}"
-        utilities.apt_install "at"
+        utilities.apt_install "at lbzip2" 
         utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "654", :owner => 'root:root'
         utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "654", :owner => 'root:root'
       end

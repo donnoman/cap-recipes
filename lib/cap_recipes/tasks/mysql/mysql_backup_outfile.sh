@@ -42,7 +42,7 @@ do
     echo "==========================="
     DUMP_PATH="${CURRENT}/${DATE}/${DBNAME}"
     echo "Database: ${DBNAME} Dump Path: ${DUMP_PATH}"
-    mkdir -p "${DUMP_PATH}"
+    mkdir -p "${DUMP_PATH}" && chown -R mysql:mysql "${DUMP_PATH}"
     echo "Schema:"
     mysqldump --user=root --opt --no-data ${DBNAME} > "${DUMP_PATH}/schema.sql"
     echo "Tables:"
