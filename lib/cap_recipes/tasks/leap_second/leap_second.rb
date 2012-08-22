@@ -1,7 +1,7 @@
 Capistrano::Configuration.instance(true).load do
     
   namespace :leap_second do
-    roles[:app]
+    roles[:app, :jenkins_master, :jenkins_slave]
 
     desc "Fix Leap Second Bug"
     task :fix, :roles => [:app, :jenkins_master, :jenkins_slave] do
