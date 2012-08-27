@@ -154,7 +154,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Disable the application conf"
     task :disable, :roles => :app do
-      sudo "rm #{nginx_unicorn_conf_dir}/sites-enabled/#{application}.conf"
+      sudo "rm -f #{nginx_unicorn_conf_dir}/sites-enabled/#{application}.conf"
     end
 
     %w(start stop restart).each do |t|
