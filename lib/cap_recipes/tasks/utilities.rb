@@ -267,6 +267,19 @@ module Utilities
     File.dirname(capfile)
   end
 
+  # logs the command then executes it locally.
+  # streams the command output
+  def stream_locally(cmd)
+    logger.trace "executing locally: #{cmd.inspect}" if logger
+    elapsed = Benchmark.realtime do
+      system cmd
+    end
+    if $?.to_i > 0 # $? is command exit code (posix style)
+      raise Capistrano::LocalArgumentError, "Command #{cmd} returned status code #{$?}"
+    end
+    logger.trace "command finished in #{(elapsed * 1000).round}ms" if logger
+  end
+
   private
 
   ##
@@ -311,6 +324,8 @@ module Utilities
   def deprecated(name,replacement=nil)
     raise Capistrano::Error, "#{name} is deprecated, #{replacement ? "see: #{replacment}" : "no replacement" }."
   end
+
+
 
 end
 
