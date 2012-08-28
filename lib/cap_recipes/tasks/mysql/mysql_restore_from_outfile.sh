@@ -1,45 +1,64 @@
 #!/bin/bash
 
-set -e
-#set -x
+# $1 should be supplied with the command: mysql_restore_outfile.sh <database_name>
+DBNAME=$1
+# For now just set the Source DB the same as DBNAME, we can change this later
+SOURCEDB=${DBNAME}
+
+if [ "$USER" != "root" ]; then 
+    echo "You are not root user, use: sudo backup"
+    exit
+fi
+
+clear
+echo "|-------------------------------------------------------------" 
+echo "|           Restoring MySQL Database From Backup              "
+echo "|-------------------------------------------------------------"
+echo ""
 
 if [ -z "$1" ]
 then
-  echo "Dest DB is not defined"
+  echo "Destination DB is not defined, specify with command:"
+  echo "mysql_restore_outfile.sh database_name"
   exit 1
 fi
-
-if [ -z "`which pv`" ]
-then
-  echo "PV Pipe Viewer Not installed, brew install pv OR apt-get install pv"
-  exit 1
-fi
-
-DBNAME=$1
-SOURCEDB=<%=mysql_restore_source_name%>
 
 read -p "Are you sure you want to overwrite $1? " -n 1
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-  mysql -uroot -e "DATABASE CREATE IF NOT EXISTS ${DBNAME}"
-then
-    exit 1
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo "==========================="
+  echo "  Creating ${DBNAME}"
+  mysql -uroot -e "CREATE DATABASE IF NOT EXISTS ${DBNAME}"
+else
+  exit 1
 fi
+
+echo "==========================="
+echo "  IMPORTING SCHEMA"
+mysql -uroot ${DBNAME} < ${DBNAME}/schema.sql
 
 PRIORITIES=( <%=mysql_restore_table_priorities%> )
 for TABLE in ${PRIORITIES}
 do
-    echo "==========================="
-    echo "  IMPORT PRIORITY ${TABLE}"
-    mysql -uroot --database=${DBNAME} --execute="LOAD DATA LOCAL INFILE '${TABLE}.out' INTO TABLE ${TABLE}"
+  echo "==========================="
+  echo "  IMPORT PRIORITY ${TABLE}"
+  mysql -uroot --database=${DBNAME} --execute="LOAD DATA LOCAL INFILE '${DBNAME}/${TABLE}' INTO TABLE ${TABLE}"
 done
-# The rest of the story
+# Import the rest of the tables
 TABLES=`ls -tr ${SOURCEDB}`
 for TABLE in ${TABLES}
 do
-    if [[ "${TABLE}" =~ ${PRIORITIES} ]]; then
-      continue
-    fi
+  # I had issues with this part, still may be wrong. Issues with mysql_restore_table_priorities is an array
+  if [[ ${TABLE} =~ ${PRIORITIES} ]]; then
+    mysql -uroot --database=${DBNAME} --execute="LOAD DATA LOCAL INFILE '${DBNAME}/${TABLE}' INTO TABLE ${TABLE}"
     echo "==========================="
     echo "  IMPORT ${TABLE}"
-    mysql -uroot --database=${DBNAME} --execute="LOAD DATA LOCAL INFILE '${TABLE}.out' INTO TABLE ${TABLE}"
+  else
+    exit 1
+  fi
 done
+
+#clear
+echo "|-------------------------------------------------------------" 
+echo "|      Finished Restoring MySQL Database From Backup          "
+echo "|-------------------------------------------------------------"
+echo ""
