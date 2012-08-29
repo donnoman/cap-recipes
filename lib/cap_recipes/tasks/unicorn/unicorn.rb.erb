@@ -8,29 +8,34 @@
 # See http://unicorn.bogomips.org/Unicorn/Configurator.html for complete
 # documentation.
 
-# Redirect Log to Syslog
-# https://gist.github.com/531749
-class Syslogger
-  def initialize
-    read, @write = IO.pipe
-    fork do
-      @write.close
-      $stdin.reopen read
-      exec *%w(logger -trails)
+<% if unicorn_use_syslogger %>
+  # Redirect Log to Syslog
+  # https://gist.github.com/531749
+  # add to your Gemfile:
+  #  gem 'SyslogLogger', :git => 'git@github.com:castaclip/sysloglogger.git', :require => 'syslog_logger'
+  #
+  class Syslogger
+    def initialize
+      read, @write = IO.pipe
+      fork do
+        @write.close
+        $stdin.reopen read
+        exec *%w(logger -trails)
+      end
+      read.close
+      @write.sync = true
     end
-    read.close
-    @write.sync = true
+    def write(progname=nil, &block)
+      @write.puts "#{progname} #{block.call if block_given?}"
+    end
+    alias :debug :write
+    alias :info :write
+    alias :warn :write
+    alias :error :write
+    alias :fatal :write
   end
-  def write(progname=nil, &block)
-    @write.puts "#{progname} #{block.call if block_given?}"
-  end
-  alias :debug :write
-  alias :info :write
-  alias :warn :write
-  alias :error :write
-  alias :fatal :write
-end
-logger Syslogger.new
+  logger Syslogger.new
+<% end %>
 
 # unicorn will stash its original command-line at startup for the USR2 upgrades, and cleaning up old revisions will cause revision-specific installations of unicorn to go missing and upgrades to fail. If you find yourself in this situation and can’t afford downtime, you can override the existing unicorn executable path in the config file like this:
 # Then use HUP to reload, and then continue with the USR2+QUIT upgrade sequence.
@@ -108,6 +113,8 @@ end
 # object will be called by the master process before forking
 # each worker.
 before_fork do |server, worker|
+  #Disconnections go in the before_fork, Reconnections should happen in the after_fork
+
   # the following is highly recomended for Rails + "preload_app true"
   # as there's no need for the master process to hold a connection
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
@@ -117,6 +124,7 @@ before_fork do |server, worker|
   defined?(SDB) and SDB.disconnect
   # Riak connection via Ripple
   Thread.current[:ripple_clent] = nil if Thread.current[:ripple_client]
+
   #
   # # *optionally* throttle the master from forking too quickly by sleeping
   # sleep 1
@@ -140,6 +148,9 @@ after_fork do |server, worker|
     server.logger.info "AFTER ENV['#{key}']=#{value}" if %w(BUNDLE_BIN_PATH GEM_PATH GEM_HOME RACK_ENV PATH BUNDLE_GEMFILE PWD).include?(key)
   end
 
+  # Redis reconnection via the Redis gem
+  defined?(Redis) and Redis.try(:current).try(:client).try(:reconnect)
+
   ##
   # When sent a USR2, Unicorn will suffix its pidfile with .oldbin and
   # immediately start loading up a new version of itself (loaded with a new
@@ -152,14 +163,16 @@ after_fork do |server, worker|
   # Using this method we get 0 downtime deploys.
 
   # wait until last worker boots to send QUIT signal
-  next if worker.nr != (server.worker_processes - 1)
+  # next if worker.nr != (server.worker_processes - 1)
+  # wait for only half of them to ease memory constraints
+  next if worker.nr != (( server.worker_processes / 2 ) > 0 ? ( server.worker_processes / 2 ) : 1 )
 
-  old_pid = File.expand_path('../../tmp/pids/unicorn.pid.oldbin', __FILE__)
+  old_pid = RAILS_ROOT + '/tmp/pids/unicorn.pid.oldbin'
   if File.exists?(old_pid) && server.pid != old_pid
     begin
       Process.kill("QUIT", old_pid_number = File.read(old_pid).to_i)
-      puts "I stabbed the Unicorn! with PID #{old_pid_number}"
-    rescue
+      puts "I slayed the Unicorn! with PID #{old_pid_number}"
+    rescue Errno::ENOENT, Errno::ESRCH
       puts "Darn, PID #{old_pid_number} was already dead."
     end
   end

@@ -4,7 +4,7 @@ Capistrano::Configuration.instance(true).load do
   namespace :unicorn do
 
     set :unicorn_version, "4.1.1"
-    set :unicorn_template_path, File.join(File.dirname(__FILE__),'unicorn.rb.template')
+    set :unicorn_template_path, File.join(File.dirname(__FILE__),'unicorn.rb.erb')
     set :unicorn_god_path, File.join(File.dirname(__FILE__),'unicorn.god')
     set(:unicorn_user) {user}
     set(:unicorn_group) {user}
@@ -18,6 +18,7 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_suppress_runner, false
     set :unicorn_suppress_configure, false
     set :unicorn_init_name, "unicorn"
+    set :unicorn_use_syslogger, false
 
     desc "select watcher"
     task :watcher do
