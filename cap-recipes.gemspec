@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cap-recipes"
-  s.version = "2.0.0.1"
+  s.version = "2.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2012-02-13"
+  s.date = "2012-09-04"
   s.description = "Battle-tested capistrano recipes for debian based distributions, passenger, apache, nginx, delayed_job, juggernaut, rubygems, backgroundrb, rails, riak, mongo and more"
   s.email = "nesquena@gmail.com donnoman@donovanbray.com"
   s.extra_rdoc_files = [
@@ -56,9 +56,25 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/cassandra/hooks.rb",
     "lib/cap_recipes/tasks/cassandra/install.rb",
     "lib/cap_recipes/tasks/cassandra/manage.rb",
+    "lib/cap_recipes/tasks/datadog.rb",
+    "lib/cap_recipes/tasks/datadog/datadog.conf.erb",
+    "lib/cap_recipes/tasks/datadog/hooks.rb",
+    "lib/cap_recipes/tasks/datadog/install.rb",
     "lib/cap_recipes/tasks/delayed_job.rb",
     "lib/cap_recipes/tasks/delayed_job/hooks.rb",
     "lib/cap_recipes/tasks/delayed_job/manage.rb",
+    "lib/cap_recipes/tasks/denyhosts.rb",
+    "lib/cap_recipes/tasks/denyhosts/hooks.rb",
+    "lib/cap_recipes/tasks/denyhosts/install.rb",
+    "lib/cap_recipes/tasks/dovecot.rb",
+    "lib/cap_recipes/tasks/dovecot/dovecot.conf.erb",
+    "lib/cap_recipes/tasks/dovecot/dovecot.logrotate.erb",
+    "lib/cap_recipes/tasks/dovecot/hooks.rb",
+    "lib/cap_recipes/tasks/dovecot/install.rb",
+    "lib/cap_recipes/tasks/dphys_swapfile.rb",
+    "lib/cap_recipes/tasks/dphys_swapfile/dphys-swapfile.erb",
+    "lib/cap_recipes/tasks/dphys_swapfile/hooks.rb",
+    "lib/cap_recipes/tasks/dphys_swapfile/install.rb",
     "lib/cap_recipes/tasks/erlang.rb",
     "lib/cap_recipes/tasks/erlang/hooks.rb",
     "lib/cap_recipes/tasks/erlang/install.rb",
@@ -69,6 +85,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/god/config.god",
     "lib/cap_recipes/tasks/god/contacts.god",
     "lib/cap_recipes/tasks/god/god.init",
+    "lib/cap_recipes/tasks/god/god.upstart.erb",
     "lib/cap_recipes/tasks/god/hooks.rb",
     "lib/cap_recipes/tasks/god/install.rb",
     "lib/cap_recipes/tasks/graphite.rb",
@@ -85,6 +102,8 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/juggernaut.rb",
     "lib/cap_recipes/tasks/juggernaut/hooks.rb",
     "lib/cap_recipes/tasks/juggernaut/manage.rb",
+    "lib/cap_recipes/tasks/leap_second.rb",
+    "lib/cap_recipes/tasks/leap_second/leap_second.rb",
     "lib/cap_recipes/tasks/logrotate.rb",
     "lib/cap_recipes/tasks/logrotate/hooks.rb",
     "lib/cap_recipes/tasks/logrotate/install.rb",
@@ -109,15 +128,19 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/mysql/hooks.rb",
     "lib/cap_recipes/tasks/mysql/install.rb",
     "lib/cap_recipes/tasks/mysql/manage.rb",
+    "lib/cap_recipes/tasks/mysql/my.cnf.erb",
     "lib/cap_recipes/tasks/mysql/mysql.monit",
+    "lib/cap_recipes/tasks/mysql/mysql_backup_outfile.sh",
     "lib/cap_recipes/tasks/mysql/mysql_backup_s3.sh",
     "lib/cap_recipes/tasks/mysql/mysql_restore.sh",
+    "lib/cap_recipes/tasks/mysql/mysql_restore_from_outfile.sh",
     "lib/cap_recipes/tasks/mysql/tuner.rb",
     "lib/cap_recipes/tasks/mysql_master.rb",
     "lib/cap_recipes/tasks/mysql_master/default-storage-engine.cnf",
     "lib/cap_recipes/tasks/mysql_master/hooks.rb",
     "lib/cap_recipes/tasks/mysql_master/install.rb",
     "lib/cap_recipes/tasks/mysql_master/my.cnf",
+    "lib/cap_recipes/tasks/mysql_master/my.cnf.old",
     "lib/cap_recipes/tasks/mysql_master/replication.cnf",
     "lib/cap_recipes/tasks/mysql_master/slave.cnf",
     "lib/cap_recipes/tasks/newrelic_rpm.rb",
@@ -152,6 +175,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/nginx_unicorn/hooks.rb",
     "lib/cap_recipes/tasks/nginx_unicorn/install.rb",
     "lib/cap_recipes/tasks/nginx_unicorn/manage.rb",
+    "lib/cap_recipes/tasks/nginx_unicorn/mime.types.erb",
     "lib/cap_recipes/tasks/nginx_unicorn/nginx.conf",
     "lib/cap_recipes/tasks/nginx_unicorn/nginx_unicorn.god",
     "lib/cap_recipes/tasks/nginx_unicorn/nginx_unicorn.init",
@@ -258,8 +282,8 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/unicorn/hooks.rb",
     "lib/cap_recipes/tasks/unicorn/install.rb",
     "lib/cap_recipes/tasks/unicorn/unicorn.god",
+    "lib/cap_recipes/tasks/unicorn/unicorn.rb.erb",
     "lib/cap_recipes/tasks/unicorn/unicorn.rb.sample",
-    "lib/cap_recipes/tasks/unicorn/unicorn.rb.template",
     "lib/cap_recipes/tasks/utilities.rb",
     "lib/cap_recipes/tasks/whenever.rb",
     "lib/cap_recipes/tasks/whenever/hooks.rb",
