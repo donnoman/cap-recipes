@@ -160,7 +160,7 @@ Capistrano::Configuration.instance(true).load do
     %w(start stop restart).each do |t|
       desc "#{t} nginx_unicorn via init"
       task t.to_sym, :roles => :app do
-        sudo "/etc/init.d/nginx #{t}" unless nginx_unicorn_suppress_runner
+        sudo "/etc/init.d/#{nginx_unicorn_init_d} #{t}" unless nginx_unicorn_suppress_runner
       end
     end
 
