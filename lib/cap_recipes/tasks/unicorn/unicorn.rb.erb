@@ -167,7 +167,7 @@ after_fork do |server, worker|
   # wait for only half of them to ease memory constraints
   next if worker.nr != (( server.worker_processes / 2 ) > 0 ? ( server.worker_processes / 2 ) : 1 )
 
-  old_pid = RAILS_ROOT + '/tmp/pids/unicorn.pid.oldbin'
+  old_pid = Rails.root + '/tmp/pids/unicorn.pid.oldbin'
   if File.exists?(old_pid) && server.pid != old_pid
     begin
       Process.kill("QUIT", old_pid_number = File.read(old_pid).to_i)
