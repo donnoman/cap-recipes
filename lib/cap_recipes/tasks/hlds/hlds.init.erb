@@ -1,0 +1,58 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          <%=hlds_game%>
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: <%=hlds_game%> server
+# Description:       Starts a <%=hlds_game%> server
+### END INIT INFO
+
+NAME="<%=hlds_game%>"
+SCREENREF="<%=hlds_game%>"
+BINARYPATH="<%=hlds_bindir%>"
+USER="<%=hlds_user%>"
+BINARYNAME="srcds_run"
+PIDFILE="<%=hlds_game%>.pid"
+OPTS="-game <%=hlds_game%> <%=hlds_parameters%>"
+
+cd "$BINARYPATH"
+
+case "$1" in
+    start)
+        echo -n "Starting the $NAME server... "
+	if [ -e "$BINARYNAME" ]; then
+            start-stop-daemon --start --pidfile $PIDFILE --make-pidfile --chuid $USER --user $USER --chdir $BINARYPATH --exec "/usr/bin/screen" -- -dmS $SCREENREF $BINARYPATH/$BINARYNAME $OPTS
+        else
+            echo "Could not find binary, aborting!"
+            exit 5
+        fi
+        if [ `pgrep $BINARYNAME` ]; then
+            echo "Done!"
+        else
+            echo "Failed!"
+            rm -f $PIDFILE
+        fi
+    ;;
+    stop)
+        echo -n "Stopping the $NAME server... "
+        killall $BINARYNAME > /dev/null 2>/dev/null
+        rm -f $PIDFILE
+        echo "Done!"
+    ;;
+    status)
+        if [ -e $PIDFILE ]; then
+            echo "$NAME server is running"
+        else
+            echo "No $NAME server running ($PIDFILE is missing)"
+        fi
+    ;;
+    *)
+        echo "Usage: ${0} {start|stop|status}"
+        exit 2
+esac
+exit 0

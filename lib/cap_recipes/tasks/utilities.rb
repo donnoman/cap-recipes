@@ -99,8 +99,8 @@ module Utilities
     sudo "#{apt_get} -qy update"
     sudo_with_input "#{apt_get} -qyu --force-yes upgrade", /\?/, "\n" #answer the default if any package pops up a warning
   end
-
-  def apt_get
+def
+   apt_get
     "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get"
   end
 
@@ -131,10 +131,11 @@ module Utilities
   # utilities.adduser('deploy')
   def adduser(user, options={})
     options[:shell] ||= '/bin/bash' # new accounts on ubuntu 6.06.1 have been getting /bin/sh
-    switches = '--disabled-password --gecos ""'
-    switches += " --disabled-login" if options[:disabled_login]
+    switches = ""
     switches += " --system" if options[:system]
-    switches += " --shell=#{options[:shell]} " if options[:shell]
+    switches += ' --disabled-password --gecos ""'
+    switches += " --disabled-login" if options[:disabled_login]
+    switches += " --shell=#{options[:shell]} " if options[:shell] && !options[:system]
     switches += ' --no-create-home ' if options[:nohome]
     switches += " --uid #{options[:uid]} " if options[:uid]
     switches += " --gid #{options[:gid]} " if options[:gid]
