@@ -258,7 +258,11 @@ def
         cd #{dest};
         git checkout -b deploy;
       fi;
-      git reset --hard #{ref};
+      if [ `cd #{dest} && git tag | grep -c #{ref}` -eq 1 ]; then
+        git reset --hard #{ref};
+      else
+        git reset --hard origin/#{ref};
+      fi
     }
   end
 
