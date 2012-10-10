@@ -5,9 +5,9 @@ Capistrano::Configuration.instance(true).load do
   namespace :hlds do 
 
     roles[:hlds]
-    set :hlds_root, "/opt/gameserver"
+    set :hlds_root, "/opt/hlds"
     set(:hlds_source) {hlds_root}
-    set :hlds_user, "tf2server"
+    set :hlds_user, "hlds"
     set :hlds_update_tool_url, "http://storefront.steampowered.com/download/hldsupdatetool.bin"
     set :hlds_game, "tf"
     set(:hlds_bindir) { "#{hlds_root}/orangebox"}
@@ -18,8 +18,8 @@ Capistrano::Configuration.instance(true).load do
     set :hlds_motd_text_txt_erb, File.join(File.dirname(__FILE__),'motd_text.txt.erb')
     set(:hlds_config_root) {"#{hlds_root}/orangebox/tf/cfg"}
     set(:hlds_config_server_cfg) {"#{hlds_config_root}/server.cfg"}
-    set :hlds_mapcycle, %w(mvm_decoy mvm_coaltown mvm_mannworks)
-    set(:hlds_parameters) {"-autoupdate -maxplayers 32 +map #{hlds_mapcycle.first}"}
+    set :hlds_mapcycle, %w(pl_sweetwater_ugc)
+    set(:hlds_parameters) {"-autoupdate -maxplayers 18 +map #{hlds_mapcycle.first}"}
     set :hlds_motd, "welcome"
     set :hlds_config_hostname, "TF2 Server"
     set :hlds_config_sv_contact, "Unset as of Yet"
@@ -29,9 +29,23 @@ Capistrano::Configuration.instance(true).load do
     set :hlds_config_tf_server_identity_account_id, nil
     set :hlds_config_tf_server_identity_token, nil
 
+    set(:hlds_packages) {
+      case target_os
+      when :debian64, :debian32
+        "build-essential gcc-multilib"
+      when :ubuntu64, :ubuntu32
+        "build-essential"
+      else
+        raise Capistrano::Error "Unhandled target_os in :hlds_packages"
+      end
+    }
+
     task :install, :roles => :hlds do
       run "#{sudo} mkdir -p #{hlds_source} #{hlds_root}"
-      utilities.adduser hlds_user, :system => true
+      utilities.addgroup "#{hlds_user};true"
+      utilities.adduser "hlds" , :group => "hlds"
+      utilities.apt_update
+      utilities.apt_install "#{hlds_packages}"
       run "cd #{hlds_source} && #{sudo} wget --tries=2 -c --progress=bar:force #{hlds_update_tool_url} && #{sudo} chmod +x hldsupdatetool.bin"
       utilities.run_with_input "cd #{hlds_source} && #{sudo} ./hldsupdatetool.bin", /decline:/, "yes\n"
       tries = 0

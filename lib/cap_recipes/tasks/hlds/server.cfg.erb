@@ -3,6 +3,12 @@
 // Hostname for server.
 hostname <%=hlds_config_hostname%>
 
+// Server Identity Config
+<%= hlds_config_tf_server_identity_account_id ?  "tf_server_identity_account_id #{hlds_config_tf_server_identity_account_id}" : '' %>
+<%= hlds_config_tf_server_identity_token ?  "tf_server_identity_token #{hlds_config_tf_server_identity_token}" : '' %>
+
+<%= hlds_config_sv_password ?  "sv_password #{hlds_config_sv_password}" : '' %>
+
 // Overrides the max players reported to prospective clients
 sv_visiblemaxplayers 24
 
@@ -39,8 +45,6 @@ exec banned_ip.cfg
 writeid
 writeip
 
-
-
 // Contact & Region //
 
 // Contact email for server sysop
@@ -50,7 +54,6 @@ sv_contact <%=hlds_config_sv_contact%>
 // -1 is the world, 0 is USA east coast, 1 is USA west coast
 // 2 south america, 3 europe, 4 asia, 5 australia, 6 middle east, 7 africa
 sv_region <%=hlds_config_sv_region%>
-
 
 
 // Rcon Settings //
@@ -196,8 +199,3 @@ mp_chattime 10
 
 // enable party mode
 // tf_birthday 1
-
-<%= hlds_config_tf_server_identity_account_id ?  "tf_server_identity_account_id #{hlds_config_tf_server_identity_account_id}" : '' %>
-<%= hlds_config_tf_server_identity_token ?  "tf_server_identity_token #{hlds_config_tf_server_identity_token}" : '' %>
-
-<%= hlds_config_sv_password ?  "sv_password #{hlds_config_sv_password}" : '' %>
