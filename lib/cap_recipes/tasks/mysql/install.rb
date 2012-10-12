@@ -99,6 +99,22 @@ Capistrano::Configuration.instance(true).load do
       sudo "mysql_install_db --user=mysql --basedir=/usr --datadir=#{mysql_data_dir};true"
     end
 
+    namespace :audit do
+      task :default do
+        user_privileges
+        schema_privileges
+      end
+
+      task :user_privileges, :roles => [:db, :mysqld] do
+        sudo %Q{mysql -uroot -e "SELECT * FROM information_schema.USER_PRIVILEGES;"}
+      end
+
+      task :schema_privileges, :roles => [:db, :mysqld] do
+        sudo %Q{mysql -uroot -e "SELECT * FROM information_schema.SCHEMA_PRIVILEGES;"}
+      end
+    end
+
+
     ##
     # Steps to restore are manual
     # $ mkdir -p /mnt/mysql_restore && cd /mnt/mysql_restore
