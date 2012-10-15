@@ -1,5 +1,13 @@
+###############################################################################
+# CHEF-SERVER HOOKS
+################################################################################
 Capistrano::Configuration.instance(true).load do
-  # after "deploy:provision", "chef_server:install"
-  after "chef_server:install", "chef_server:setup"
-  # after "chef_server:setup", "chef_server:logrotate"
+
+  # DEPLOY
+  after "deploy:provision", "chef:server:install"
+
+  # CHEF-SERVER
+  after "chef:server:install", "chef:server:update"
+  # after "chef:server:update", "chef_server:logrotate"
+
 end
