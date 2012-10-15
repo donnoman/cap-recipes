@@ -2,7 +2,6 @@ Capistrano::Configuration.instance(true).load do
   namespace :chef_server do
     roles[:chef_server]
 
-    set(:chef_server_omnibus_url) { "http://www.opscode.com/chef/install.sh" }
     set(:chef_server_url) { "http://127.0.0.1:4000" }
     set(:chef_server_amqp_password) { "p@ssw0rd" }
     set(:chef_server_admin_password) { "p@ssw0rd" }
