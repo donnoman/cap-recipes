@@ -46,6 +46,14 @@ Capistrano::Configuration.instance(true).load do
         run("([[ -f /etc/init.d/chef-client ]] && #{sudo} /etc/init.d/chef-client status) || ([[ -f /sbin/service ]] && #{sudo} /sbin/service chef-client status)")
       end
 
+      desc "chef-client status"
+      task :version, :roles => [:chef_client] do
+        logger.info("################################################################################")
+        logger.info("# CHEF-CLIENT VERSION")
+        logger.info("################################################################################")
+        run("([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client -v) || echo \"Failed to find the chef-client executable!\"")
+      end
+
     end
   end
 
