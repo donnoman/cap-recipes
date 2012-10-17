@@ -23,6 +23,7 @@ Capistrano::Configuration.instance(true).load do
       set(:chef_client_config_chef_server_url) { "http://shared-jenkins-production-1.dc3.offerify.net:4000" }
       set(:chef_client_config_ssl_verify_mode) { ":verify_none" }
       set(:chef_client_config_validation_client_name) { "chef-validator" }
+      set(:chef_client_config_environment) { rails_env.to_s }
 
       desc "install chef-client"
       task :install, :roles => [:chef_client], :on_error => :continue do
