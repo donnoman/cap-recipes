@@ -54,6 +54,14 @@ Capistrano::Configuration.instance(true).load do
         sudo("bash -c '([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client -v) || echo \"Failed to find the chef-client executable!\"'")
       end
 
+      desc "chef-client bootstrap; runs chef-client once via command line"
+      task :bootstrap, :roles => [:chef_client] do
+        logger.info("################################################################################")
+        logger.info("# CHEF-CLIENT BOOTSTRAP")
+        logger.info("################################################################################")
+        sudo("bash -c '([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client) || echo \"Failed to find the chef-client executable!\"'")
+      end
+
     end
   end
 
