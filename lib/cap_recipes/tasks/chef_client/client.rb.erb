@@ -1,0 +1,7 @@
+log_level               <%= chef_client_config_log_level %>
+log_location            <%= chef_client_config_log_location %>
+chef_server_url         "<%= chef_client_config_chef_server_url %>"
+ssl_verify_mode         <%= chef_client_config_ssl_verify_mode %>
+validation_client_name  "<%= chef_client_config_validation_client_name %>"
+
+Mixlib::Log::Formatter.show_time = true

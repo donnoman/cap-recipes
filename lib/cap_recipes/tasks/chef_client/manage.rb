@@ -11,7 +11,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("################################################################################")
         logger.info("# CHEF-CLIENT START")
         logger.info("################################################################################")
-        run("([[ -f /etc/init.d/chef-client ]] && #{sudo} /etc/init.d/chef-client start) || ([[ -f /sbin/service ]] && #{sudo} /sbin/service chef-client start)")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client start) || ([[ -f /sbin/service ]] && /sbin/service chef-client start)'")
       end
 
       desc "stop chef-client"
@@ -19,7 +19,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("################################################################################")
         logger.info("# CHEF-CLIENT STOP")
         logger.info("################################################################################")
-        run("([[ -f /etc/init.d/chef-client ]] && #{sudo} /etc/init.d/chef-client stop) || ([[ -f /sbin/service ]] && #{sudo} /sbin/service chef-client stop)")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client stop) || ([[ -f /sbin/service ]] && /sbin/service chef-client stop)'")
       end
 
       desc "restart chef-client"
@@ -27,7 +27,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("################################################################################")
         logger.info("# CHEF-CLIENT RESTART")
         logger.info("################################################################################")
-        run("([[ -f /etc/init.d/chef-client ]] && #{sudo} /etc/init.d/chef-client restart) || ([[ -f /sbin/service ]] && #{sudo} /sbin/service chef-client restart)")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client restart) || ([[ -f /sbin/service ]] && /sbin/service chef-client restart)'")
       end
 
       desc "reload chef-client"
@@ -35,7 +35,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("################################################################################")
         logger.info("# CHEF-CLIENT RELOAD")
         logger.info("################################################################################")
-        run("([[ -f /etc/init.d/chef-client ]] && #{sudo} /etc/init.d/chef-client reload) || ([[ -f /sbin/service ]] && #{sudo} /sbin/service chef-client reload)")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client reload) || ([[ -f /sbin/service ]] && /sbin/service chef-client reload)'")
       end
 
       desc "chef-client status"
@@ -43,7 +43,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("################################################################################")
         logger.info("# CHEF-CLIENT STATUS")
         logger.info("################################################################################")
-        run("([[ -f /etc/init.d/chef-client ]] && #{sudo} /etc/init.d/chef-client status) || ([[ -f /sbin/service ]] && #{sudo} /sbin/service chef-client status)")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client status) || ([[ -f /sbin/service ]] && /sbin/service chef-client status)'")
       end
 
       desc "chef-client status"
@@ -51,7 +51,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("################################################################################")
         logger.info("# CHEF-CLIENT VERSION")
         logger.info("################################################################################")
-        run("([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client -v) || echo \"Failed to find the chef-client executable!\"")
+        sudo("bash -c '([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client -v) || echo \"Failed to find the chef-client executable!\"'")
       end
 
     end
