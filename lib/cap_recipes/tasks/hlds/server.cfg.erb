@@ -10,7 +10,7 @@ hostname <%=hlds_config_hostname%>
 <%= hlds_config_sv_password ?  "sv_password #{hlds_config_sv_password}" : '' %>
 
 // Overrides the max players reported to prospective clients
-sv_visiblemaxplayers 24
+sv_visiblemaxplayers <%= maxplayers %>
 
 // Maximum number of rounds to play before server changes maps
 mp_maxrounds 5
@@ -23,7 +23,7 @@ setpause 0
 
 // Control where the client gets content from 
 // 0 = anywhere, 1 = anywhere listed in white list, 2 = steam official content only
-sv_pure 2
+sv_pure 0
 
 // Is the server pausable
 sv_pausable 0
@@ -45,6 +45,8 @@ exec banned_ip.cfg
 writeid
 writeip
 
+
+
 // Contact & Region //
 
 // Contact email for server sysop
@@ -54,6 +56,7 @@ sv_contact <%=hlds_config_sv_contact%>
 // -1 is the world, 0 is USA east coast, 1 is USA west coast
 // 2 south america, 3 europe, 4 asia, 5 australia, 6 middle east, 7 africa
 sv_region <%=hlds_config_sv_region%>
+
 
 
 // Rcon Settings //

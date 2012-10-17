@@ -15,10 +15,12 @@ Capistrano::Configuration.instance(true).load do
     set :hlds_config_erb, File.join(File.dirname(__FILE__),'server.cfg.erb')
     set :hlds_motd_txt_erb, File.join(File.dirname(__FILE__),'motd.txt.erb')
     set :hlds_motd_text_txt_erb, File.join(File.dirname(__FILE__),'motd_text.txt.erb')
+    set :hlds_steam_appid_erb, File.join(File.dirname(__FILE__),'steam_appid.txt.erb')
+    set :hlds_steam_appid_erb_path, "#{hlds_root}/orangebox/steam_appid.txt"
     set :ugc_files, nil
     set(:hlds_config_root) {"#{hlds_root}/orangebox/tf/cfg"}
     set(:hlds_config_server_cfg) {"#{hlds_config_root}/server.cfg"}
-    set(:hlds_parameters) {"-autoupdate +maxplayers #{maxplayers} +ip #{server_ip} -port #{server_port} +exec #{server_type_cfg} +map #{hlds_mapcycle.first} +fps_max #{fps_max}"}
+    set(:hlds_parameters) {"-autoupdate -console +maxplayers #{maxplayers} +ip #{server_ip} -port #{server_port} +exec #{server_type_cfg} +map #{hlds_mapcycle.first} +fps_max #{fps_max}"}
     set :hlds_game, "tf"
     set :fps_max, "1000"
     set :maxplayers, "24"
@@ -67,6 +69,7 @@ Capistrano::Configuration.instance(true).load do
 
     task :setup, :roles => :hlds do
       utilities.sudo_upload_template hlds_init_erb, hlds_init_dest, :owner => "root:root", :mode => "700"
+      utilities.sudo_upload_template hlds_steam_appid_erb, hlds_steam_appid_erb_path, :owner => "#{hlds_user}:#{hlds_user}"
       utilities.sudo_upload_template hlds_config_erb, hlds_config_server_cfg, :owner => "#{hlds_user}:#{hlds_user}"
       utilities.sudo_upload_template hlds_motd_txt_erb, "#{hlds_bindir}/tf/motd.txt", :owner => "#{hlds_user}:#{hlds_user}"
       utilities.sudo_upload_template hlds_motd_text_txt_erb, "#{hlds_bindir}/tf/motd_text.txt", :owner => "#{hlds_user}:#{hlds_user}"
