@@ -15,7 +15,7 @@ Capistrano::Configuration.instance(true).load do
     set(:god_pid_path) {"/var/run/god.pid"}
     set :god_notify_list, "localhost"
     set :god_install_from, :package
-    set :god_git_ref, "v0.12.1"
+    set :god_git_ref, "v0.13.1"
     set :god_git_repo, "git://github.com/mojombo/god.git"
     set :god_log_level, "info" # [debug|info|warn|error|fatal]
     set :god_open_socket, false
