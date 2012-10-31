@@ -4,11 +4,10 @@ Capistrano::Configuration.instance(true).load do
   namespace :pflogsumm do
     roles[:pflogsumm]
     set :pflogsumm_src, "https://raw.github.com/KTamas/pflogsumm/master/pflogsumm.pl"
-    set :pflogsum_chase_report, File.join(File.dirname(__FILE__), 'reports', 'chase_daily.sh')
-    set :pflogsum_att_report, File.join(File.dirname(__FILE__), 'reports', 'att_daily.sh')
+    set :pflogsumm_report, File.join(File.dirname(__FILE__), 'reports', 'postfix_daily_stats.sh')
     set :pflogsumm_scripts_dir, "/root/scripts"
     set :pflogsumm_reports_dir, "/var/log/reports"
-    
+
     desc "setup pflogsum"
     task :setup, :roles => :pflogsumm do
       pflogsumm.install
@@ -31,18 +30,12 @@ Capistrano::Configuration.instance(true).load do
     task :upload_report_scripts, :roles => :pflogsumm do
       sudo "mkdir -p #{pflogsumm_scripts_dir}"
       sudo "mkdir -p #{pflogsumm_reports_dir}"
-      utilities.sudo_upload_template pflogsum_chase_report,"#{pflogsumm_scripts_dir}/chase_daily.sh", :owner => "root:root"
-      utilities.sudo_upload_template pflogsum_att_report,"#{pflogsumm_scripts_dir}/att_daily.sh", :owner => "root:root"
+      utilities.sudo_upload_template pflogsumm_report,"#{pflogsumm_scripts_dir}/postfix_daily_stats.sh", :mode => "755", :owner => "root:root"
     end
 
     desc "Execute Script"
-    task :run_chase_report, :roles => :pflogsumm do
-      sudo "sh ~/scripts/chase_daily.sh"
-    end
-
-    desc "Execute Script"
-    task :run_att_report, :roles => :pflogsumm do
-      sudo "sh ~/scripts/att_daily.sh"
+    task :daily_report, :roles => :pflogsumm do
+      sudo "sh ~/scripts/postfix_daily_stats_report.sh"
     end
 
   end
