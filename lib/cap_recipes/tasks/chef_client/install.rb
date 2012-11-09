@@ -25,6 +25,7 @@ Capistrano::Configuration.instance(true).load do
       set(:chef_client_config_validation_client_name) { "chef-validator" }
       set(:chef_client_config_environment) { rails_env.to_s }
       set(:chef_client_install_method) { :ec2 }
+      set(:chef_server_validation_pem_path) { nil }
 
       desc "install chef-client"
       task :install, :roles => [:chef_client], :on_no_matching_servers => :continue do
@@ -46,6 +47,7 @@ Capistrano::Configuration.instance(true).load do
           sudo("ln -svf /opt/chef/bin/* /usr/bin/")
         end
         sudo("mkdir -p /etc/chef/")
+        chef_server_validation_pem = File.expand_path(File.join(chef_server_validation_pem_path, "chef-#{chef_client_install_method}-validation.pem"))
         utilities.sudo_upload(chef_server_validation_pem, "/etc/chef/validation.pem", :owner => "root:root")
       end
 
