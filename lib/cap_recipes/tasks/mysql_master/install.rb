@@ -5,6 +5,12 @@ Capistrano::Configuration.instance(true).load do
     roles[:mysql_slave]
 
     # mysql configuration sets
+    # These meed to be defined for master server installs
+    set :mysql_master_server_id, nil
+    set :mysql_master_increment_id, nil
+    set :mysql_master_offset_id, nil
+    set :mysql_slave_server_id, nil
+    set :mysql_repl_pass, nil
     set :mysql_listen_interface, "eth0"
     set :mysql_data_dir, "/var/lib/mysql"
     set :mysql_log_dir, "/var/log/mysql"

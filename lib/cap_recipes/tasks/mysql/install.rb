@@ -20,10 +20,12 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_backup_log_path, "/tmp/mysql_backup.log"
     set(:mysql_backup_log_dest) {File.join(utilities.caproot,'log','backups')}
     set :mysql_backup_stop_sql_thread, false
-    set :mysql_backup_script, File.join(File.dirname(__FILE__),'mysql_backup_s3.sh')
+    set :mysql_backup_script, File.join(File.dirname(__FILE__),'mysql_backup_outfile.sh')
     set :mysql_backup_script_path, "/root/script/mysql_backup_s3.sh"
     set :mysql_backup_chunk_size, "250M"
     set :mysql_backup_location, "/mnt/mysql_backups"
+    set :mysql_vagrant_pass, ""
+
 
     set :mysql_conf, File.join(File.dirname(__FILE__),'my.cnf.erb')
     set :mysql_conf_path, "/etc/mysql/my.cnf"
@@ -99,6 +101,12 @@ Capistrano::Configuration.instance(true).load do
       sudo "mysql_install_db --user=mysql --basedir=/usr --datadir=#{mysql_data_dir};true"
     end
 
+    desc "Grant User Access"
+    task :grant_mysql_vagrant, :roles => [:db, :mysqld] do
+      sudo %Q{mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'vagrant'@'%' IDENTIFIED BY '#{mysql_vagrant_pass}' WITH GRANT OPTION;"}
+      sudo %Q{mysql -uroot -e "FLUSH PRIVILEGES"}
+    end
+
     namespace :audit do
       task :default do
         user_privileges
@@ -113,7 +121,6 @@ Capistrano::Configuration.instance(true).load do
         sudo %Q{mysql -uroot -e "SELECT * FROM information_schema.SCHEMA_PRIVILEGES;"}
       end
     end
-
 
     ##
     # Steps to restore are manual
@@ -138,7 +145,8 @@ Capistrano::Configuration.instance(true).load do
 
       desc "Transfer backup script to host"
       task :upload_backup_script, :roles => :mysqld_backup do
-        run "#{sudo} mkdir -p /root/script #{mysql_backup_location}"
+        run "#{sudo} mkdir -p /root/script #{mysql_backup_location} #{mysql_backup_log_path}"
+        # Some backup scripts require lbzip2
         utilities.apt_install "at lbzip2" 
         utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "654", :owner => 'root:root'
         utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "654", :owner => 'root:root'
