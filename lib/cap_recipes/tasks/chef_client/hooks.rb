@@ -7,7 +7,7 @@ Capistrano::Configuration.instance(true).load do
   after "deploy:stop", "chef:client:stop"
   after "deploy:start", "chef:client:start"
   after "deploy:restart", "chef:client:restart"
-  #after "deploy:provision", "chef:client:install"
+  after "deploy:provision", "chef:client:install"
   after "deploy:update", "chef:client:update"
 
   # CHEF-CLIENT
