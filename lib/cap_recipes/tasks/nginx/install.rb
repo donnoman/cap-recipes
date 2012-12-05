@@ -71,6 +71,7 @@ Capistrano::Configuration.instance(true).load do
 
     task :upload_certs, :roles => [:web,:nginx,:nginx_client] do
       if nginx_cert_name and nginx_upload_certs
+        sudo "mkdir -p #{nginx_cert_location}"
         utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.key"), "#{nginx_cert_location}/#{nginx_cert_name}.key"
         utilities.sudo_upload_template File.join(nginx_cert_path,"#{nginx_cert_name}.crt"), "#{nginx_cert_location}/#{nginx_cert_name}.crt"
       end
