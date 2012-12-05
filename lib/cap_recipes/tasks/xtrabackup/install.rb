@@ -3,11 +3,10 @@
 Capistrano::Configuration.instance(true).load do
 
   namespace :xtrabackup do 
-    roles[:mysqld_backup]
     set(:xtrabackup_target) { "#{mysql_data_dir}"}
     set(:xtrabackup_destination) { "#{mysql_backup_location}" }
-    set :mysql_percona_apt_list, File.join(File.dirname(__FILE__),'xtrabackup.list')
-    set :mysql_percona_apt_list_path, "/etc/apt/sources.list.d/xtrabackup.list"
+    set :mysql_percona_apt_list, File.join(File.dirname(__FILE__),'percona.list')
+    set :mysql_percona_apt_list_path, "/etc/apt/sources.list.d/percona.list"
     set(:mysql_xtrabackup_user) {secrets.xtrabackup[:database_user]}
     set(:mysql_xtrabackup_pass) {secrets.xtrabackup[:database_user_password]}
     set :mysql_backup_script, File.join(File.dirname(__FILE__),'innobackupex-full.sh.erb')
