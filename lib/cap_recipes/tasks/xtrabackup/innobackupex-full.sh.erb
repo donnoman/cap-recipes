@@ -10,7 +10,7 @@ INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
 USEROPTIONS="--user=root"
 TMPFILE="/tmp/innobackupex-full.$$.tmp"
-MYCNF=<%= mysql_conf %> 
+MYCNF=<%= mysql_conf_path %> 
 MYSQL=/usr/bin/mysql
 MYSQLADMIN=/usr/bin/mysqladmin
 BACKUPDIR=<%= mysql_backup_location %> # Backups base directory
@@ -82,10 +82,10 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE + 5` -ge 
   fi
   
   echo "Running new incremental backup using $INCRBASEDIR as base."
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF --slave-info --safe-slave-backup --safe-slave-backup-timeout=30 $USEROPTIONS --incremental $TMPINCRDIR --incremental-basedir $INCRBASEDIR > $TMPFILE 2>&1
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF --slave-info $USEROPTIONS --incremental $TMPINCRDIR --incremental-basedir $INCRBASEDIR > $TMPFILE 2>&1
 else
   echo "Running new full backup."
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF --slave-info --safe-slave-backup --safe-slave-backup-timeout=30 $USEROPTIONS $FULLBACKUPDIR > $TMPFILE 2>&1
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF --slave-info $USEROPTIONS $FULLBACKUPDIR > $TMPFILE 2>&1
 fi
 
 if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
