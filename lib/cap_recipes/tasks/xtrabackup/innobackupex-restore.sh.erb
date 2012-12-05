@@ -6,11 +6,11 @@
 INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
 TMPFILE="/tmp/innobackupex-restore.$$.tmp"
-MYCNF=<%= mysql_conf %> 
+MYCNF=<%= mysql_conf_path %> 
 BACKUPDIR=<%= mysql_backup_location %> # Backups base directory
 FULLBACKUPDIR=$BACKUPDIR/full # Full backups directory
 INCRBACKUPDIR=$BACKUPDIR/incr # Incremental backups directory
-MEMORY=1024M # Amount of memory to use when preparing the backup
+MEMORY=2048M # Amount of memory to use when preparing the backup
 
 #############################################################################
 # Display error message and exit
