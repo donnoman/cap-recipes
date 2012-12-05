@@ -66,13 +66,13 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Install and Setup Xtrabackup Tools, Users and Scripts"
     task :setup, :roles => :mysqld_backup do
-      xtrabackup.install_xtrabackup
+      xtrabackup.install
       xtrabackup.upload_backup_script
       xtrabackup.grant_percona_user
     end
 
     desc "Install Percona XtraBackup"
-    task :install_xtrabackup, :roles => :mysqld_backup do
+    task :install, :roles => :mysqld_backup do
        run "#{sudo} gpg --keyserver hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A && #{sudo} gpg -a --export CD2EFD2A | #{sudo} apt-key add -"
        utilities.sudo_upload_template mysql_percona_apt_list, mysql_percona_apt_list_path, :mode => "644", :owner => 'root:root'
        utilities.apt_update
