@@ -279,7 +279,7 @@ def
     tee = opts.delete(:tee)
     redact = opts.delete(:redact)
     redact_replacement = opts.delete(:redact_replacment) || '-REDACTED-'
-    cmd_text = redact.inject(cmd.inspect){|ct,r| ct.gsub(r,redact_replacement)}
+    cmd_text = redact ? redact.inject(cmd.inspect){|ct,r| ct.gsub(r,redact_replacement)} : cmd.inspect
     logger.trace "executing locally: #{cmd_text}" if logger
     elapsed = Benchmark.realtime do
       Open3.popen3(cmd + " 2>&1") { |stdin, stdout, stderr|
