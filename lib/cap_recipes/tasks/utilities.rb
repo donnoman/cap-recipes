@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'open3'
 
 module Utilities
   # utilities.config_gsub('/etc/example', /(.*)/im, "\\1")
@@ -274,13 +275,22 @@ def
 
   # logs the command then executes it locally.
   # streams the command output
-  def stream_locally(cmd)
-    logger.trace "executing locally: #{cmd.inspect}" if logger
+  def stream_locally(cmd,opts={})
+    tee = opts.delete(:tee)
+    redact = opts.delete(:redact)
+    redact_replacement = opts.delete(:redact_replacment) || '-REDACTED-'
+    cmd_text = redact.inject(cmd.inspect){|ct,r| ct.gsub(r,redact_replacement)}
+    logger.trace "executing locally: #{cmd_text}" if logger
     elapsed = Benchmark.realtime do
-      system cmd
+      Open3.popen3(cmd + " 2>&1") { |stdin, stdout, stderr|
+        out = stdout.read
+        redact.each {|r| out.gsub!(r,redact_replacement)} if redact
+        STDOUT << out
+        File.open(tee,'a') {|f| f.write(out) } if tee
+      }
     end
     if $?.to_i > 0 # $? is command exit code (posix style)
-      raise Capistrano::LocalArgumentError, "Command #{cmd} returned status code #{$?}"
+      raise Capistrano::LocalArgumentError, "Command #{cmd_text} returned status code #{$?}"
     end
     logger.trace "command finished in #{(elapsed * 1000).round}ms" if logger
   end
