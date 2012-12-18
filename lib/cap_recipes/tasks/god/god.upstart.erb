@@ -28,7 +28,22 @@ exec <%=god_daemon%> -D -c <%=god_config%> -P <%=god_pid_path%> --log-level <%=g
 # Run after process
 post-start script
   <% if god_open_socket %>
-    sleep 3 && sh -c "chmod 0777 /tmp/god.*.sock;true"
+  echo -n "Waiting on the god socket to appear..."
+  I=0
+  while [ true ]; do
+    SOCKET=$(ls /tmp/god.*.sock 2>/dev/null)
+    if [ -S "$SOCKET" ]; then
+      break
+    fi
+    I=$(($I+1))
+    echo -n "." && sleep 1
+    if [ $I -gt 30 ]; then
+      echo -n "The god socket never appeared!"
+      return "2"
+    fi
+  done
+  echo "done."
+  sleep 3 && sh -c "chmod 0777 /tmp/god.*.sock;true"
   <% end %>
 end script
 
