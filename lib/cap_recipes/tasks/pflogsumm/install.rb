@@ -8,6 +8,19 @@ Capistrano::Configuration.instance(true).load do
     set :pflogsumm_scripts_dir, "/root/scripts"
     set :pflogsumm_reports_dir, "/var/log/reports"
 
+    def today(opts={})
+      target = opts[:target] || 'mail'
+      syslog_name = opts[:syslog_name] || 'postfix'
+      logfile = "pflogsumm-#{target}.log"
+      run %Q{ #{sudo} pflogsumm -q -u 0 --problems_first --no_no_msg_size --syslog_name=#{syslog_name} -d today /var/log/#{target}.log /var/log/#{target}.log.1 > /tmp/#{logfile} }
+      top.get "/tmp/#{logfile}", "log/#{logfile}", :via => :scp
+      File.open("log/#{logfile}", "r") do |infile|
+        while (line = infile.gets)
+          logger.info line
+        end
+      end
+    end
+
     desc "setup pflogsum"
     task :setup, :roles => :pflogsumm do
       pflogsumm.install
@@ -28,14 +41,13 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Upload report scripts"
     task :upload_report_scripts, :roles => :pflogsumm do
-      sudo "mkdir -p #{pflogsumm_scripts_dir}"
-      sudo "mkdir -p #{pflogsumm_reports_dir}"
+      sudo "mkdir -p #{pflogsumm_scripts_dir} #{pflogsumm_reports_dir}"
       utilities.sudo_upload_template pflogsumm_report,"#{pflogsumm_scripts_dir}/postfix_daily_stats.sh", :mode => "755", :owner => "root:root"
     end
 
     desc "Execute Script"
     task :daily_report, :roles => :pflogsumm do
-      sudo "sh ~/scripts/postfix_daily_stats_report.sh"
+      run "#{sudo} #{pflogsumm_scripts_dir}/postfix_daily_stats_report.sh"
     end
 
   end
