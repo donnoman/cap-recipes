@@ -43,7 +43,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("#" * 80)
         logger.info("# CHEF-CLIENT START")
         logger.info("#" * 80)
-        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client start) || echo \"NOT INSTALLED!\"'")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client start) || echo \"NOT INSTALLED\"'")
       end
 
       desc "stop chef-client"
@@ -51,7 +51,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("#" * 80)
         logger.info("# CHEF-CLIENT STOP")
         logger.info("#" * 80)
-        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client stop) || echo \"NOT INSTALLED!\"'")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client stop) || echo \"NOT INSTALLED\"'")
       end
 
       desc "restart chef-client"
@@ -59,7 +59,7 @@ Capistrano::Configuration.instance(true).load do
         logger.info("#" * 80)
         logger.info("# CHEF-CLIENT RESTART")
         logger.info("#" * 80)
-        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client restart) || echo \"NOT INSTALLED!\"'")
+        sudo("bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client restart) || echo \"NOT INSTALLED\"'")
       end
 
       desc "chef-client status"
@@ -67,19 +67,28 @@ Capistrano::Configuration.instance(true).load do
         results = Hash.new
 
         run %Q{hostname -f} do |channel, stream, data|
+          break if data.strip.empty?
+          logger.info("#{channel.connection.host}: #{data.strip}")
+
           result = (results[channel.connection.host] ||= OpenStruct.new)
           result.hostname = data.strip
           result.ip = channel.connection.host.strip
         end
 
-        run %Q{(([ -f /etc/init.d/chef-client ] && /etc/init.d/chef-client status) || echo "NOT INSTALLED!")} do |channel, stream, data|
+        sudo %Q{bash -c '(([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client status) || echo "NOT INSTALLED")'} do |channel, stream, data|
+          break if data.strip.empty?
+          logger.info("#{channel.connection.host}: #{data.strip}")
+
           result = (results[channel.connection.host] ||= OpenStruct.new)
-          result.chef_client_status = data.split("\n").first.strip
+          result.chef_client_status = data.strip #split("\n").first.strip
         end
 
-        run %Q{(([ -f /usr/bin/chef-client ] && /usr/bin/chef-client -v) || echo "NOT INSTALLED!")} do |channel, stream, data|
+        sudo %Q{bash -c '(([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client -v) || echo "NOT INSTALLED")'} do |channel, stream, data|
+          break if data.strip.empty?
+          logger.info("#{channel.connection.host}: #{data.strip}")
+
           result = (results[channel.connection.host] ||= OpenStruct.new)
-          result.chef_client_version = data.split("\n").first.strip
+          result.chef_client_version = data.strip #split("\n").first.strip
         end
 
         with_report(results.values, [:hostname, :ip, :chef_client_version, :chef_client_status]) do |result|
@@ -96,8 +105,8 @@ Capistrano::Configuration.instance(true).load do
           logger.info("#" * 80)
 
           server_hostname = capture("hostname -f", :hosts => server).strip
-          chef_client_status = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client status) || echo \"NOT INSTALLED!\"'", :hosts => server).strip
-          chef_client_version = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /usr/bin/chef-client -v) || echo \"NOT INSTALLED!\"'", :hosts => server).strip
+          chef_client_status = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client status) || echo \"NOT INSTALLED\"'", :hosts => server).strip
+          chef_client_version = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /usr/bin/chef-client -v) || echo \"NOT INSTALLED\"'", :hosts => server).strip
 
           to_filepath = File.expand_path(File.join(Dir.pwd, ".chef", "chef-#{ENV['CHEF_ENV'].downcase}-client-#{server_hostname}.pem"))
           sudo("cp -v /etc/chef/client.pem /var/tmp/client.pem && chown -v dev:dev /var/tmp/client.pem", :hosts => server)
