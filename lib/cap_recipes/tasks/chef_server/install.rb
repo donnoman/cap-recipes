@@ -23,7 +23,7 @@ Capistrano::Configuration.instance(true).load do
       set(:chef_server_dc3_machine_arch) { "x86_64" }
 
       set(:chef_server_config_template) { File.join(File.dirname(__FILE__), 'client.rb.erb') }
-      set(:chef_server_config_log_level) { ":info" }
+      set(:chef_server_config_log_level) { :info }
       set(:chef_server_config_log_location) { "STDOUT" }
       set(:chef_server_config_chef_server_url) { "http://127.0.0.1:4000" }
       set(:chef_server_config_ssl_verify_mode) { ":verify_none" }

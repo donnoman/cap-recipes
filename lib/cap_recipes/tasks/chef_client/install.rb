@@ -18,12 +18,12 @@ Capistrano::Configuration.instance(true).load do
       set(:chef_client_dc3_machine_arch) { "x86_64" }
 
       set(:chef_client_config_template) { File.join(File.dirname(__FILE__), 'client.rb.erb') }
-      set(:chef_client_config_log_level) { ":info" }
+      set(:chef_client_config_log_level) { :info }
       set(:chef_client_config_log_location) { "STDOUT" }
       set(:chef_client_config_chef_server_url) { nil }
       set(:chef_client_config_ssl_verify_mode) { ":verify_none" }
       set(:chef_client_config_validation_client_name) { "chef-validator" }
-      set(:chef_client_config_environment) { rails_env.to_s }
+      set(:chef_client_config_environment) { nil }
       set(:chef_client_config_file_backup_path) { "/var/chef/backup" }
       set(:chef_client_config_file_cache_path) { "/var/chef/cache" }
       set(:chef_client_install_method) { :ec2 }
