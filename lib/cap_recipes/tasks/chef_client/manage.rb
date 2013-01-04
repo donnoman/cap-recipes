@@ -64,16 +64,26 @@ Capistrano::Configuration.instance(true).load do
 
       desc "chef-client status"
       task :status, :roles => [:chef_client] do
-        with_report(find_servers_for_task(current_task), [:hostname, :ip, :chef_client_version, :chef_client_status]) do |server|
-          logger.info("#" * 80)
-          logger.info("# CHEF-CLIENT STATUS: #{server}")
-          logger.info("#" * 80)
+        results = Hash.new
 
-          server_hostname = capture("hostname -f", :hosts => server).strip
-          chef_client_status = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client status) || echo \"NOT INSTALLED!\"'", :hosts => server).strip
-          chef_client_version = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /usr/bin/chef-client -v) || echo \"NOT INSTALLED!\"'", :hosts => server).strip
+        run %Q{hostname -f} do |channel, stream, data|
+          result = (results[channel.connection.host] ||= OpenStruct.new)
+          result.hostname = data.strip
+          result.ip = channel.connection.host.strip
+        end
 
-          OpenStruct.new(:hostname => server_hostname, :ip => server.to_s, :chef_client_status => chef_client_status, :chef_client_version => chef_client_version)
+        run %Q{(([ -f /etc/init.d/chef-client ] && /etc/init.d/chef-client status) || echo "NOT INSTALLED!")} do |channel, stream, data|
+          result = (results[channel.connection.host] ||= OpenStruct.new)
+          result.chef_client_status = data.split("\n").first.strip
+        end
+
+        run %Q{(([ -f /usr/bin/chef-client ] && /usr/bin/chef-client -v) || echo "NOT INSTALLED!")} do |channel, stream, data|
+          result = (results[channel.connection.host] ||= OpenStruct.new)
+          result.chef_client_version = data.split("\n").first.strip
+        end
+
+        with_report(results.values, [:hostname, :ip, :chef_client_version, :chef_client_status]) do |result|
+          result
         end
       end
 
