@@ -38,10 +38,6 @@ Capistrano::Configuration.instance(true).load do
         case chef_client_install_method.to_sym
         when :ec2 then
           run("curl -L http://www.opscode.com/chef/install.sh | #{sudo} bash")
-          sudo("sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config")
-          sudo("/etc/init.d/ssh stop")
-          sudo("/etc/init.d/ssh start")
-          sudo("rm -rfv /var/chef/cache/* /var/chef/backup/*")
         when :dc3 then
           chef_client_url_params = [
             "v=#{chef_client_dc3_version}",
@@ -85,6 +81,7 @@ Capistrano::Configuration.instance(true).load do
           logger.info("# CHEF-CLIENT BOOTSTRAP: #{server}")
           logger.info("#" * 80)
 
+          sudo("rm -rfv /var/chef/cache/* /var/chef/backup/*", :hosts => server)
           sudo("bash -c '([[ -f /opt/chef/bin/chef-client ]] && /opt/chef/bin/chef-client) || echo \"NOOP\"'", :hosts => server)
           sudo("bash -c '([[ -f /etc/chef/client.pem ]] && chmod -v 0400 /etc/chef/client.pem) || echo \"NOOP\"'", :hosts => server)
           sudo("chown -Rv root:root /etc/chef", :hosts => server)
