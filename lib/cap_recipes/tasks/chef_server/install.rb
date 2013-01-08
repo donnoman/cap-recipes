@@ -62,7 +62,7 @@ Capistrano::Configuration.instance(true).load do
           chef_client_tempfile = Tempfile.new("chef-server")
           utilities.stream_locally("wget \"#{chef_client_url}\" -O #{chef_client_tempfile.path}")
           utilities.sudo_upload(chef_client_tempfile.path, "/var/tmp/chef-client.deb")
-          sudo("dpkg -i /var/tmp/chef-server.deb")
+          sudo("dpkg -i /var/tmp/chef-client.deb")
           sudo("ln -svf /opt/chef/bin/* /usr/bin/")
         end
       end
