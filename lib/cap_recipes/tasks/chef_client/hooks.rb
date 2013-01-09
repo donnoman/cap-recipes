@@ -15,4 +15,8 @@ Capistrano::Configuration.instance(true).load do
   # after "chef:client:configure", "chef:client:bootstrap"
   # after "chef:client:bootstrap", "chef:client:status"
 
+  after "chef:client:stop", "chef:client:status"
+  after "chef:client:start", "chef:client:status"
+  after "chef:client:restart", "chef:client:status"
+
 end
