@@ -80,7 +80,8 @@ Capistrano::Configuration.instance(true).load do
           logger.info("#{channel.connection.host}: #{data.strip}")
 
           result = (results[channel.connection.host] ||= OpenStruct.new)
-          result.chef_client_status = data.strip #split("\n").first.strip
+          data.strip!
+          !data.empty? and (result.chef_client_status = data)
         end
 
         sudo %Q{bash -c '(([[ -f /usr/bin/chef-client ]] && /usr/bin/chef-client -v) || echo "NOT INSTALLED")'} do |channel, stream, data|
@@ -88,12 +89,18 @@ Capistrano::Configuration.instance(true).load do
           logger.info("#{channel.connection.host}: #{data.strip}")
 
           result = (results[channel.connection.host] ||= OpenStruct.new)
-          result.chef_client_version = data.strip #split("\n").first.strip
+          data.strip!
+          !data.empty? and (result.chef_client_version = data)
         end
 
         with_report(results.values, [:hostname, :ip, :chef_client_version, :chef_client_status]) do |result|
           result
         end
+      end
+
+      desc "watch chef-client logs"
+      task :tail, :roles => [:chef_client] do
+        stream("#{sudo} tail -f /var/log/chef/client.log")
       end
 
       desc "chef-client key backup"
@@ -108,8 +115,10 @@ Capistrano::Configuration.instance(true).load do
           chef_client_status = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /etc/init.d/chef-client status) || echo \"NOT INSTALLED\"'", :hosts => server).strip
           chef_client_version = capture("#{sudo} bash -c '([[ -f /etc/init.d/chef-client ]] && /usr/bin/chef-client -v) || echo \"NOT INSTALLED\"'", :hosts => server).strip
 
-          to_filepath = File.expand_path(File.join(Dir.pwd, ".chef", "chef-#{ENV['CHEF_ENV'].downcase}-client-#{server_hostname}.pem"))
-          sudo("cp -v /etc/chef/client.pem /var/tmp/client.pem && chown -v dev:dev /var/tmp/client.pem", :hosts => server)
+          to_filepath = File.expand_path(File.join(Dir.pwd, ".chef", "backup", current_ecosystem.to_s, "chef-#{ENV['CHEF_ENV'].downcase}-#{server_hostname}.pem"))
+          FileUtils.mkdir_p(File.dirname(to_filepath))
+          sudo("cp -v /etc/chef/client.pem /var/tmp/client.pem", :hosts => server)
+          sudo("chown -v dev:dev /var/tmp/client.pem", :hosts => server)
           (top.download("/var/tmp/client.pem", to_filepath, :hosts => server) rescue nil)
           sudo("rm -fv /var/tmp/client.pem", :hosts => server)
           key_backup_result = ((File.exists?(to_filepath) && (File.mtime(to_filepath).utc > (Time.now.utc - 15.seconds))) ? "SUCCESS" : "X")
