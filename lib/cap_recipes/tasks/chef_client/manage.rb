@@ -100,6 +100,9 @@ Capistrano::Configuration.instance(true).load do
 
       desc "watch chef-client logs"
       task :tail, :roles => [:chef_client] do
+        logger.info("#" * 80)
+        logger.info("# CHEF-CLIENT TAIL")
+        logger.info("#" * 80)
         stream("#{sudo} tail -f /var/log/chef/client.log")
       end
 
