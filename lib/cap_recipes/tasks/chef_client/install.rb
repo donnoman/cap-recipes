@@ -73,7 +73,7 @@ Capistrano::Configuration.instance(true).load do
         sudo("chown -Rv root:root /etc/chef")
       end
 
-      desc "chef-client bootstrap; runs chef-client once via command line"
+      desc "chef-client bootstrap; purges the chef-client cache then runs chef-client once via command line"
       task :bootstrap, :roles => [:chef_client], :on_no_matching_servers => :continue do
         chef.client.stop
         find_servers_for_task(current_task).each do |server|
@@ -82,6 +82,21 @@ Capistrano::Configuration.instance(true).load do
           logger.info("#" * 80)
 
           sudo("rm -rfv /var/chef/cache/* /var/chef/backup/*", :hosts => server)
+          sudo("bash -c '([[ -f /opt/chef/bin/chef-client ]] && /opt/chef/bin/chef-client) || echo \"NOOP\"'", :hosts => server)
+          sudo("bash -c '([[ -f /etc/chef/client.pem ]] && chmod -v 0400 /etc/chef/client.pem) || echo \"NOOP\"'", :hosts => server)
+          sudo("chown -Rv root:root /etc/chef", :hosts => server)
+        end
+        chef.client.start
+      end
+
+      desc "chef-client boot; runs the chef-client once via command line"
+      task :boot, :roles => [:chef_client], :on_no_matching_servers => :continue do
+        chef.client.stop
+        find_servers_for_task(current_task).each do |server|
+          logger.info("#" * 80)
+          logger.info("# CHEF-CLIENT BOOT: #{server}")
+          logger.info("#" * 80)
+
           sudo("bash -c '([[ -f /opt/chef/bin/chef-client ]] && /opt/chef/bin/chef-client) || echo \"NOOP\"'", :hosts => server)
           sudo("bash -c '([[ -f /etc/chef/client.pem ]] && chmod -v 0400 /etc/chef/client.pem) || echo \"NOOP\"'", :hosts => server)
           sudo("chown -Rv root:root /etc/chef", :hosts => server)
