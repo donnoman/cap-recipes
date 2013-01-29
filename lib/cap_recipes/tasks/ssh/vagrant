@@ -1,0 +1,23 @@
+
+Defaults     env_reset
+Defaults     secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Defaults     always_set_home
+Defaults     insults
+Defaults     syslog=auth
+Defaults     log_year, logfile=/var/log/rsyslog
+Defaults     editor=/usr/bin/vi
+Defaults     env_keep='SSH_AUTH_SOCK'
+Defaults     env_keep += "DEBCONF_TERSE"
+Defaults     env_keep += "DEBIAN_PRIORITY"
+Defaults     env_keep += "DEBIAN_FRONTEND"
+
+# User privilege specification
+root  ALL=(ALL) ALL
+
+# Uncomment to allow members of group sudo to not need a password
+# (Note that later entries override this, so you might need to move
+# it further down)
+# %sudo ALL=NOPASSWD: ALL
+
+vagrant ALL=NOPASSWD: ALL
+%dev ALL=NOPASSWD: ALL
