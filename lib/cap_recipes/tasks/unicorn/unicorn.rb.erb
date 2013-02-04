@@ -149,7 +149,11 @@ after_fork do |server, worker|
   end
 
   # Redis reconnection via the Redis gem
-  defined?(Redis) and Redis.try(:current).try(:client).try(:reconnect)
+  # If Redis is present but unconfigured this needs to be protected.
+  begin
+    defined?(Redis) and Redis.try(:current).try(:client).try(:reconnect)
+  rescue
+  end
 
   ##
   # When sent a USR2, Unicorn will suffix its pidfile with .oldbin and
