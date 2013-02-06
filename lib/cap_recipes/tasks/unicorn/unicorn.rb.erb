@@ -149,9 +149,9 @@ after_fork do |server, worker|
   end
 
   # Redis reconnection via the Redis gem
-  # If Redis is present but unconfigured this needs to be protected.
+  # Guard against all failures including the redis server not being present at the default 127.0.0.1:6379
   begin
-    defined?(Redis) and Redis.try(:current).try(:client).try(:reconnect)
+    Redis.current.client.reconnect
   rescue
   end
 
