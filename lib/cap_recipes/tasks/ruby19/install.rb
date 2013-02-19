@@ -5,7 +5,7 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :ruby19 do
 
-    set :ruby_ver, 'ruby-1.9.2-p180'
+    set :ruby_ver, 'ruby-1.9.3-p385'
     set(:ruby_src){"ftp://ftp.ruby-lang.org/pub/ruby/1.9/#{ruby_ver}.tar.bz2"}
     set :base_ruby_path, '/usr'
 
