@@ -8,11 +8,12 @@ Capistrano::Configuration.instance(true).load do
     set :pflogsumm_scripts_dir, "/root/scripts"
     set :pflogsumm_reports_dir, "/var/log/reports"
 
-    def today(opts={})
+    def cmd(opts={})
+      day = opts[:day] || 'today'
       target = opts[:target] || 'mail'
       syslog_name = opts[:syslog_name] || 'postfix'
       logfile = "pflogsumm-#{target}.log"
-      run %Q{ #{sudo} pflogsumm -q -u 0 --problems_first --no_no_msg_size --syslog_name=#{syslog_name} -d today /var/log/#{target}.log /var/log/#{target}.log.1 > /tmp/#{logfile} }
+      run %Q{ #{sudo} pflogsumm -q -u 0 --problems_first --no_no_msg_size --syslog_name=#{syslog_name} -d #{day} /var/log/#{target}.log /var/log/#{target}.log.1 > /tmp/#{logfile} }
       top.get "/tmp/#{logfile}", "log/#{logfile}", :via => :scp
       File.open("log/#{logfile}", "r") do |infile|
         while (line = infile.gets)
