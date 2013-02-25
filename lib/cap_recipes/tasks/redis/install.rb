@@ -118,7 +118,9 @@ Capistrano::Configuration.instance(true).load do
 
       with_layout do
         unless redis_no_conf
-          sudo "sed -i s/#{redis_bind_daemon}/#{ipaddress(redis_bind_daemon_eth)}/g #{redis_path}/#{redis_name}.conf"
+          if redis_bind_daemon_eth
+            sudo "sed -i s/#{redis_bind_daemon}/#{ipaddress(redis_bind_daemon_eth)}/g #{redis_path}/#{redis_name}.conf"
+          end
           sudo "update-rc.d -f #{redis_name} defaults"
         end
       end
