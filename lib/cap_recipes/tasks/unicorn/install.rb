@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../utilities')
 Capistrano::Configuration.instance(true).load do
   namespace :unicorn do
 
-    set :unicorn_version, "4.1.1"
+    set :unicorn_version, "4.6.2"
     set :unicorn_template_path, File.join(File.dirname(__FILE__),'unicorn.rb.erb')
     set :unicorn_god_path, File.join(File.dirname(__FILE__),'unicorn.god')
     set(:unicorn_user) {user}
