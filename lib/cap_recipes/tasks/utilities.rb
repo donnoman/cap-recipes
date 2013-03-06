@@ -258,11 +258,13 @@ def
         git clone #{repo} #{dest};
         cd #{dest};
         git checkout -b deploy;
-      fi;
-      if [ `cd #{dest} && git tag | grep -c #{ref}` -eq 1 ]; then
-        git reset --hard #{ref};
+      fi
+    }
+    sudo_run_compressed %Q{
+      if [ `cd #{dest} && git tag | grep -c #{ref}` = '1' ]; then
+        cd #{dest}; git reset --hard #{ref};
       else
-        git reset --hard origin/#{ref};
+        cd #{dest}; git reset --hard origin/#{ref};
       fi
     }
   end
