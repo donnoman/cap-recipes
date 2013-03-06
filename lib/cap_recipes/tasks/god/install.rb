@@ -102,6 +102,7 @@ Capistrano::Configuration.instance(true).load do
     task :install_from_git, :except => {:no_ruby => true} do
       utilities.gem_install "json"
       utilities.gem_uninstall "god"
+      sudo "mkdir -p /usr/local/src"
       utilities.git_clone_or_pull(god_git_repo,"/usr/local/src/god",god_git_ref)
       utilities.run_compressed %Q{
         cd /usr/local/src/god;
@@ -139,6 +140,13 @@ Capistrano::Configuration.instance(true).load do
       god.cmd "quit;true"
       sudo "/etc/init.d/god stop;true" #just for good measure
       sudo "/etc/init.d/god start"
+    end
+
+    desc "force restart god"
+    task :force_stop, :except => {:no_ruby => true} do
+      sudo "service god stop; true"
+      god.cmd "quit;true"
+      sudo "/etc/init.d/god stop;true" #just for good measure
     end
 
     desc "god status"
