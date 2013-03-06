@@ -6,6 +6,7 @@ class TeeLogWriter
   end
 
   def puts(message)
+    message = message.respond_to?(:force_encoding) ? message.force_encoding("UTF-8") : message
     STDOUT.puts message
     @file.puts "[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] #{message}"
   end

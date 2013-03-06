@@ -5,7 +5,7 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :ruby19 do
 
-    set :ruby_ver, 'ruby-1.9.2-p180'
+    set :ruby_ver, 'ruby-1.9.3-p327'
     set(:ruby_src){"ftp://ftp.ruby-lang.org/pub/ruby/1.9/#{ruby_ver}.tar.bz2"}
     set :base_ruby_path, '/usr'
 
@@ -16,8 +16,9 @@ Capistrano::Configuration.instance(true).load do
 
     desc "install ruby"
     task :install, :except => {:no_ruby => true} do
-      utilities.apt_install %w[build-essential zlib1g-dev libssl-dev openssl libcurl4-openssl-dev libreadline6-dev bzip2]
-      sudo "mkdir -p /usr/local/src"
+      utilities.apt_install %w[build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool]
+      sudo "mkdir -p /usr/local/src/"
+      run "#{sudo} rm -rf /usr/local/src/#{ruby_ver}" #make clean is not allowing a re-install  #http://www.ruby-forum.com/topic/4409005
       run "cd /usr/local/src && #{sudo} wget --tries=2 -c --progress=bar:force #{ruby_src} && #{sudo} bunzip2 --keep --force #{ruby_ver}.tar.bz2 && #{sudo} tar xvf #{ruby_ver}.tar"
       run "cd /usr/local/src/#{ruby_ver} && #{sudo} ./configure --prefix=#{base_ruby_path} --enable-shared && #{sudo} make install"
     end
