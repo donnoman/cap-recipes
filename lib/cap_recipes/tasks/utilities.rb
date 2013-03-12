@@ -240,7 +240,11 @@ def
   end
 
   def sudo_run_compressed(cmd)
-    sudo %Q{sh -c "#{cmd.split("\n").reject(&:empty?).map(&:strip).join(' ')}"}
+    sudo compressed_join(cmd)
+  end
+
+  def compressed_join(cmd)
+     %Q{sh -c "#{cmd.split("\n").reject(&:empty?).map(&:strip).join(' ')}"}
   end
 
   ##
@@ -249,8 +253,10 @@ def
   #
   # utilities.sudo_git_clone_or_pull "git://github.com/scalarium/server-density-plugins.git", "/usr/local/src/scalarium"
   #
+  # Had to change from using sudo to the deploying user because
   def git_clone_or_pull(repo,dest,ref="master")
-    sudo_run_compressed %Q{
+    run "#{sudo} mkdir -p #{File.dirname(dest)}; #{sudo} chown #{user} #{File.dirname(dest)}"
+    cmd = compressed_join %Q{
       if [ -d #{dest} ]; then
         cd #{dest};
         git fetch;
@@ -260,7 +266,8 @@ def
         git checkout -b deploy;
       fi
     }
-    sudo_run_compressed %Q{
+    run_with_input(cmd,%r{\(yes/no\)}, "yes\n")
+    run_compressed %Q{
       if [ `cd #{dest} && git tag | grep -c #{ref}` = '1' ]; then
         cd #{dest}; git reset --hard #{ref};
       else
