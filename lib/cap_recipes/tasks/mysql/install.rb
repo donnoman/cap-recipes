@@ -32,12 +32,13 @@ Capistrano::Configuration.instance(true).load do
 
     set :mysql_data_dir, "/var/lib/mysql"
 
-    def mysql_client_cmd(cmd)
+    def mysql_client_cmd(cmd,opts={})
       command = []
       command << "#{sudo}" if mysql_client_use_sudo
       command << mysql_client_executable
       command << "-u#{mysql_client_user}" if mysql_client_user
       command << "-p#{mysql_client_pass}" if mysql_client_pass
+      command << "--force" if opts[:force]
       command << "-e \"#{cmd}\""
       command.join(" ")
     end
@@ -147,7 +148,7 @@ Capistrano::Configuration.instance(true).load do
       task :upload_backup_script, :roles => :mysqld_backup do
         run "#{sudo} mkdir -p /root/script #{mysql_backup_location} #{mysql_backup_log_path}"
         # Some backup scripts require lbzip2
-        utilities.apt_install "at lbzip2" 
+        utilities.apt_install "at lbzip2"
         utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "654", :owner => 'root:root'
         utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "654", :owner => 'root:root'
       end
