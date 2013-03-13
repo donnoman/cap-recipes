@@ -255,7 +255,7 @@ def
   #
   # Had to change from using sudo to the deploying user because
   def git_clone_or_pull(repo,dest,ref="master")
-    run "#{sudo} mkdir -p #{File.dirname(dest)}; #{sudo} chown #{user} #{File.dirname(dest)}"
+    run "#{sudo} mkdir -p #{File.dirname(dest)}; #{sudo} chown -R #{user} #{File.dirname(dest)}"
     cmd = compressed_join %Q{
       if [ -d #{dest} ]; then
         cd #{dest};
