@@ -15,11 +15,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     set(:bundler_exec) { base_ruby_path + "/bin/bundle" }
     set(:bundler_dir) { "#{shared_path}/bundle" }
     set(:bundler_deploy_dir) { "#{latest_release}/vendor/bundle" }
-    set :bundler_rubygems_minimum_ver, '1.3.7'
-    set :bundler_ver, "1.0.17"
+    set :bundler_rubygems_minimum_ver, "1.8.25"
+    set :bundler_ver, "1.3.4"
     set(:bundler_user) { user }
     set :bundler_file, "Gemfile"
     set :bundler_binstubs, true
+    set :bundler_clean, true
 
     def bundle(path=nil)
       # Don't bother if there's no gemfile.
@@ -31,6 +32,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       args << "--path #{path}" unless path.to_s.empty? || bundler_opts.include?("--system")
       args << "--gemfile=#{bundler_file}" unless bundler_file == "Gemfile"
       args << "--binstubs" if bundler_binstubs
+      args << "--clean" if bundler_clean && bundler_ver >= "1.3.0"
       cmd = "cd #{latest_release}; if [ -f #{bundler_file} ]; then #{bundler_exec} install #{args.join(' ')}; fi"
       if bundler_opts.include?('--system')
         cmd = "#{sudo} sh -c '#{cmd}'"
