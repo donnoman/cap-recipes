@@ -1,5 +1,11 @@
 class TeeLogWriter
 
+  ##
+  # This passes through the value and adds it to the redaction list
+  #
+  #  set(:mysql_client_user) { TeeLogWriter.redact(database_user) }
+  #
+  # So your capistrano variable has the correct value, but it will be redacted from TeeLogWriters output.
   def self.redact(secure_message)
     self.redactions = (self.redactions + [secure_message].flatten).uniq
     secure_message
@@ -34,9 +40,6 @@ class TeeLogWriter
 
   private
 
-  def file
-    @file ||= File.open(File.join(logdir,"deploy.#{file_timestamp}.log"), "w")
-  end
 
   def self.redactions
     @redactions ||= []
@@ -48,6 +51,10 @@ class TeeLogWriter
 
   def self.with_ensured_encoding(message)
     yield message.respond_to?(:force_encoding) ? message.force_encoding("UTF-8") : message
+  end
+
+  def file
+    @file ||= File.open(File.join(logdir,"deploy.#{file_timestamp}.log"), "w")
   end
 
   def log_timestamp
