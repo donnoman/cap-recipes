@@ -11,6 +11,7 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_restore_source_name, nil
     set :mysql_client_user, nil
     set :mysql_client_pass, nil
+    set :mysql_client_host, nil
     set :mysql_client_executable, "mysql"
     set :mysql_client_use_sudo, true
     set :mysql_restore_script, File.join(File.dirname(__FILE__),'mysql_restore.sh')
@@ -38,8 +39,9 @@ Capistrano::Configuration.instance(true).load do
       command << mysql_client_executable
       command << "-u#{mysql_client_user}" if mysql_client_user
       command << "-p#{mysql_client_pass}" if mysql_client_pass
+      command << "-h#{mysql_client_host}" if mysql_client_host
       command << "--force" if opts[:force]
-      command << "-e \"#{cmd}\""
+      command << "-e \"#{cmd}\"" unless cmd.nil?
       command.join(" ")
     end
 
