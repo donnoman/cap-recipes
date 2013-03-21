@@ -1,26 +1,71 @@
-# If you require the TeeLogger then
 class TeeLogWriter
-  def initialize
-    logdir = FileUtils.mkdir_p(File.join(caproot,'log')).first
-    @file=File.open(File.join(logdir,'deploy.log'), "w")
+
+  def self.redact(secure_message)
+    self.redactions = (self.redactions + [secure_message].flatten).uniq
+    secure_message
+  end
+
+  def self.redaction_replacement
+    @redaction_replacement ||= '######'
+  end
+
+  def self.redaction_replacement=(replacement)
+    @redaction_replacement = replacement
+  end
+
+  def self.redacted(message)
+    with_ensured_encoding(message) do |message|
+      redactions.inject(message) do |message,redaction|
+        message.gsub(redaction,redaction_replacement)
+      end
+    end
+  end
+
+  def with_redactions(message)
+    yield self.class.redacted(message)
   end
 
   def puts(message)
-    message = message.respond_to?(:force_encoding) ? message.force_encoding("UTF-8") : message
-    STDOUT.puts message
-    @file.puts "[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] #{message}"
-  end
-
-  ##
-  # return the directory that holds the capfile
-  def caproot
-    @caproot ||= File.dirname(capfile)
+    with_redactions(message) do |message|
+      STDOUT.puts message
+      file.puts "[#{log_timestamp}] #{message}"
+    end
   end
 
   private
 
-  ##
-  # Find the location of the capfile
+  def file
+    @file ||= File.open(File.join(logdir,"deploy.#{file_timestamp}.log"), "w")
+  end
+
+  def self.redactions
+    @redactions ||= []
+  end
+
+  def self.redactions=(value)
+    @redactions = value
+  end
+
+  def self.with_ensured_encoding(message)
+    yield message.respond_to?(:force_encoding) ? message.force_encoding("UTF-8") : message
+  end
+
+  def log_timestamp
+    Time.now.strftime("%Y-%m-%d %H:%M:%S%z")
+  end
+
+  def file_timestamp
+    Time.now.strftime("%Y%m%d-%H%M%S%z")
+  end
+
+  def caproot
+    @caproot ||= File.dirname(capfile)
+  end
+
+  def logdir
+    FileUtils.mkdir_p(File.join(caproot,'log')).first
+  end
+
   def capfile
     previous = nil
     current  = File.expand_path(Dir.pwd)
@@ -33,6 +78,27 @@ class TeeLogWriter
   end
 
 end
+
+require 'capistrano/configuration'
+
+module Capistrano
+  class CLI
+    module Execute
+      def handle_error(error) #:nodoc:
+        # redact the error even in the case of an abort
+        error = error.class.new(TeeLogWriter.redacted(error.message))
+        case error
+        when Net::SSH::AuthenticationFailed
+          abort "authentication failed for `#{error.message}'"
+        when Capistrano::Error
+          abort(error.message)
+        else raise error
+        end
+      end
+    end
+  end
+end
+
 
 Capistrano::Configuration.instance(true).load do
   #replace the running logger device with our own.
