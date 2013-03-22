@@ -36,12 +36,20 @@ Capistrano::Configuration.instance(true).load do
           run "#{sudo} initctl #{t} god" unless god_supress_runner
         end
       end
+
+      task :install_check, :except => {:no_ruby => true} do
+        begin
+          run "ls #{god_upstart_conf}"
+        rescue
+          god.install
+        end
+      end
       task :restart, :except => {:no_ruby => true} do
         run "#{sudo} initctl stop god;#{sudo} initctl start god;" unless god_supress_runner
       end
       task :install, :except => {:no_ruby => true} do
         god.send("install_from_#{god_install_from}".to_sym)
-        run "#{sudo} /etc/init.d/god stop;true"
+        god.force_stop
         run "#{sudo} update-rc.d god remove -f;true"
         run "#{sudo} rm -f /etc/init.d/god"
         utilities.sudo_upload_template god_upstart_erb, god_upstart_conf, :owner => "root:root"
@@ -65,6 +73,14 @@ Capistrano::Configuration.instance(true).load do
 
     def cmd(cmd,options={})
       r_env = options[:rails_env] || rails_env
+      # This protects the deploy if god is down for some reason, we have an opportunity to restart it and continue on.
+      begin
+        run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} status"
+      rescue
+        god.restart
+        logger.info "sleeping 10 for god to restart"
+        sleep 10
+      end
       run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} #{cmd}"
     end
 
@@ -92,6 +108,15 @@ Capistrano::Configuration.instance(true).load do
       god.send("install_from_#{god_install_from}".to_sym)
       utilities.sudo_upload_template god_init_path, god_init, :mode => "+x"
       sudo "update-rc.d -f god defaults"
+    end
+
+    desc "installs god if the init file is not present"
+    task :install_check, :except => {:no_ruby => true} do
+      begin
+        run "ls #{god_init}"
+      rescue
+        god.install
+      end
     end
 
     desc "install god init"
