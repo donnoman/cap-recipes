@@ -55,9 +55,15 @@ Capistrano::Configuration.instance(true).load do
         utilities.sudo_upload_template god_upstart_erb, god_upstart_conf, :owner => "root:root"
         run "#{sudo} initctl reload-configuration"
       end
+      desc "force restart god"
+      task :force_stop, :except => {:no_ruby => true} do
+        run "#{sudo} initctl stop god;true" # in case it's thrashing
+        run "#{sudo} /etc/init.d/god stop;true" #just for good measure
+        # run "#{sudo} pkill -f '/bin/god ';true" #try's to catch all god processes but not be overzealous and kill similarly matching processes.
+      end
       task :force_restart, :except => {:no_ruby => true} do
-        god.cmd "quit;true"
         run "#{sudo} initctl stop god;true" #just for good measure
+        # run "#{sudo} pkill -f '/bin/god ';true" #try's to catch all god processes but not be overzealous and kill similarly matching processes.
         run "#{sudo} initctl start god"
       end
       task :terminate, :except => {:no_ruby => true } do
@@ -75,7 +81,7 @@ Capistrano::Configuration.instance(true).load do
       r_env = options[:rails_env] || rails_env
       # This protects the deploy if god is down for some reason, we have an opportunity to restart it and continue on.
       begin
-        run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} status"
+        run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} status" unless %w(terminate quit).any?{|c| cmd =~ c }
       rescue
         god.restart
         logger.info "sleeping 10 for god to restart"
