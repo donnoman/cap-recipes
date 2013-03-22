@@ -51,10 +51,8 @@ Capistrano::Configuration.instance(true).load do
       task :install, :except => {:no_ruby => true} do
         god.send("install_from_#{god_install_from}".to_sym)
         god.force_stop
-        run "#{sudo} update-rc.d god remove -f;true"
-        run "#{sudo} rm -f /etc/init.d/god"
         utilities.sudo_upload_template god_upstart_erb, god_upstart_conf, :owner => "root:root"
-        utilities.sudo_upload_template god_upstart_init_erb, god_init, :owner => "root:root"
+        utilities.sudo_upload_template god_upstart_init_erb, god_init, :owner => "root:root", :mode => "+x"
         run "#{sudo} initctl reload-configuration"
       end
       desc "force restart god"
