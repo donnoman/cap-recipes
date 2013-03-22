@@ -9,6 +9,7 @@ Capistrano::Configuration.instance(true).load do
     set(:god_init) {"/etc/init.d/god"}
     set(:god_upstart_conf) {"/etc/init/god.conf"}
     set :god_init_path, File.join(File.dirname(__FILE__),'god.init')
+    set :god_upstart_init_erb, File.join(File.dirname(__FILE__),'god.upstart.init.erb')
     set :god_upstart_erb, File.join(File.dirname(__FILE__),'god.upstart.erb')
     set :god_contacts_path, File.join(File.dirname(__FILE__),'contacts.god')
     set :god_log_path, nil # without a path assumes syslog
@@ -53,6 +54,7 @@ Capistrano::Configuration.instance(true).load do
         run "#{sudo} update-rc.d god remove -f;true"
         run "#{sudo} rm -f /etc/init.d/god"
         utilities.sudo_upload_template god_upstart_erb, god_upstart_conf, :owner => "root:root"
+        utilities.sudo_upload_template god_upstart_init_erb, god_init, :owner => "root:root"
         run "#{sudo} initctl reload-configuration"
       end
       task :force_restart, :except => {:no_ruby => true} do
