@@ -61,6 +61,11 @@ module Utilities
     run "if #{base_ruby_path}/bin/gem list '#{package}' | grep --silent -e '#{package}.*#{version}'; then #{cmd}; fi"
   end
 
+  def aptitude_safe_upgrade
+    run "#{sudo} aptitude update"
+    run "#{sudo} aptitude safe-upgrade -o Aptitude::Delete-Unused=false --assume-yes --target-release `lsb_release -cs`-"
+  end
+
   # utilities.apt_install %w[package1 package2]
   # utilities.apt_install "package1 package2"
   def apt_install(packages)
@@ -100,8 +105,8 @@ module Utilities
     sudo "#{apt_get} -qy update"
     sudo_with_input "#{apt_get} -qyu --force-yes upgrade", /\?/, "\n" #answer the default if any package pops up a warning
   end
-def
-   apt_get
+
+  def apt_get
     "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get"
   end
 
