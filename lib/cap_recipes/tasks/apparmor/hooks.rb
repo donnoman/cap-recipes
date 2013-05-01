@@ -1,3 +1,5 @@
 Capistrano::Configuration.instance(true).load do
-  before "mysql_master:setup", "apparmor:setup"
+  after "deploy:provision", "apparmor:install"
+  after "apparmor:install", "apparmor:setup"
+  after "apparmor:setup", "apparmor:restart"
 end
