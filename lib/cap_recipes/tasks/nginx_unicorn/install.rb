@@ -43,7 +43,8 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_unicorn_gzip, true
     set :nginx_unicorn_fail_timeout, nil
     set :nginx_unicorn_syslog_patch, true
-    set :nginx_unicorn_rid_header_patch, true
+    set :nginx_unicorn_rid_header_patch, false # while we want this to be true by default it makes the configurations incompatible
+                                               # with the previous default. Which can cause a working NGINX to stop working until recompiled.
 
     set(:nginx_unicorn_configure_flags) {[
       "--prefix=#{nginx_unicorn_root}",
