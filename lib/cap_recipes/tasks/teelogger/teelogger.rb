@@ -93,13 +93,16 @@ module Capistrano
     module Execute
       def handle_error(error) #:nodoc:
         # redact the error even in the case of an abort
+        backtrace = error.backtrace
         error = error.class.new(TeeLogWriter.redacted(error.message))
         case error
         when Net::SSH::AuthenticationFailed
           abort "authentication failed for `#{error.message}'"
         when Capistrano::Error
           abort(error.message)
-        else raise error
+        else
+          puts backtrace
+          exit 1
         end
       end
     end
