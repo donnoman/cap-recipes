@@ -1,0 +1,184 @@
+#!/bin/sh
+# /etc/init.d/srv-manager
+
+### BEGIN INIT INFO
+# Provides: srv-manager
+# Required-Start: $local_fs $remote_fs
+# Required-Stop: $local_fs $remote_fs
+# Should-Start: $network
+# Should-Stop: $network
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: srv-manager
+# Description: Init script for csgo
+### END INIT INFO
+
+#############################################
+# Based On
+# https://github.com/thomas-illiet/Csgo-launcher/blob/master/srv-magager.sh
+#############################################
+
+#############################################
+## Global Config
+#############################################
+# Linux
+############
+LINUX_USER="<%=steamcmd_user%>"
+LINUX_SCREENNAME='csgo_ds'
+LINUX_PATH_SERVER="<%=csgo_ds_source%>"
+############
+# Game
+############
+GAME_NAME="<%=csgo_ds_game%>"
+GAME_FPS="<%=fps_max%>" 
+GAME_MODE="0"
+GAME_TYPE="0"
+# +mapgroup ${GAME_MAP_GROUP} 
+GAME_MAP_GROUP=""
+GAME_MAP="<%=csgo_ds_mapcycle%>"
+# +Network
+GAME_IP="<%=server_ip%>"
+GAME_PORT="<%=server_port%>"
+############
+# Update
+############
+STEAMCMD='<%=steamcmd_app_root%>/steamcmd.sh'
+#############################################
+## CMD
+#############################################
+SRCDSCMD="<%=csgo_ds_parameters%>"
+#############################################
+## FONC
+#############################################
+# as_user
+ME=`whoami`
+as_user() {
+    if [ $ME == $LINUX_USER ] ; then
+        bash -c "$1"
+        else
+        su $LINUX_USER -s /bin/bash -c "$1"
+    fi
+}
+
+is_running(){
+    if ps ax | grep -v grep | grep "$LINUX_SCREENNAME $SRCDSCMD" > /dev/null
+        then
+        return 0
+    fi
+    return 1
+}
+
+srv_start() {
+    as_user "cd $LINUX_PATH_SERVER && screen -dmS $LINUX_SCREENNAME $SRCDSCMD"
+    #
+    # Waiting for the server to start
+    #
+    seconds=0
+    sleep 2
+    until ps ax | grep -v grep | grep "$LINUX_SCREENNAME $SRCDSCMD" > /dev/null
+    do
+        sleep 1
+        seconds=$seconds+1
+        if [[ $seconds -eq 5 ]]
+        then
+            echo "Still not running, waiting a while longer..."
+        fi
+        if [[ $seconds -ge 120 ]]
+        then
+            echo "Failed to start, aborting."
+            exit 1
+        fi
+    done
+    echo "$LINUX_SCREENNAME is running."
+}
+
+srv_stop() {
+    #
+    # Stops the server
+    #
+    as_user 'screen -dr ${LINUX_SCREENNAME} -X quit'
+    as_user 'screen -wipe'  
+}
+
+srv_command() {
+        if is_running
+        then
+            as_user "screen -p 0 -S $LINUX_SCREENNAME -X eval 'stuff \"$(eval echo $1)\"\015'"
+        else
+            echo "$LINUX_SCREENNAME was not running. Not able to run command."
+        fi
+}
+
+srv_say() {
+    if is_running
+    then
+        echo "Said: $1"
+        srv_command "say $1"
+    else
+        echo "$LINUX_SCREENNAME was not running. Not able to say anything."
+    fi
+}
+#############################################
+## SCRIPT
+#############################################
+case "$1" in
+    #######################
+    # START
+    #######################
+    'start')
+    # Starts the server
+    if is_running; then
+        echo "Server already running."
+    else
+        srv_start
+    fi
+    ;;
+    #######################
+    # STOP
+    #######################
+    'stop')
+    # Stops the server
+    if is_running; then
+        srv_say "SERVER SHUTTING DOWN!"
+        sleep 2
+        srv_stop
+    else
+        echo "No running server."
+    fi
+    ;;
+    #######################
+    # RESTART
+    #######################
+    'restart')
+    # Restarts the server
+    if is_running; then
+        srv_say "SERVER REBOOT IN 10 SECONDS!"
+        sleep 10
+        srv_stop
+    else
+        echo "No running server, starting it..."
+    fi
+        srv_start
+    ;;
+    #######################
+    # STATUS
+    #######################
+    'status')
+    # Shows server status
+    if is_running
+    then
+        echo "$LINUX_SCREENNAME is running."
+    else
+        echo "$LINUX_SCREENNAME is not running."
+    fi
+    ;;
+    #######################
+    # NOT FOUND CMD
+    #######################
+    *)
+        echo "Usage: $0 { start | stop | restart | update | status }"
+    ;;
+    
+esac
+exit 0
+    
