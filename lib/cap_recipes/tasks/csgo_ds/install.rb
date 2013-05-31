@@ -17,7 +17,7 @@ Capistrano::Configuration.instance(true).load do
     set :csgo_ds_motd_txt_erb, File.join(File.dirname(__FILE__),'motd.txt.erb')
     set(:csgo_ds_config_root) {"#{steamcmd_app_root}/cfg"}
     set(:csgo_ds_config_server_cfg) {"#{csgo_ds_config_root}/server.cfg"}
-set(:csgo_ds_parameters) {"./srcds_run -game ${GAME_NAME} -console -usercon -ip ${GAME_IP} -port ${GAME_PORT} +fps_max ${GAME_FPS} +game_type ${GAME_TYPE} +game_mode ${GAME_MODE} -maxplayers_override ${MAX_PLAYERS} +map ${GAME_MAP} -autoupdate -steamcmd_script ${STEAMCMD} -steam_dir ${STEAM_DIR}"}
+    set(:csgo_ds_parameters) {"./srcds_run -game ${GAME_NAME} -console -usercon -ip ${GAME_IP} -port ${GAME_PORT} +fps_max ${GAME_FPS} +game_type ${GAME_TYPE} +game_mode ${GAME_MODE} -maxplayers_override ${MAX_PLAYERS} +map ${GAME_MAP} -autoupdate -steamcmd_script ${STEAMCMD} -steam_dir ${STEAM_DIR}"}
     set :csgo_ds_game, "csgo"
     set :fps_max, "1000"
     set :maxplayers, "16"
@@ -71,7 +71,7 @@ set(:csgo_ds_parameters) {"./srcds_run -game ${GAME_NAME} -console -usercon -ip 
       run "#{sudo} chown -R #{steamcmd_user}:#{steamcmd_user} #{csgo_ds_source}"
     end
 
-    %w(start stop restart).each do |t|
+    %w(start stop status restart).each do |t|
       task t.to_sym, :roles => [:csgo_ds] do
         run "#{sudo} /etc/init.d/csgo_ds #{t}"
       end
