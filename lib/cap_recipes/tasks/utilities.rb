@@ -182,7 +182,17 @@ module Utilities
 
   # role = :app
   def with_role(role, &block)
-    original, ENV['HOSTS'] = ENV['HOSTS'], find_servers(:roles => role).map{|d| d.host}.join(",")
+    original, ENV['HOSTS'] = ENV['HOSTS'], find_servers(:role => role).map{|d| d.host}.join(",")
+    begin
+      yield
+    ensure
+      ENV['HOSTS'] = original
+    end
+  end
+
+  # role = :app
+  def without_role(role, &block)
+    original, ENV['HOSTS'] = ENV['HOSTS'], (find_servers() - find_servers(:roles => role)).map{|d| d.host}.join(",")
     begin
       yield
     ensure
