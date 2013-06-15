@@ -101,6 +101,7 @@ module Capistrano
         when Capistrano::Error
           abort(error.message)
         else
+          puts error.message
           puts backtrace
           exit 1
         end
