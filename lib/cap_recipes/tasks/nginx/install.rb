@@ -102,7 +102,7 @@ Capistrano::Configuration.instance(true).load do
     task :uninstall_apt_nginx, :roles => [:web,:nginx] do
       run "#{sudo} /etc/init.d/nginx stop;true"
       utilities.apt_remove "nginx"
-      sudo "rm -rf /etc/nginx"
+      run "#{sudo} rm -rf /etc/nginx"
     end
 
     desc 'Installs nginx for web'
