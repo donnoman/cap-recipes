@@ -11,20 +11,63 @@ for common issues which can then be used by the community.
 Feel free to improve upon this recipe collection by adding your own!
 
 Currently included recipes in this gem:
-
+ * Apache Server
+ * Apparmor
+ * Aptitude
+ * Autossh
+ * Backgroundrb
+ * Bprobe
+ * Bundler Setup
+ * Cassandra
+ * Chef Client
+ * Chef Server
+ * Csgo_ds
+ * DelayedJob
+ * Datadog
+ * Denyhosts
+ * Dovecot
+ * Dphys_swapfile
+ * Erlang
+ * Gitosis Git Repository Hosting
+ * God
+ * Graphite
+ * Haproxy
+ * Hids
+ * Juggernaut Daemon
+ * Leap_second
+ * Logrotat
+ * Memcached Management
+ * MongoDB Management
+ * Munin
+ * Mysql
+ * Mysql_master
+ * newrelic_rpm
+ * newrelic_sysmond
+ * nginx
+ * nginx_passenger
+ * nginx_unicorn
+ * Postgresql
+ * Phusion Passenger
+ * Provision
+ * Rails
+ * Redis
+ * Ree
+ * Resque
  * Ruby Setup
  * Rubygems Management
- * Apache Server
- * Phusion Passenger
- * Memcached Management
+ * s3cmd
+ * s3fs
+ * s3sync
+ * sdagent
+ * ssh
+ * ssmtp
+ * statsd
+ * teelogger
  * ThinkingSphinx Daemon
- * Juggernaut Daemon
- * Backgroundrb Server
- * DelayedJob Worker
+ * Ufw
+ * Unicorn
  * Whenever Cron Scheduling
- * MongoDB Management
- * Aptitude Package Management
- * Gitosis Git Repository Hosting
+ * Xtrabackup
 
 Check out the USAGE section below for specific tasks included in the recipes.
 
@@ -33,6 +76,8 @@ h2. INSTALLATION
 To install the gem, execute:
 
 @$ sudo gem install cap-recipes --source http://gemcutter.org@
+
+gem install cap-recipes gives a smaller collection of recipes, so make sure you fork from the gem you want
 
 Then, include into your @deploy.rb@ configuration file for Capistrano:
 
