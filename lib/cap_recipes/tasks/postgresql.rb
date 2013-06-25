@@ -1,5 +1,5 @@
 # @author Donovan Bray <donnoman@donovanbray.com>
-require File.expand_path(File.dirname(__FILE__) + '/../utilities')
+require File.expand_path(File.dirname(__FILE__) + '/utilities')
 
 # This Nginx is targeted for the :app role meant to be acting as a front end
 # to a unicorn based application
