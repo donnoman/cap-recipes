@@ -1,15 +1,11 @@
-def set_default(name, *args, &block)
-  set(name, *args, &block) unless exists?(name)
-end
-
-set_default(:postgresql_host, "localhost")
-set_default(:postgresql_user) { application }
-set_default(:postgresql_password) { Capistrano::CLI.password_prompt "PostgreSQL Password: " }
-set_default(:postgresql_database) { "#{application}_production" }
-set_default(:postgresql_dump_path) { "#{current_path}/tmp" }
-set_default(:postgresql_dump_file) { "#{application}_dump.sql" }
-set_default(:postgresql_local_dump_path) { File.expand_path("../../../tmp", __FILE__) }
-set_default(:postgresql_pid) { "/var/run/postgresql/9.1-main.pid" }
+utilities.set_default(:postgresql_host, "localhost")
+utilities.set_default(:postgresql_user) { application }
+utilities.set_default(:postgresql_password) { Capistrano::CLI.password_prompt "PostgreSQL Password: " }
+utilities.set_default(:postgresql_database) { "#{application}_production" }
+utilities.set_default(:postgresql_dump_path) { "#{current_path}/tmp" }
+utilities.set_default(:postgresql_dump_file) { "#{application}_dump.sql" }
+utilities.set_default(:postgresql_local_dump_path) { File.expand_path("../../../tmp", __FILE__) }
+utilities.set_default(:postgresql_pid) { "/var/run/postgresql/9.1-main.pid" }
 
 
 namespace :postgresql do
