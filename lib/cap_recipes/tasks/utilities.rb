@@ -161,7 +161,7 @@ def
     switches = ''
     switches += " --system" if options[:system]
     switches += " --gid #{options[:gid]} " if options[:gid]
-    invoke_command "/usr/sbin/addgroup  #{switches} #{group}", :via => run_method
+    invoke_command "sudo /usr/sbin/addgroup  #{switches} #{group}", :via => run_method
   end
 
   #utilities.delgroup('deploy')
