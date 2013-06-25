@@ -1,3 +1,7 @@
+def set_default(name, *args, &block)
+  set(name, *args, &block) unless exists?(name)
+end
+
 set_default(:postgresql_host, "localhost")
 set_default(:postgresql_user) { application }
 set_default(:postgresql_password) { Capistrano::CLI.password_prompt "PostgreSQL Password: " }
@@ -7,9 +11,6 @@ set_default(:postgresql_dump_file) { "#{application}_dump.sql" }
 set_default(:postgresql_local_dump_path) { File.expand_path("../../../tmp", __FILE__) }
 set_default(:postgresql_pid) { "/var/run/postgresql/9.1-main.pid" }
 
-def set_default(name, *args, &block)
-  set(name, *args, &block) unless exists?(name)
-end
 
 namespace :postgresql do
   desc "Install the latest stable release of PostgreSQL."
