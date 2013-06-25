@@ -57,10 +57,10 @@ Capistrano::Configuration.instance(true).load do
     desc "install redis-server"
     task :install, :roles => [:redis,:redis_slave] do
       utilities.apt_install %w[build-essential wget]
-      #utilities.addgroup "redis", :system => true # needs sudo
-      sudo "/usr/sbin/addgroup --system redis"
-      sudo "/usr/sbin/adduser --group redis  --system redis --disabled-login true --no-create-home true"
-      #utilities.adduser "redis" , :nohome => true, :group => "redis", :system => true, :disabled_login => true
+      utilities.sudo_addgroup "redis", :system => true # needs sudo
+      #sudo "/usr/sbin/addgroup --system redis"
+      #sudo "/usr/sbin/adduser --group redis  --system redis --disabled-login true --no-create-home true"
+      utilities.sudo_adduser "redis" , :nohome => true, :group => "redis", :system => true, :disabled_login => true
       sudo "mkdir -p #{redis_base_path}/bin #{redis_base_path}/src /var/log/redis"
       run "cd #{redis_base_path}/src && #{sudo} wget --tries=2 -c --progress=bar:force #{redis_src} && #{sudo} tar xzf #{redis_ver}.tar.gz"
       run "cd #{redis_base_path}/src/#{redis_ver} && #{sudo} make"
