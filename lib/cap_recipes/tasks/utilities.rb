@@ -339,6 +339,10 @@ def
   def deprecated(name,replacement=nil)
     raise Capistrano::Error, "#{name} is deprecated, #{replacement ? "see: #{replacment}" : "no replacement" }."
   end
+  
+  def set_default(name, *args, &block)
+    set(name, *args, &block) unless exists?(name)
+  end
 
 
 
