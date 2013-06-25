@@ -1,6 +1,17 @@
+# @author Donovan Bray <donnoman@donovanbray.com>
+require File.expand_path(File.dirname(__FILE__) + '/../utilities')
 
+# This Nginx is targeted for the :app role meant to be acting as a front end
+# to a unicorn based application
 
-namespace :postgresql do
+# Additions
+# https://github.com/newobj/nginx-x-rid-header
+# https://github.com/yaoweibin/nginx_syslog_patch
+
+# Possible Future Additions
+# https://support.newrelic.com/kb/features/tracking-front-end-time
+
+Capistrano::Configuration.instance(true).load do
   
   utilities.set_default(:postgresql_host, "localhost")
   utilities.set_default(:postgresql_user) { application }
@@ -10,7 +21,8 @@ namespace :postgresql do
   utilities.set_default(:postgresql_dump_file) { "#{application}_dump.sql" }
   utilities.set_default(:postgresql_local_dump_path) { File.expand_path("../../../tmp", __FILE__) }
   utilities.set_default(:postgresql_pid) { "/var/run/postgresql/9.2-main.pid" }
-
+  
+  namespace :postgresql do
   desc "Install the latest stable release of PostgreSQL."
   task :install, roles: :db, only: {primary: true} do
     run "#{sudo} add-apt-repository -y ppa:pitti/postgresql"
@@ -129,5 +141,6 @@ namespace :postgresql do
       upload
       restore
     end
+  end
   end
 end
