@@ -11,9 +11,7 @@ require File.expand_path(File.dirname(__FILE__) + '/utilities')
 # Possible Future Additions
 # https://support.newrelic.com/kb/features/tracking-front-end-time
 
-Capistrano::Configuration.instance(true).load do
-  
-  set :postgresql_host, "localhost"
+set :postgresql_host, "localhost"
   set :postgresql_user, application
   set(postgresql_password) {Capistrano::CLI.password_prompt("PostgreSQL Password: ")}
   set(postgresql_database) {"#{application}_production"}
@@ -21,6 +19,10 @@ Capistrano::Configuration.instance(true).load do
   set(postgresql_dump_file) {"#{application}_dump.sql"}
   set(postgresql_local_dump_path) {File.expand_path("../../../tmp", __FILE__) }
   set(postgresql_pid) {"/var/run/postgresql/9.2-main.pid"}
+  
+Capistrano::Configuration.instance(true).load do
+  
+  
   
   namespace :postgresql do
   desc "Install the latest stable release of PostgreSQL."
