@@ -58,8 +58,8 @@ Capistrano::Configuration.instance(true).load do
     task :install, :roles => [:redis,:redis_slave] do
       utilities.apt_install %w[build-essential wget]
       #utilities.addgroup "redis", :system => true # needs sudo
-      sudo "/usr/sbin/addgroup   --system redis"
-      sudo "/usr/sbin/adduser -g redis  --system redis --disabled-login true --no-create-home true"
+      sudo "/usr/sbin/addgroup --system redis"
+      sudo "/usr/sbin/adduser --group redis  --system redis --disabled-login true --no-create-home true"
       #utilities.adduser "redis" , :nohome => true, :group => "redis", :system => true, :disabled_login => true
       sudo "mkdir -p #{redis_base_path}/bin #{redis_base_path}/src /var/log/redis"
       run "cd #{redis_base_path}/src && #{sudo} wget --tries=2 -c --progress=bar:force #{redis_src} && #{sudo} tar xzf #{redis_ver}.tar.gz"
