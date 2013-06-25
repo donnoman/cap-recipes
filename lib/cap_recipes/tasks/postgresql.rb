@@ -1,14 +1,16 @@
-utilities.set_default(:postgresql_host, "localhost")
-utilities.set_default(:postgresql_user) { application }
-utilities.set_default(:postgresql_password) { Capistrano::CLI.password_prompt "PostgreSQL Password: " }
-utilities.set_default(:postgresql_database) { "#{application}_production" }
-utilities.set_default(:postgresql_dump_path) { "#{current_path}/tmp" }
-utilities.set_default(:postgresql_dump_file) { "#{application}_dump.sql" }
-utilities.set_default(:postgresql_local_dump_path) { File.expand_path("../../../tmp", __FILE__) }
-utilities.set_default(:postgresql_pid) { "/var/run/postgresql/9.1-main.pid" }
 
 
 namespace :postgresql do
+  
+  utilities.set_default(:postgresql_host, "localhost")
+  utilities.set_default(:postgresql_user) { application }
+  utilities.set_default(:postgresql_password) { Capistrano::CLI.password_prompt "PostgreSQL Password: " }
+  utilities.set_default(:postgresql_database) { "#{application}_production" }
+  utilities.set_default(:postgresql_dump_path) { "#{current_path}/tmp" }
+  utilities.set_default(:postgresql_dump_file) { "#{application}_dump.sql" }
+  utilities.set_default(:postgresql_local_dump_path) { File.expand_path("../../../tmp", __FILE__) }
+  utilities.set_default(:postgresql_pid) { "/var/run/postgresql/9.2-main.pid" }
+
   desc "Install the latest stable release of PostgreSQL."
   task :install, roles: :db, only: {primary: true} do
     run "#{sudo} add-apt-repository -y ppa:pitti/postgresql"
