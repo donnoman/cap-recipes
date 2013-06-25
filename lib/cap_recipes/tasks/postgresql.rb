@@ -17,7 +17,7 @@ Capistrano::Configuration.instance(true).load do
   
   set :postgresql_host, "localhost"
   set :postgresql_user, application
-  set(:postgresql_password) {"bundio5842"}
+  set(:postgresql_password) {Capistrano::CLI.password_prompt "PostgreSQL Password: "}
   set(:postgresql_database) {"#{application}_production"}
   set(:postgresql_dump_path) {"#{current_path}/tmp"}
   set(:postgresql_dump_file) {"#{application}_dump.sql"}
@@ -45,7 +45,7 @@ Capistrano::Configuration.instance(true).load do
     run "mkdir -p #{shared_path}/config"
     template "postgresql.yml.erb", "#{shared_path}/config/database.yml"
   end
-  after "postgresql:create_database", "postgresql:setup"
+  #after "postgresql:create_database", "postgresql:setup"
 
   desc "Symlink the database.yml file into latest release"
   task :symlink, roles: :app do
