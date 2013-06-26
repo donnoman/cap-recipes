@@ -38,14 +38,14 @@ Capistrano::Configuration.instance(true).load do
     run %Q{#{sudo} -u postgres psql -c "create user #{postgresql_user} with password '#{postgresql_password}';"}
     run %Q{#{sudo} -u postgres psql -c "create database #{postgresql_database} owner #{postgresql_user};"}
   end
-  #after "deploy:setup", "postgresql:install"
+  after "deploy:provision", "postgresql:install"
 
   desc "Generate the database.yml configuration file."
   task :setup, roles: :app do
     run "mkdir -p #{shared_path}/config"
     template "postgresql.yml.erb", "#{shared_path}/config/database.yml"
   end
-  #after "postgresql:create_database", "postgresql:setup"
+  after "postgresql:create_database", "postgresql:setup"
 
   desc "Symlink the database.yml file into latest release"
   task :symlink, roles: :app do
