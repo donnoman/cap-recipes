@@ -2,24 +2,6 @@ Capistrano::Configuration.instance(true).load do
   set :local_ping_path, 'http://localhost'
 
   namespace :rails do
-  
-  
-  #def template(from, to)
-  #  erb = File.read(File.expand_path("../templates/#{from}", __FILE__))
-  #  put ERB.new(erb).result(binding), to
-  #end
-
-  def set_default(name, *args, &block)
-    set(name, *args, &block) unless exists?(name)
-  end
-
-  namespace :deploy do
-    desc "Provision a new server and install everything"
-    task :provision do
-      run "#{sudo} apt-get -y update"
-      run "#{sudo} apt-get -y install python-software-properties"
-    end
-  end
     # ===============================================================
     # UTILITY TASKS
     # ===============================================================
