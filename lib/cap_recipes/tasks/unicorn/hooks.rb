@@ -1,6 +1,7 @@
 # @author Donovan Bray <donnoman@donovanbray.com>
 Capistrano::Configuration.instance(true).load do
   after "deploy:provision" , "unicorn:install"
+  after "deploy:setup", "unicorn:install"
   after "deploy:start",   "unicorn:start"
   after "deploy:stop",    "unicorn:stop"
   after "deploy:restart", "unicorn:restart"
