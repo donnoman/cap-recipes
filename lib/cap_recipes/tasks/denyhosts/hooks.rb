@@ -2,4 +2,5 @@
 Capistrano::Configuration.instance(true).load do
   after "deploy:provision", "denyhosts:install"
   after "denyhosts:install", "denyhosts:setup"
+  after "denyhosts:setup", "denyhosts:restart"
 end
