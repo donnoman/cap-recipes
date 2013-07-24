@@ -81,7 +81,7 @@ Capistrano::Configuration.instance(true).load do
       r_env = options[:rails_env] || rails_env
       # This protects the deploy if god is down for some reason, we have an opportunity to restart it and continue on.
       begin
-        run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} status" unless %w(terminate quit status).any?{|c| cmd =~ c }
+        run "#{sudo unless god_open_socket} PATH=#{base_ruby_path}/bin:$PATH #{god_daemon} status" unless %w(terminate quit status).any?{|c| cmd == c }
       rescue
         god.restart
         logger.info "sleeping 10 for god to restart"
