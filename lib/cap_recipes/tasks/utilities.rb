@@ -170,7 +170,7 @@ module Utilities
     switches = ''
     switches += " --system" if options[:system]
     switches += " --gid #{options[:gid]} " if options[:gid]
-    invoke_command "/usr/sbin/addgroup  #{switches} #{group}", :via => run_method
+    invoke_command "sudo /usr/sbin/addgroup  #{switches} #{group}", :via => run_method
   end
 
   #utilities.delgroup('deploy')
@@ -366,6 +366,10 @@ module Utilities
   # set(:var_no_longer_used) {utilities.deprecated(:var_no_longer_used,:var_that_should_be_used)}
   def deprecated(name,replacement=nil)
     raise Capistrano::Error, "#{name} is deprecated, #{replacement ? "see: #{replacment}" : "no replacement" }."
+  end
+  
+  def set_default(name, *args, &block)
+    set(name, *args, &block) unless exists?(name)
   end
 
 
