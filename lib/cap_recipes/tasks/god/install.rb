@@ -54,6 +54,7 @@ Capistrano::Configuration.instance(true).load do
         utilities.sudo_upload_template god_upstart_erb, god_upstart_conf, :owner => "root:root"
         utilities.sudo_upload_template god_upstart_init_erb, god_init, :owner => "root:root", :mode => "+x"
         run "#{sudo} initctl reload-configuration"
+        run "#{sudo} /sbin/telinit q" #tell init to re-read  it's configuration
       end
       desc "force restart god"
       task :force_stop, :except => {:no_ruby => true} do
