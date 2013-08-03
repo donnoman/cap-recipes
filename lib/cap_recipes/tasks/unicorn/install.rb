@@ -19,6 +19,10 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_suppress_configure, false
     set :unicorn_init_name, "unicorn"
     set :unicorn_use_syslogger, false
+    set :unicorn_god_start_grace, 30
+    set :unicorn_god_restart_grace, 30
+    set :unicorn_god_stop_grace, 30
+    set :unicorn_god_stop_timeout, 120
 
     desc "select watcher"
     task :watcher do
