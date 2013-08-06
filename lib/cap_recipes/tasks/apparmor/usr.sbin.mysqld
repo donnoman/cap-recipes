@@ -41,6 +41,9 @@
   /var/log/mysql/* rw,
   /var/run/mysqld/mysqld.pid w,
   /var/run/mysqld/mysqld.sock w,
-
   /sys/devices/system/cpu/ r,
+  /backup/mysql_backup/last/ r,
+  /backup/mysql_backup/last/** rwk,
+  /backup/mysql_backup/current/ r,
+  /backup/mysql_backup/current/** rwk,
 }
