@@ -15,18 +15,22 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_client_port, nil
     set :mysql_client_executable, "mysql"
     set :mysql_client_use_sudo, true
+
+    set :mysql_backup_script, File.join(File.dirname(__FILE__),'mysql_backup_s3.sh')
+    set :mysql_backup_script_path, "/root/script/mysql_backup.sh"
     set :mysql_restore_script, File.join(File.dirname(__FILE__),'mysql_restore.sh')
     set :mysql_restore_script_path, "/root/script/mysql_restore.sh"
+
     set :mysql_backup_archive_watermark, "0m"
     set :mysql_backup_s3_bucket, "mysql-backups"
     set :mysql_backup_log_path, "/tmp/mysql_backup.log"
     set(:mysql_backup_log_dest) {File.join(utilities.caproot,'log','backups')}
     set :mysql_backup_stop_sql_thread, false
-    set :mysql_backup_script, File.join(File.dirname(__FILE__),'mysql_backup_outfile.sh')
-    set :mysql_backup_script_path, "/root/script/mysql_backup_s3.sh"
+
     set :mysql_backup_chunk_size, "250M"
     set :mysql_backup_location, "/mnt/mysql_backups"
     set :mysql_vagrant_pass, ""
+
 
 
     set :mysql_conf, File.join(File.dirname(__FILE__),'my.cnf.erb')
@@ -153,8 +157,8 @@ Capistrano::Configuration.instance(true).load do
         run "#{sudo} mkdir -p /root/script #{mysql_backup_location} #{mysql_backup_log_path}"
         # Some backup scripts require lbzip2
         utilities.apt_install "at lbzip2"
-        utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "654", :owner => 'root:root'
-        utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "654", :owner => 'root:root'
+        utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "600", :owner => 'root:root'
+        utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "600", :owner => 'root:root'
       end
 
       desc "Trigger Backup"
