@@ -5,13 +5,13 @@ DBNAME=$1
 # For now just set the Source DB the same as DBNAME, we can change this later
 SOURCEDB=${DBNAME}
 
-if [ "$USER" != "root" ]; then 
+if [ "$USER" != "root" ]; then
     echo "You are not root user, use: sudo backup"
     exit
 fi
 
 clear
-echo "|-------------------------------------------------------------" 
+echo "|-------------------------------------------------------------"
 echo "|           Restoring MySQL Database From Backup              "
 echo "|-------------------------------------------------------------"
 echo ""
@@ -58,7 +58,7 @@ do
 done
 
 #clear
-echo "|-------------------------------------------------------------" 
+echo "|-------------------------------------------------------------"
 echo "|      Finished Restoring MySQL Database From Backup          "
 echo "|-------------------------------------------------------------"
 echo ""
