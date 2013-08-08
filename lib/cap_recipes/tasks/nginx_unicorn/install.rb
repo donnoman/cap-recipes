@@ -165,5 +165,11 @@ Capistrano::Configuration.instance(true).load do
       end
     end
 
+    task :deprovision, :roles => :app do
+      unicorn.stop rescue nil
+      sudo "rm -rf #{god_confd}/#{unicorn_init_name}.god" if unicorn_watcher == :god
+      god.restart
+    end
+
   end
 end
