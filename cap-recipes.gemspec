@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cap-recipes"
-  s.version = "2.2.0"
+  s.version = "2.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2012-09-04"
+  s.date = "2013-08-09"
   s.description = "Battle-tested capistrano recipes for debian based distributions, passenger, apache, nginx, delayed_job, juggernaut, rubygems, backgroundrb, rails, riak, mongo and more"
   s.email = "nesquena@gmail.com donnoman@donovanbray.com"
   s.extra_rdoc_files = [
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
     "README.textile"
   ]
   s.files = [
+    ".bundle/config",
     ".rvmrc.template",
     "Gemfile",
     "Gemfile.lock",
@@ -49,6 +50,10 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/backgroundrb.rb",
     "lib/cap_recipes/tasks/backgroundrb/hooks.rb",
     "lib/cap_recipes/tasks/backgroundrb/manage.rb",
+    "lib/cap_recipes/tasks/bprobe.rb",
+    "lib/cap_recipes/tasks/bprobe/bprobe.god",
+    "lib/cap_recipes/tasks/bprobe/hooks.rb",
+    "lib/cap_recipes/tasks/bprobe/install.rb",
     "lib/cap_recipes/tasks/bundler.rb",
     "lib/cap_recipes/tasks/bundler/hooks.rb",
     "lib/cap_recipes/tasks/bundler/install.rb",
@@ -56,6 +61,22 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/cassandra/hooks.rb",
     "lib/cap_recipes/tasks/cassandra/install.rb",
     "lib/cap_recipes/tasks/cassandra/manage.rb",
+    "lib/cap_recipes/tasks/chef_client.rb",
+    "lib/cap_recipes/tasks/chef_client/client.rb.erb",
+    "lib/cap_recipes/tasks/chef_client/hooks.rb",
+    "lib/cap_recipes/tasks/chef_client/install.rb",
+    "lib/cap_recipes/tasks/chef_client/manage.rb",
+    "lib/cap_recipes/tasks/chef_server.rb",
+    "lib/cap_recipes/tasks/chef_server/hooks.rb",
+    "lib/cap_recipes/tasks/chef_server/install.rb",
+    "lib/cap_recipes/tasks/chef_server/install.sh.erb",
+    "lib/cap_recipes/tasks/csgo_ds.rb",
+    "lib/cap_recipes/tasks/csgo_ds/csgo_ds.init.erb",
+    "lib/cap_recipes/tasks/csgo_ds/hooks.rb",
+    "lib/cap_recipes/tasks/csgo_ds/install.rb",
+    "lib/cap_recipes/tasks/csgo_ds/motd.txt.erb",
+    "lib/cap_recipes/tasks/csgo_ds/server.cfg.erb",
+    "lib/cap_recipes/tasks/csgo_ds/update_csgo.sh.erb",
     "lib/cap_recipes/tasks/datadog.rb",
     "lib/cap_recipes/tasks/datadog/datadog.conf.erb",
     "lib/cap_recipes/tasks/datadog/hooks.rb",
@@ -78,6 +99,9 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/erlang.rb",
     "lib/cap_recipes/tasks/erlang/hooks.rb",
     "lib/cap_recipes/tasks/erlang/install.rb",
+    "lib/cap_recipes/tasks/git.rb",
+    "lib/cap_recipes/tasks/git/hooks.rb",
+    "lib/cap_recipes/tasks/git/install.rb",
     "lib/cap_recipes/tasks/gitosis.rb",
     "lib/cap_recipes/tasks/gitosis/hooks.rb",
     "lib/cap_recipes/tasks/gitosis/install.rb",
@@ -86,6 +110,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/god/contacts.god",
     "lib/cap_recipes/tasks/god/god.init",
     "lib/cap_recipes/tasks/god/god.upstart.erb",
+    "lib/cap_recipes/tasks/god/god.upstart.init.erb",
     "lib/cap_recipes/tasks/god/hooks.rb",
     "lib/cap_recipes/tasks/god/install.rb",
     "lib/cap_recipes/tasks/graphite.rb",
@@ -99,6 +124,14 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/haproxy/haproxy.god",
     "lib/cap_recipes/tasks/haproxy/hooks.rb",
     "lib/cap_recipes/tasks/haproxy/install.rb",
+    "lib/cap_recipes/tasks/hlds.rb",
+    "lib/cap_recipes/tasks/hlds/hlds.init.erb",
+    "lib/cap_recipes/tasks/hlds/hooks.rb",
+    "lib/cap_recipes/tasks/hlds/install.rb",
+    "lib/cap_recipes/tasks/hlds/motd.txt.erb",
+    "lib/cap_recipes/tasks/hlds/motd_text.txt.erb",
+    "lib/cap_recipes/tasks/hlds/server.cfg.erb",
+    "lib/cap_recipes/tasks/hlds/steam_appid.txt.erb",
     "lib/cap_recipes/tasks/juggernaut.rb",
     "lib/cap_recipes/tasks/juggernaut/hooks.rb",
     "lib/cap_recipes/tasks/juggernaut/manage.rb",
@@ -133,7 +166,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/mysql/mysql_backup_outfile.sh",
     "lib/cap_recipes/tasks/mysql/mysql_backup_s3.sh",
     "lib/cap_recipes/tasks/mysql/mysql_restore.sh",
-    "lib/cap_recipes/tasks/mysql/mysql_restore_from_outfile.sh",
+    "lib/cap_recipes/tasks/mysql/mysql_restore_outfile.sh",
     "lib/cap_recipes/tasks/mysql/tuner.rb",
     "lib/cap_recipes/tasks/mysql_master.rb",
     "lib/cap_recipes/tasks/mysql_master/default-storage-engine.cnf",
@@ -181,10 +214,19 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/nginx_unicorn/nginx_unicorn.init",
     "lib/cap_recipes/tasks/nginx_unicorn/nginx_unicorn.logrotate",
     "lib/cap_recipes/tasks/nginx_unicorn/stub_status.conf",
+    "lib/cap_recipes/tasks/openjdk/hooks.rb",
+    "lib/cap_recipes/tasks/openjdk/install.rb",
     "lib/cap_recipes/tasks/passenger.rb",
     "lib/cap_recipes/tasks/passenger/hooks.rb",
     "lib/cap_recipes/tasks/passenger/install.rb",
     "lib/cap_recipes/tasks/passenger/manage.rb",
+    "lib/cap_recipes/tasks/pflogsumm.rb",
+    "lib/cap_recipes/tasks/pflogsumm/hooks.rb",
+    "lib/cap_recipes/tasks/pflogsumm/install.rb",
+    "lib/cap_recipes/tasks/pflogsumm/reports/postfix_daily_stats.sh",
+    "lib/cap_recipes/tasks/phantomjs.rb",
+    "lib/cap_recipes/tasks/phantomjs/hooks.rb",
+    "lib/cap_recipes/tasks/phantomjs/install.rb",
     "lib/cap_recipes/tasks/postfix.rb",
     "lib/cap_recipes/tasks/postfix/hooks.rb",
     "lib/cap_recipes/tasks/postfix/install.rb",
@@ -259,6 +301,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/ssh/hooks.rb",
     "lib/cap_recipes/tasks/ssh/install.rb",
     "lib/cap_recipes/tasks/ssh/issue.net",
+    "lib/cap_recipes/tasks/ssh/vagrant",
     "lib/cap_recipes/tasks/ssmtp.rb",
     "lib/cap_recipes/tasks/ssmtp/hooks.rb",
     "lib/cap_recipes/tasks/ssmtp/install.rb",
@@ -288,6 +331,17 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/whenever.rb",
     "lib/cap_recipes/tasks/whenever/hooks.rb",
     "lib/cap_recipes/tasks/whenever/manage.rb",
+    "lib/cap_recipes/tasks/wkhtmltopdf.rb",
+    "lib/cap_recipes/tasks/wkhtmltopdf/hooks.rb",
+    "lib/cap_recipes/tasks/wkhtmltopdf/install.rb",
+    "lib/cap_recipes/tasks/xtrabackup.rb",
+    "lib/cap_recipes/tasks/xtrabackup/hooks.rb",
+    "lib/cap_recipes/tasks/xtrabackup/innobackupex-full.sh.erb",
+    "lib/cap_recipes/tasks/xtrabackup/innobackupex-restore.sh.erb",
+    "lib/cap_recipes/tasks/xtrabackup/install.rb",
+    "lib/cap_recipes/tasks/xtrabackup/mini_backup_full.sh",
+    "lib/cap_recipes/tasks/xtrabackup/mini_restore_full.sh",
+    "lib/cap_recipes/tasks/xtrabackup/percona.list",
     "spec/cap/all/Capfile",
     "spec/cap/helper.rb",
     "spec/cap_recipes_spec.rb",
@@ -296,7 +350,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/nesquena/cap-recipes"
   s.require_paths = ["lib"]
   s.rubyforge_project = "cap-recipes"
-  s.rubygems_version = "1.8.10"
+  s.rubygems_version = "1.8.25"
   s.summary = "Battle-tested capistrano recipes for debian based distributions"
 
   if s.respond_to? :specification_version then
