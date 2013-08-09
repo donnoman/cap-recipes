@@ -157,8 +157,8 @@ Capistrano::Configuration.instance(true).load do
         run "#{sudo} mkdir -p /root/script #{mysql_backup_location} #{mysql_backup_log_path}"
         # Some backup scripts require lbzip2
         utilities.apt_install "at lbzip2"
-        utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "600", :owner => 'root:root'
-        utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "600", :owner => 'root:root'
+        utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "700", :owner => 'root:root'
+        utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "700", :owner => 'root:root'
       end
 
       desc "Trigger Backup"
