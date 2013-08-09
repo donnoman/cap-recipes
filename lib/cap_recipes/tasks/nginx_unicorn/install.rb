@@ -124,7 +124,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Watch Nginx and Unicorn Workers with GOD"
     task :setup_god, :roles => :app do
-      god.upload nginx_unicorn_god_path, "nginx_unicorn.god"
+      god.upload nginx_unicorn_god_path, "#{nginx_unicorn_init_d}.god"
       # disable init from automatically starting and stopping these init controlled apps
       # god will be started by init, and in turn start these god controlled apps.
       # but leave the init script in place to be called manually
@@ -148,6 +148,12 @@ Capistrano::Configuration.instance(true).load do
       enable
     end
 
+    desc "remove the application conf"
+    task :deconfigure, :roles => :app do
+      disable
+      sudo "rm -rf #{nginx_unicorn_conf_dir}/sites-available/#{application}.conf"
+    end
+
     desc "Enable the application conf"
     task :enable, :roles => :app do
       sudo "ln -sf #{nginx_unicorn_conf_dir}/sites-available/#{application}.conf #{nginx_unicorn_conf_dir}/sites-enabled/#{application}.conf"
@@ -163,12 +169,6 @@ Capistrano::Configuration.instance(true).load do
       task t.to_sym, :roles => :app do
         sudo "/etc/init.d/#{nginx_unicorn_init_d} #{t}" unless nginx_unicorn_suppress_runner
       end
-    end
-
-    task :deprovision, :roles => :app do
-      unicorn.stop rescue nil
-      sudo "rm -rf #{god_confd}/#{unicorn_init_name}.god" if unicorn_watcher == :god
-      god.restart
     end
 
   end
