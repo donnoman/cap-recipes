@@ -86,5 +86,11 @@ Capistrano::Configuration.instance(true).load do
       run "cd #{latest_release}; [ -f tmp/pids/unicorn.pid ] && kill -USR2 `cat tmp/pids/unicorn.pid` || #{base_ruby_path}/bin/unicorn_rails -c config/unicorn.rb -E #{rails_env} -D"
     end
 
+    task :deprovision, :roles => :app do
+      unicorn.stop
+      god.remove  "#{unicorn_init_name}.god"
+      god.restart
+    end
+
   end
 end
