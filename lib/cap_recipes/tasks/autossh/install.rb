@@ -2,16 +2,16 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :autossh do
   	roles[:autossh]
-    roles[:autossh_slave] #not all mysql slaves should be autossh'd
-    roles[:autossh_master] #not all mysql masters should be autossh'd
+    # roles[:autossh_slave] #not all mysql slaves should be autossh'd
+    # roles[:autossh_master] #not all mysql masters should be autossh'd
     set :autossh_init, File.join(File.dirname(__FILE__),'autossh.sh')
-    set(:autossh_default_remote_user) { utitlies.ask("autossh_default_remote_user") }
-    set(:autossh_default_remote_host) { utitlies.ask("autossh_default_remote_host") }
-    set(:autossh_default_remote_private_key) { utitlies.ask("autossh_default_remote_private_key") }
-    set(:autossh_default_remote_public_key) { utitlies.ask("autossh_default_remote_public_key") }
-    set(:autossh_default_remote_private_key_location) { utitlies.ask("autossh_default_remote_private_key_location") }
-    set(:autossh_default_remote_public_key_location){ utitlies.ask("autossh_default_remote_public_key_location") }
-    set(:autossh_default_remote_target_host) { utitlies.ask("autossh_default_remote_target_host") }
+    set(:autossh_default_remote_user) { utilities.ask("autossh_default_remote_user") }
+    set(:autossh_default_remote_host) { utilities.ask("autossh_default_remote_host") }
+    set(:autossh_default_remote_private_key) { utilities.ask("autossh_default_remote_private_key") }
+    set(:autossh_default_remote_public_key) { utilities.ask("autossh_default_remote_public_key") }
+    set(:autossh_default_remote_private_key_location) { utilities.ask("autossh_default_remote_private_key_location") }
+    set(:autossh_default_remote_public_key_location){ utilities.ask("autossh_default_remote_public_key_location") }
+    set(:autossh_default_remote_target_host) { utilities.ask("autossh_default_remote_target_host") }
     set :autossh_default_remote_target_port, "3306"
     set :autossh_default_port, "3305"
     set :autossh_default_monitoring_port, "5122"
