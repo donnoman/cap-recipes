@@ -23,6 +23,7 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_god_restart_grace, 30
     set :unicorn_god_stop_grace, 30
     set :unicorn_god_stop_timeout, 120
+    set :unicorn_disable_rack_attack, false
 
     desc "select watcher"
     task :watcher do

@@ -37,6 +37,17 @@
   logger Syslogger.new
 <% end %>
 
+<% if unicorn_disable_rack_attack %>
+  # This isn't a built-in to rack attack.
+  # Use something like this in your config.ru to take advantage of this parameter.
+  #
+  # Rack::Attack.throttle('req/ip', :limit => 15, :period => 3.second) do |req|
+  #   req.ip unless ENV['DISABLE_RACK_ATTACK'].present?
+  # end
+  #
+  ENV['DISABLE_RACK_ATTACK'] = '1'
+<% end %>
+
 # unicorn will stash its original command-line at startup for the USR2 upgrades, and cleaning up old revisions will cause revision-specific installations of unicorn to go missing and upgrades to fail. If you find yourself in this situation and can’t afford downtime, you can override the existing unicorn executable path in the config file like this:
 # Then use HUP to reload, and then continue with the USR2+QUIT upgrade sequence.
 Unicorn::HttpServer::START_CTX[0] = "<%=current_path%>/bin/unicorn"
