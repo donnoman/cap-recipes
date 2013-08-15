@@ -66,7 +66,7 @@ module Utilities
     run_with_input(cmd, input_query=/(<No>|\?)/, "N\n")
     run "#{sudo} aptitude update"
     #using every trick in the book to attempt to force it to not prompt.
-    cmd = "#{sudo} DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive aptitude safe-upgrade -o Aptitude::Delete-Unused=false -o Aptitude::CmdLine::Fix-Broken=true --quiet --assume-yes --target-release `lsb_release -cs`-"
+    cmd = "#{sudo} DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive aptitude safe-upgrade -o Aptitude::Delete-Unused=false -o Aptitude::CmdLine::Fix-Broken=true --quiet --assume-yes --target-release `lsb_release -cs`"
     run_with_input(cmd, input_query=/(<No>|\?)/, "N\n") #attempt to answer ncurses overwrite popup like when libpam complains about local modifications.
   end
 
