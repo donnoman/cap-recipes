@@ -56,30 +56,20 @@ Capistrano::Configuration.instance(true).load do
       #TODO: check password security, something seems off after install
       #http://serverfault.com/questions/19367/scripted-install-of-mysql-on-ubuntu
       begin
-        put %Q{
-          Name: mysql-server/root_password
-          Template: mysql-server/root_password
-          Value: #{mysql_admin_password}
-          Owners: mysql-server-5.1
-          Flags: seen
+        put %w(5.0 5.1 5.5).inject("") { |memo,ver| 
+          memo << %Q{
+            Name: mysql-server/root_password
+            Template: mysql-server/root_password
+            Value: #{mysql_admin_password}
+            Owners: mysql-server-#{ver}
+            Flags: seen
 
-          Name: mysql-server/root_password_again
-          Template: mysql-server/root_password_again
-          Value: #{mysql_admin_password}
-          Owners: mysql-server-5.1
-          Flags: seen
-
-          Name: mysql-server/root_password
-          Template: mysql-server/root_password
-          Value: #{mysql_admin_password}
-          Owners: mysql-server-5.0
-          Flags: seen
-
-          Name: mysql-server/root_password_again
-          Template: mysql-server/root_password_again
-          Value: #{mysql_admin_password}
-          Owners: mysql-server-5.0
-          Flags: seen
+            Name: mysql-server/root_password_again
+            Template: mysql-server/root_password_again
+            Value: #{mysql_admin_password}
+            Owners: mysql-server-#{ver}
+            Flags: seen
+          }
         }, "non-interactive.txt"
         sudo "DEBIAN_FRONTEND=noninteractive DEBCONF_DB_FALLBACK=Pipe apt-get -qq -y install mysql-server < non-interactive.txt"
       rescue
