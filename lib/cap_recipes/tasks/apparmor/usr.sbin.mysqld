@@ -39,6 +39,8 @@
   /mylogs/** rwk,
   /var/log/mysql/ r,
   /var/log/mysql/* rw,
+  /run/mysqld/mysqld.pid w,
+  /run/mysqld/mysqld.sock w,
   /var/run/mysqld/mysqld.pid w,
   /var/run/mysqld/mysqld.sock w,
   /sys/devices/system/cpu/ r,
