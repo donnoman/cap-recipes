@@ -18,6 +18,8 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_suppress_runner, false
     set :unicorn_suppress_configure, false
     set :unicorn_init_name, "unicorn"
+    set(:unicorn_god_group_name) { unicorn_init_name }
+    set(:unicorn_god_name) { "#{unicorn_init_name}" } #name for original compatability.
     set :unicorn_use_syslogger, false
     set :unicorn_god_start_grace, 30
     set :unicorn_god_restart_grace, 30
@@ -37,7 +39,7 @@ Capistrano::Configuration.instance(true).load do
       #rejigger the maintenance tasks to use god when god is in play
       %w(start stop restart).each do |t|
         task t.to_sym, :roles => :app do
-          god.cmd "#{t} #{unicorn_init_name}" unless unicorn_suppress_runner
+          god.cmd "#{t} #{unicorn_god_name}" unless unicorn_suppress_runner
         end
       end
       after "god:setup", "unicorn:setup_god"
