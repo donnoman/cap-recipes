@@ -73,7 +73,7 @@ do_start()
             echo -n "." && sleep 1
             if [ $I -gt 30 ]; then
                 echo -n "The god socket never appeared!"
-                return "2"
+                exit 2
             fi
         done
         echo "done."
