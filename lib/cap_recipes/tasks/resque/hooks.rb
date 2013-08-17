@@ -4,5 +4,6 @@ Capistrano::Configuration.instance(true).load do
   before "deploy", "resque:workers:stop"
   after "deploy:restart", "resque:workers:start"
   after "deploy:start", "resque:workers:start"
+  after "resque:workers:stop", "resque:workers:force_stop"
   on :load, "resque:watcher"
 end

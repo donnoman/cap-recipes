@@ -17,6 +17,8 @@ Capistrano::Configuration.instance(true).load do
     set(:resque_user) { user }
     set(:resque_group) { user }
     set :resque_worker_count, "2"
+    set :resque_stop_grace, "2 minutes"
+    set :resque_stop_regex, '[r]esque-[^w]'  #avoid resque-web and redis_resque
 
     desc "select watcher"
     task :watcher do
@@ -29,12 +31,6 @@ Capistrano::Configuration.instance(true).load do
         %w(start stop restart).each do |t|
           task t.to_sym, :roles => :resque_worker do
             god.cmd "#{t} #{resque_name}#{"; true" if t == 'stop'}" unless resque_suppress_runner
-            unless resque_suppress_runner
-              begin
-                sudo "pkill -QUIT -f #{resque_name}" if t == 'stop' #Clean up orphaned resque workers.
-              rescue
-              end
-            end
           end
         end
       end
@@ -61,10 +57,19 @@ Capistrano::Configuration.instance(true).load do
     end
 
     namespace :workers do
+
       #stub the workers namespace to avoid errors because they are in hooks.rb even if there is no watcher set.
       %w(start stop restart).each do |t|
         task t.to_sym do; end
       end
+
+      desc "unconditionally kernel kill resque after a grace period"
+      task :force_stop, :roles => :resque_worker do
+        unless resque_suppress_runner
+          sudo %Q{sh -c "echo 'pkill -9 -f #{resque_stop_regex}' | at now + #{resque_stop_grace}"} #Clean up orphaned resque workers.
+        end
+      end
+
     end
 
   end
