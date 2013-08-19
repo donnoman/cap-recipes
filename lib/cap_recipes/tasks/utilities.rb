@@ -309,17 +309,27 @@ module Utilities
     redact_replacement = opts.delete(:redact_replacment) || '-REDACTED-'
     cmd_text = redact ? redact.inject(cmd.inspect){|ct,r| ct.gsub(r,redact_replacement)} : cmd.inspect
     logger.trace "executing locally: #{cmd_text}" if logger
+    $stdout.sync = true
     elapsed = Benchmark.realtime do
-      Open3.popen3(cmd + " 2>&1") { |stdin, stdout, stderr|
-        out = stdout.read
-        redact.each {|r| out.gsub!(r,redact_replacement)} if redact
-        STDOUT << out
-        File.open(tee,'a') {|f| f.write(out) } if tee
-      }
+      Open3.popen3(cmd + " 2>&1") do |stdin, out, err, external|
+        # Create a thread to read from each stream
+        { :out => out, :err => err }.each do |key, stream|
+          Thread.new do
+            until (line = stream.gets).nil? do
+              redact.each {|r| line.gsub!(r,redact_replacement)} if redact
+              $stdout << line
+              File.open(tee,'a') {|f| f.write(line) } if tee
+            end
+          end
+        end
+        # Don't exit until the external process is done
+        external.join
+      end
+      if $?.to_i > 0 # $? is command exit code (posix style)
+        raise Capistrano::LocalArgumentError, "Command #{cmd_text} returned status code #{$?}"
+      end
     end
-    if $?.to_i > 0 # $? is command exit code (posix style)
-      raise Capistrano::LocalArgumentError, "Command #{cmd_text} returned status code #{$?}"
-    end
+    $stdout.sync = false
     logger.trace "command finished in #{(elapsed * 1000).round}ms" if logger
   end
 
