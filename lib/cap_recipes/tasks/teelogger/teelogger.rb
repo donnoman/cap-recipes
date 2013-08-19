@@ -1,5 +1,5 @@
 class TeeLogWriter
-
+  class NormalExit < Capistrano::Error; end #use this to exit cap but still have a zero exit code
   ##
   # This passes through the value and adds it to the redaction list
   #
@@ -96,6 +96,8 @@ module Capistrano
         backtrace = error.backtrace
         error = error.class.new(TeeLogWriter.redacted(error.message))
         case error
+        when TeeLogWriter::NormalExit #used to force capistrano to end but without an error code.
+          exit 0
         when Net::SSH::AuthenticationFailed
           abort "authentication failed for `#{error.message}'"
         when Capistrano::Error
