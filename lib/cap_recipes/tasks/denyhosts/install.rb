@@ -19,8 +19,13 @@ Capistrano::Configuration.instance(true).load do
     desc "clear and reinstall denyhosts"
     task :reinstall, :except => {:no_denyhosts => true}  do
       sudo "service denyhosts stop;true"
-      sudo "rm -rf #{denyhosts_root}/*"
+      clear
       install
+    end
+
+    task :clear, :except => {:no_denyhosts => true} do
+      run "#{sudo} rm -rf #{denyhosts_root}/*"
+      run "#{sudo} sed -i -e 's/^[^#].*$//g' /etc/hosts.deny; #{sudo} sed -i -e '/^$/d' /etc/hosts.deny"
     end
 
     %w(start stop restart).each do |t|
