@@ -18,6 +18,7 @@ Capistrano::Configuration.instance(true).load do
     set :stingray_configure_recording_erb, File.join(File.dirname(__FILE__),'configure.recording.erb')
     set :stingray_serial_number, nil
     set :stingray_features, nil
+    set :stingray_openjdk_version, "6"
 
     # stingray_license_file_erb must be the local path to the license file file.
     #   set :stingray_license_file_erb, File.expand_path(File.join('..','licenses','developer.lic.erb'),__FILE__)
@@ -26,6 +27,8 @@ Capistrano::Configuration.instance(true).load do
     desc "Install Zeus Stingray"
     task :install, :roles => :stingray do
       if stingray_tarball #dont even bother if this pre-req isn't met.
+        utilities.apt_update
+        utilities.apt_install "openjdk-#{stingray_openjdk_version}-jre openjdk-#{stingray_openjdk_version}-jdk"
         run "#{sudo} mkdir -p #{stingray_src_path}"
         top.upload stingray_tarball, "/tmp/#{stingray_pkg}"
         run "#{sudo} mv /tmp/#{stingray_pkg} #{stingray_src_path}"
