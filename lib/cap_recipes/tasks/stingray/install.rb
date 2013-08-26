@@ -15,6 +15,7 @@ Capistrano::Configuration.instance(true).load do
     set(:stingray_pkg) { File.basename(stingray_tarball) }
     set(:stingray_pkg_dir) { File.join(stingray_src_path,File.basename(stingray_pkg,'.tgz')) }
     set :stingray_install_recording_erb, File.join(File.dirname(__FILE__),'install.recording.erb')
+    set :stingray_configure_recording_erb, File.join(File.dirname(__FILE__),'configure.recording.erb')
     set :stingray_serial_number, nil
     set :stingray_features, nil
 
@@ -22,6 +23,7 @@ Capistrano::Configuration.instance(true).load do
     #   set :stingray_license_file_erb, File.expand_path(File.join('..','licenses','developer.lic.erb'),__FILE__)
     set :stingray_license_file_erb, nil
 
+    desc "Install Zeus Stingray"
     task :install, :roles => :stingray do
       if stingray_tarball #dont even bother if this pre-req isn't met.
         run "#{sudo} mkdir -p #{stingray_src_path}"
@@ -29,10 +31,11 @@ Capistrano::Configuration.instance(true).load do
         run "#{sudo} mv /tmp/#{stingray_pkg} #{stingray_src_path}"
         run "cd #{stingray_src_path} && #{sudo} tar -zxvf #{stingray_pkg}"
         utilities.sudo_upload_template stingray_install_recording_erb, "#{stingray_root}/#{File.basename(stingray_install_recording_erb,'.erb')}"
-        run "cd #{stingray_pkg_dir} && #{sudo} ./zinstall --noninteractive --replay-from=#{stingray_root}/#{File.basename(stingray_install_recording_erb,'.erb')}"
+        run "cd #{stingray_pkg_dir} && #{sudo} ./zinstall --noninteractive --force-install-same --replay-from=#{stingray_root}/#{File.basename(stingray_install_recording_erb,'.erb')}"
       end
     end
 
+    desc "Setup Zeus Stingray"
     task :setup, :roles => :stingray do
       if stingray_license_file_erb
         utilities.sudo_upload_template stingray_configure_recording_erb, "#{stingray_root}/#{File.basename(stingray_configure_recording_erb,'.erb')}"
@@ -44,8 +47,13 @@ Capistrano::Configuration.instance(true).load do
       end
     end
 
+    desc "Retrieve fingerprint for Zeus Stingray"
+    task :fingerprint, :roles => :stingray do
+      sudo "#{stingray_root}/admin/bin/cert -f fingerprint -in #{stingray_root}/admin/etc/admin.public"
+    end
+
     %w(start stop restart).each do |t|
-      desc "#{t} zeus"
+      desc "#{t} Zeus Stingray"
       task t.to_sym, :roles => :stingray do
         run "#{sudo} service #{t} zeus"
       end
