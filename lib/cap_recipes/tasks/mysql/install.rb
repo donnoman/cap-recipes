@@ -29,9 +29,7 @@ Capistrano::Configuration.instance(true).load do
 
     set :mysql_backup_chunk_size, "250M"
     set :mysql_backup_location, "/mnt/mysql_backups"
-    set :mysql_vagrant_pass, ""
-
-
+    set :mysql_bind_address, "127.0.0.1" # "0.0.0.0" for all interfaces.
 
     set :mysql_conf, File.join(File.dirname(__FILE__),'my.cnf.erb')
     set :mysql_conf_path, "/etc/mysql/my.cnf"
@@ -56,7 +54,7 @@ Capistrano::Configuration.instance(true).load do
       #TODO: check password security, something seems off after install
       #http://serverfault.com/questions/19367/scripted-install-of-mysql-on-ubuntu
       begin
-        put %w(5.0 5.1 5.5).inject("") { |memo,ver| 
+        put %w(5.0 5.1 5.5).inject("") { |memo,ver|
           memo << %Q{
             Name: mysql-server/root_password
             Template: mysql-server/root_password
@@ -98,12 +96,6 @@ Capistrano::Configuration.instance(true).load do
       sudo "mkdir -p #{mysql_data_dir}"
       sudo "chown -R  mysql:mysql #{mysql_data_dir}"
       sudo "mysql_install_db --user=mysql --basedir=/usr --datadir=#{mysql_data_dir};true"
-    end
-
-    desc "Grant User Access"
-    task :grant_mysql_vagrant, :roles => [:db, :mysqld] do
-      sudo %Q{mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'vagrant'@'%' IDENTIFIED BY '#{mysql_vagrant_pass}' WITH GRANT OPTION;"}
-      sudo %Q{mysql -uroot -e "FLUSH PRIVILEGES"}
     end
 
     namespace :audit do
