@@ -6,10 +6,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "install git"
     task :install, :except => {:no_release => true} do
-      utilities.apt_install "python-software-properties"
-      run "#{sudo} add-apt-repository -y ppa:git-core/ppa"
-      utilities.apt_update
-      utilities.apt_install "git-core"
+      utilities.apt_install_from_ppa("ppa:git-core/ppa","git-core")
     end
 
     desc "git version"

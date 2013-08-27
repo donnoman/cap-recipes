@@ -70,12 +70,38 @@ module Utilities
     run_with_input(cmd, input_query=/(<No>|\?)/, "N\n") #attempt to answer ncurses overwrite popup like when libpam complains about local modifications.
   end
 
+  # 10.04 <=> 12.04 naming compatability layer, find packages by executable name instead of package name.
+  # like add-apt-repository is in python-software-properties for 10.04 but software-properties-common in 12.04.
+  #
+  # utilities.apt_install_by_command('add-apt-repository')
+  def apt_install_by_command(command)
+    sudo_run_compressed %Q{
+      #{apt_get_preamble} install apt-file;
+      apt-file update;
+      #{apt_get_preamble} install `apt-file --non-interactive --package-only --fixed-string search #{command}`
+    }
+  end
+
+
+  # Install a package from a ppa utilizing add-apt-repository syntax
+  #
+  # utilities.apt_install_from_ppa("ppa:git-core/ppa","git-core")
+  def apt_install_from_ppa(ppa,package)
+    apt_install_by_command('add-apt-repository')
+    # 12.04 has a -y, 10.04 doesn't. (the check assumes all boxes are the same)
+    run "#{sudo} add-apt-repository #{capture("lsb_release -rs") < "12.04" ? "" : "-y" } #{ppa}"
+    apt_update
+    apt_install package
+  end
+
+
+
   # utilities.apt_install %w[package1 package2]
   # utilities.apt_install "package1 package2"
   def apt_install(packages)
     packages = packages.split(/\s+/) if packages.respond_to?(:split)
     packages = Array(packages)
-    sudo "#{apt_get} -qyu --force-yes install #{packages.join(" ")}"
+    sudo "#{apt_get_preamble} install #{packages.join(" ")}"
   end
 
   # utilities.apt_reinstall %w[package1 package2]
@@ -83,13 +109,13 @@ module Utilities
   def apt_reinstall(packages)
     packages = packages.split(/\s+/) if packages.respond_to?(:split)
     packages = Array(packages)
-    sudo "#{apt_get} -qyu --force-yes --reinstall install #{packages.join(" ")}"
+    sudo "#{apt_get_preamble} --reinstall install #{packages.join(" ")}"
   end
 
   def apt_remove(packages)
     packages = packages.split(/\s+/) if packages.respond_to?(:split)
     packages = Array(packages)
-    sudo "#{apt_get} -qyu --force-yes remove #{packages.join(" ")}"
+    sudo "#{apt_get_preamble} remove #{packages.join(" ")}"
   end
 
   def apt_autoremove
@@ -107,11 +133,15 @@ module Utilities
   def apt_upgrade
     sudo_with_input "dpkg --configure -a", /\?/, "\n" #recover from failed dpkg
     sudo "#{apt_get} -qy update"
-    sudo_with_input "#{apt_get} -qyu --force-yes upgrade", /\?/, "\n" #answer the default if any package pops up a warning
+    sudo_with_input "#{apt_get_preamble} upgrade", /\?/, "\n" #answer the default if any package pops up a warning
   end
 
   def apt_get
     "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get"
+  end
+
+  def apt_get_preamble
+    "#{apt_get} -qyu --force-yes"
   end
 
   # utilities.sudo_upload('/local/path/to/file', '/remote/path/to/destination', options)
