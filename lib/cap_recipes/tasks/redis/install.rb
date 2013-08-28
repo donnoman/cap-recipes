@@ -85,7 +85,9 @@ Capistrano::Configuration.instance(true).load do
       #rejigger the maintenance tasks to use god when god is in play
       %w(start stop restart).each do |t|
         task t.to_sym, :roles => :redis do
-          god.cmd "#{t} redi" unless redis_suppress_runner
+          with_layout do
+            god.cmd "#{t} #{redis_name}" unless redis_suppress_runner
+          end
         end
       end
       after "god:setup", "redis:setup_god"
