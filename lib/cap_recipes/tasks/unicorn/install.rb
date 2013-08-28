@@ -18,8 +18,8 @@ Capistrano::Configuration.instance(true).load do
     set :unicorn_suppress_runner, false
     set :unicorn_suppress_configure, false
     set :unicorn_init_name, "unicorn"
-    set(:unicorn_god_group_name) { unicorn_init_name }
-    set(:unicorn_god_name) { "#{unicorn_init_name}" } #name for original compatability.
+    set(:unicorn_god_group_name) { "unicorns" } #must not equal the unicorn_init_name, god will fail to load complaining.
+    set(:unicorn_god_name) { unicorn_init_name } #name for original compatability.
     set :unicorn_use_syslogger, false
     set :unicorn_god_start_grace, 30
     set :unicorn_god_restart_grace, 30
