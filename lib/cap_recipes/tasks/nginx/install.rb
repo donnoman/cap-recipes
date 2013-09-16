@@ -1,8 +1,8 @@
 # @author Donovan Bray <donnoman@donovanbray.com>
 require File.expand_path(File.dirname(__FILE__) + '/../utilities')
 
-# This Nginx is targeted for the :web role meant to be acting as a front end
-# to a unicorn based application
+# This Nginx is targeted for the :web role meant to be acting to front an
+# to an :app role
 
 # Additions
 # https://github.com/newobj/nginx-x-rid-header
@@ -175,6 +175,16 @@ Capistrano::Configuration.instance(true).load do
     desc "Disable the application conf"
     task :disable, :roles => [:web,:nginx,:nginx_client] do
       sudo "rm #{nginx_root}/conf/sites-enabled/#{nginx_app_conf_filename}.conf"
+    end
+
+    desc "Verify the pairs of keys are matched sets in nginx_cert_path"
+    task :verify_cert_pairs do
+      if nginx_cert_path
+        Dir[File.expand_path(File.join(nginx_cert_path,"/*.crt"))].each do |cert|
+          key = cert.gsub(".crt",".key")
+          run_locally %Q{[ `openssl x509 -noout -modulus -in #{cert} | openssl md5` == `openssl rsa -noout -modulus -in #{key} | openssl md5` ]}
+        end
+      end
     end
 
     %w(start stop restart).each do |t|
