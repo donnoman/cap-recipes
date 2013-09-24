@@ -45,6 +45,7 @@ Capistrano::Configuration.instance(true).load do
     set :nginx_unicorn_syslog_patch, true
     set :nginx_unicorn_rid_header_patch, false # while we want this to be true by default it makes the configurations incompatible
                                                # with the previous default. Which can cause a working NGINX to stop working until recompiled.
+    set :nginx_unicorn_use_503_instead_of_502, false # useful if you are behind a load balancer that only understands 503's.
 
     set(:nginx_unicorn_configure_flags) {[
       "--prefix=#{nginx_unicorn_root}",
