@@ -26,6 +26,11 @@ Capistrano::Configuration.instance(true).load do
       monit.cmd "reload"
     end
 
+    def remove(name)
+      sudo "rm -rf #{monit_confd}/#{name}", :roles => :monit
+      monit.cmd "reload"
+    end
+
     desc "Install Monit"
     task :install, :roles => :monit do
       utilities.apt_install "monit"

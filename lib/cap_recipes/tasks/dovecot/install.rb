@@ -16,6 +16,14 @@ Capistrano::Configuration.instance(true).load do
       utilities.apt_install "dovecot-pop3d"
     end
 
+    desc "uninstall dovecot"
+    task :uninstall do
+      utilities.apt_purge "dovecot-pop3d"
+      sudo "rm -rf /etc/logrotate.d/dovecot"
+      sudo "rm -rf #{dovecot_ssl_cert_file}" if dovecot_ssl_cert_path
+      sudo "rm -rf #{dovecot_ssl_key_file}" if dovecot_ssl_key_path
+    end
+
     desc "setup dovecot"
     task :setup, :roles => :dovecot do
       utilities.sudo_upload_template dovecot_conf_erb, "#{dovecot_root}/dovecot.conf"

@@ -112,10 +112,21 @@ module Utilities
     sudo "#{apt_get_preamble} --reinstall install #{packages.join(" ")}"
   end
 
+  # remove is identical to install except that packages are removed instead of installed. Note the
+  # removing a package leaves its configuration files in system. If a plus sign is appended to the
+  # package name (with no intervening space), the identified package will be installed instead of
+  # removed.
   def apt_remove(packages)
     packages = packages.split(/\s+/) if packages.respond_to?(:split)
     packages = Array(packages)
     sudo "#{apt_get_preamble} remove #{packages.join(" ")}"
+  end
+
+  #purge is identical to remove except that packages are removed and purged (any configuration files are deleted too).
+  def apt_purge(packages)
+    packages = packages.split(/\s+/) if packages.respond_to?(:split)
+    packages = Array(packages)
+    sudo "#{apt_get_preamble} purge #{packages.join(" ")}"
   end
 
   def apt_autoremove
