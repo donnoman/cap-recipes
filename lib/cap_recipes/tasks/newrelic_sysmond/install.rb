@@ -14,11 +14,15 @@ Capistrano::Configuration.instance(true).load do
     set :newrelic_sysmond_hostname_cmd, "hostname -f 2>/dev/null || hostname"
     set :newrelic_sysmond_cfg_template, File.join(File.dirname(__FILE__),'nrsysmond.cfg.erb')
     set :newrelic_sysmond_cfg_file, "/etc/newrelic/nrsysmond.cfg"
+    set :newrelic_sysmond_update_apt_sources, true
 
     desc 'Installs newrelic_sysmond'
     task :install, :roles => :newrelic_sysmond do
-      run "curl -L http://download.newrelic.com/548C16BF.gpg | #{sudo} apt-key add -"
-      sudo "curl -L http://download.newrelic.com/debian/newrelic.list -o /etc/apt/sources.list.d/newrelic.list"
+      if newrelic_sysmond_update_apt_sources
+        # If you are using a proxy that is configured with these keys and can't add them from the host itself you can set this to false.
+        run "curl -L http://download.newrelic.com/548C16BF.gpg | #{sudo} apt-key add -"
+        sudo "curl -L http://download.newrelic.com/debian/newrelic.list -o /etc/apt/sources.list.d/newrelic.list"
+      end
       utilities.apt_update
       utilities.apt_install 'newrelic-sysmond'
     end
