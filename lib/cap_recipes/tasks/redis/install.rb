@@ -102,7 +102,9 @@ Capistrano::Configuration.instance(true).load do
 
     desc "push a redis logrotate config"
     task :logrotate, :roles => [:redis,:redis_slave] do
-      utilities.sudo_upload_template redis_logrotate_path, "/etc/logrotate.d/redis", :owner => 'root:root'
+      with_layout do
+        utilities.sudo_upload_template redis_logrotate_path, "/etc/logrotate.d/#{redis_name}", :owner => 'root:root'
+      end
     end
 
     desc "setup redis-server"
