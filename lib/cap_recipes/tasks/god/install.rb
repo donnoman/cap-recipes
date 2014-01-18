@@ -152,6 +152,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "setup god"
     task :setup, :except => {:no_ruby => true} do
+      sudo "mkdir -p #{god_confd}"
       utilities.sudo_upload_template god_config_path, god_config
     end
 
