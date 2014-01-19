@@ -1,19 +1,23 @@
 h1. cap-recipes
 
-A collection of useful capistrano recipes I have been using in production on a number of sites.
+A collection of useful Capistrano 2 provisioning recipes.
 
-This gem is best suited for ruby (and rails) projects which deploy using Apache and Phusion Passenger.
-Worth noting is that the installation tasks are for systems using aptitude package management.
+This gem is best suited for ruby (and rails) projects hosted on Ubuntu or Debian servers.
 
-The overall vision for this project is simply to collect a number of classic, generic recipes
-for common issues which can then be used by the community.
+The overall vision for this project is simply to collect a number of recipes
+for common applications which can then be used by the community.
 
 Feel free to improve upon this recipe collection by adding your own!
 
 Currently included recipes in this gem:
 
- * Ruby Setup
+ * Ruby
  * Rubygems Management
+ * Aptitude Package Management
+ * NGINX
+ * Unicorn
+ * MySQL
+ * Redis
  * Apache Server
  * Phusion Passenger
  * Memcached Management
@@ -23,24 +27,21 @@ Currently included recipes in this gem:
  * DelayedJob Worker
  * Whenever Cron Scheduling
  * MongoDB Management
- * Aptitude Package Management
  * Gitosis Git Repository Hosting
 
 Check out the USAGE section below for specific tasks included in the recipes.
 
 h2. INSTALLATION
 
-To install the gem, execute:
+To use the gem, add the following to your Gemfile:
 
-@$ sudo gem install cap-recipes --source http://gemcutter.org@
+
+  gem 'cap-recipes', :git => 'git@github.com:donnoman/cap-recipes.git', :require => false
+
 
 Then, include into your @deploy.rb@ configuration file for Capistrano:
 
 <pre><code>
-  # use the complete deployment process (NOT RECOMMENDED)
-  require 'cap_recipes'
-
-  # RECOMMENDED
   # require necessary recipes according to your needs
   # (use hooks which tie all the recipes into the deployment process,
   # tasks for managing and tasks for installing):
@@ -49,7 +50,7 @@ Then, include into your @deploy.rb@ configuration file for Capistrano:
   require 'cap_recipes/tasks/thinking_sphinx'
   require 'cap_recipes/tasks/rails'
   require 'cap_recipes/tasks/delayed_job'
-  # or ruby, rubygems, apache, mongodb, juggernaut, backgroundrb, aptitude, gitosis, whenever
+  # etc for any recipe directory or file under tasks.
 
   # OR
   # only use managing tasks:
@@ -488,9 +489,20 @@ h2. CONTRIBUTORS
 
 The following people are the reason this library exists:
 
-  * nesquena [Nathan Esquenazi] - created and maintaining the library
+  * nesquena [Nathan Esquenazi] - created and no longer maintaining the library
   * achiu    [Arthur Chiu]      - contributed gitosis, ruby, mongodb and other recipes
   * hubertlepicki               - contributed thinking_sphinx recipes
+  * donnoman [Donovan Bray]     - maintaining the library and contributed autossh, bprobe, bundler,
+                                  cassandra, datadog, denyhosts, dovecot, dphys-swapfile, erlang, git,
+                                  haproxy, hlds, hosts, jenkins, logrotate, munin, mysql, newrelic_rpm,
+                                  newrelic_sysmond, nginx, nginx_unicorn, nginx_passenger, openjdk,
+                                  phantomjs, postfix, provision, resque, ree, redis, riak, ripple, ruby,
+                                  ruby19, s3cmd, s3fs, s3sync, sdagent, ssmtp, stingray, teelogger,
+                                  unicorn, wkhtmltopdf, and others.
+  * rickrussell [Rick Russell]  - contributed csgo_ds, graphite, ssh, statsd, ufw, leap_second,
+                                  xtrabackup, and others.
+  * zpatten [Zachary Patten]    - contributed chef_client, chef_server
+
 
 h2. LICENSE
 

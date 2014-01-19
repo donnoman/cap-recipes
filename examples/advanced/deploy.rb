@@ -24,6 +24,7 @@ require 'capistrano/ext/multistage'
 # =============================================================================
 
 require 'rubygems'
+require 'cap_recipes/tasks/bundler'
 require 'cap_recipes/tasks/whenever'
 require 'cap_recipes/tasks/apache'
 require 'cap_recipes/tasks/passenger'

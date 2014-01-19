@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/../utilities')
-require File.expand_path(File.dirname(__FILE__) + '/../aptitude/manage')
 
 Capistrano::Configuration.instance(true).load do
 
@@ -15,8 +14,6 @@ Capistrano::Configuration.instance(true).load do
       logger.info " update your scripts ruby:setup is now ruby:install"
       install
     end
-
-    before "ruby:install", "aptitude:updates"
 
   end
 end

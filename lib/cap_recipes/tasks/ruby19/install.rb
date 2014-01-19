@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/../utilities')
-require File.expand_path(File.dirname(__FILE__) + '/../aptitude/manage')
 
 Capistrano::Configuration.instance(true).load do
 

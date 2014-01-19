@@ -185,6 +185,7 @@ module Utilities
     switches = ""
     switches += " --system" if options[:system]
     switches += ' --disabled-password --gecos ""'
+    switches += " --home #{options[:home]}" if options[:home]
     switches += " --disabled-login" if options[:disabled_login]
     switches += " --shell=#{options[:shell]} " if options[:shell] && !options[:system]
     switches += ' --no-create-home ' if options[:nohome]

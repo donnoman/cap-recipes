@@ -16,7 +16,6 @@ Capistrano::Configuration.instance(true).load do
     task :install_packages do
       utilities.apt_install %[git-core python-setuptools]
     end
-    before "gitosis:install_packages", "aptitude:updates"
 
     desc "setup packages"
     task :setup_packages do
@@ -35,7 +34,6 @@ Capistrano::Configuration.instance(true).load do
       run "rm -f /home/#{user}/.ssh/id_rsa; rm -f /home/#{user}/.ssh/id_rsa.pub"
       run "ssh-keygen -q -f /home/#{user}/.ssh/id_rsa -N \"\""
     end
-    before "gitosis:copy_ssh", "gitosis:generate_ssh"
 
     desc "copy over servers own ssh, important for self pull"
     task :copy_ssh do
@@ -51,8 +49,6 @@ Capistrano::Configuration.instance(true).load do
     task :cleanup do
       sudo "rm -rf src"
     end
-    before "gitosis:setup_packages", "gitosis:cleanup"
-    after "gitosis:setup_packages", "gitosis:cleanup"
 
   end
 end

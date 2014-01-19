@@ -2,9 +2,9 @@
 # GENERAL SETTINGS
 # =============================================================================
 
-role :web, "demo.app.com"
+role :web, "lb.app.com"
 role :app, "demo.app.com"
-role :db,  "demo.app.com", :primary => true
+role :db,  "db.app.com", :primary => true
 
 set :application,  "demo"
 set :deploy_to,  "/var/apps/#{application}"
@@ -29,12 +29,14 @@ default_run_options[:pty] = true
 # =============================================================================
 
 require 'rubygems'
-require "bundler/capistrano"
-# require 'cap_recipes/tasks/whenever'
-# require 'cap_recipes/tasks/passenger'
-# require 'cap_recipes/tasks/apache'
-# require 'cap_recipes/tasks/memcache'
-# require 'cap_recipes/tasks/juggernaut'
-# require 'cap_recipes/tasks/delayed_job'
-# require 'cap_recipes/tasks/rails'
-
+require 'cap_recipes/tasks/provision'
+require 'cap_recipes/tasks/teelogger'
+require 'cap_recipes/tasks/bundler'
+require 'cap_recipes/tasks/god'
+require 'cap_recipes/tasks/git'
+require 'cap_recipes/tasks/ruby19'
+require 'cap_recipes/tasks/nginx'
+require 'cap_recipes/tasks/nginx_unicorn'
+require 'cap_recipes/tasks/unicorn'
+require 'cap_recipes/tasks/redis'
+require 'cap_recipes/tasks/logrotate'

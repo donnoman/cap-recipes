@@ -74,18 +74,18 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Install Percona XtraBackup"
     task :install, :roles => :xtrabackup do
-       run "#{sudo} gpg --keyserver hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A && #{sudo} gpg -a --export CD2EFD2A | #{sudo} apt-key add -"
-       utilities.sudo_upload_template mysql_percona_apt_list, mysql_percona_apt_list_path, :mode => "644", :owner => 'root:root'
-       utilities.apt_install "xtrabackup"
-     end
+      run "#{sudo} gpg --keyserver hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A && #{sudo} gpg -a --export CD2EFD2A | #{sudo} apt-key add -"
+      utilities.sudo_upload_template mysql_percona_apt_list, mysql_percona_apt_list_path, :mode => "644", :owner => 'root:root'
+      utilities.apt_install "xtrabackup"
+    end
 
-      desc "Transfer backup scripts to host"
-      task :upload_backup_script, :roles => :xtrabackup do
-        run "#{sudo} mkdir -p /root/script"
-        utilities.apt_install "at lbzip2"
-        utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "655", :owner => 'root:root'
-        utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "655", :owner => 'root:root'
-      end
+    desc "Transfer backup scripts to host"
+    task :upload_backup_script, :roles => :xtrabackup do
+      run "#{sudo} mkdir -p /root/script"
+      utilities.apt_install "at lbzip2"
+      utilities.sudo_upload_template mysql_backup_script, mysql_backup_script_path, :mode => "655", :owner => 'root:root'
+      utilities.sudo_upload_template mysql_restore_script, mysql_restore_script_path, :mode => "655", :owner => 'root:root'
+    end
 
     desc "Grant the Percona user permissions"
     task :grant_percona_user, :roles => :xtrabackup do

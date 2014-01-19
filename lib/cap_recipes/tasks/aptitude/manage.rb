@@ -2,11 +2,17 @@ require File.expand_path(File.dirname(__FILE__) + '/../utilities')
 
 Capistrano::Configuration.instance(true).load do
   namespace :aptitude do
-    desc "Updates all installed packages on aptitude package system"
-    task :updates do
-      sudo "apt-get -qy update"
+
+    desc "Update aptitude package system"
+    task :update do
+      utilities.apt_update
+    end
+
+    desc "Upgrade all installed packages on aptitude package system"
+    task :upgrade do
+      utilities.apt_update
       utilities.apt_upgrade
-      sudo "apt-get -qy autoremove"
+      utilities.apt_autoremove
     end
 
     desc "Installs a specified aptitude package"

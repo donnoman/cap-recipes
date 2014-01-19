@@ -18,12 +18,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "cap-recipes"
-    s.summary = %Q{Battle-tested capistrano recipes for debian based distributions}
-    s.email = "nesquena@gmail.com donnoman@donovanbray.com"
-    s.homepage = "http://github.com/nesquena/cap-recipes"
-    s.description = "Battle-tested capistrano recipes for debian based distributions, passenger, apache, nginx, delayed_job, juggernaut, rubygems, backgroundrb, rails, riak, mongo and more"
+    s.summary = %Q{Battle-tested capistrano provisioning recipes for debian based distributions}
+    s.email = "donnoman@donovanbray.com nesquena@gmail.com"
+    s.homepage = "http://github.com/donnoman/cap-recipes"
+    s.description = %Q{Battle-tested capistrano provisioning recipes for debian based distributions}
     s.authors = ["Nathan Esquenazi","Donovan Bray"]
     s.rubyforge_project = 'cap-recipes'
+    s.add_dependency 'capistrano', '~> 2.0'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

@@ -1,6 +1,5 @@
 # @author Donovan Bray <donnoman@donovanbray.com>
 require File.expand_path(File.dirname(__FILE__) + '/../utilities')
-require File.expand_path(File.dirname(__FILE__) + '/../aptitude/manage')
 require File.expand_path(File.dirname(__FILE__) + '/../erlang/install')
 
 Capistrano::Configuration.instance(true).load do

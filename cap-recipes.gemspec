@@ -347,7 +347,7 @@ Gem::Specification.new do |s|
     "spec/cap_recipes_spec.rb",
     "spec/spec_helper.rb"
   ]
-  s.homepage = "http://github.com/nesquena/cap-recipes"
+  s.homepage = "http://github.com/donnoman/cap-recipes"
   s.require_paths = ["lib"]
   s.rubyforge_project = "cap-recipes"
   s.rubygems_version = "1.8.25"
