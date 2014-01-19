@@ -49,7 +49,6 @@ Capistrano::Configuration.instance(true).load do
       run "#{sudo} mkdir -p #{csgo_ds_source} #{steamcmd_app_root}"
       utilities.addgroup "#{steamcmd_user};true"
       utilities.adduser "#{steamcmd_user}" , :group => "#{steamcmd_user}"
-      utilities.apt_update
       utilities.apt_install "#{default_packages}"
       run "cd #{steamcmd_app_root} && #{sudo} wget --tries=2 -c --progress=bar:force #{steamcmd_wget_url} && #{sudo} tar -xvzf steamcmd_linux.tar.gz"
       run "#{sudo} chown -R #{steamcmd_user}:#{steamcmd_user} #{steamcmd_app_root}"

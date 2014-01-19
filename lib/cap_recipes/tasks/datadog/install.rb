@@ -11,7 +11,6 @@ Capistrano::Configuration.instance(true).load do
     task :install, :roles => :datadog do
       run "#{sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C7A7DA52"
       sudo %Q{#{sudo} sh -c "echo 'deb http://apt.datadoghq.com/ unstable main' > /etc/apt/sources.list.d/datadog.list"}
-      utilities.apt_update
       utilities.apt_install 'datadog-agent'
     end
 

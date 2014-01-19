@@ -21,7 +21,6 @@ Capistrano::Configuration.instance(true).load do
     desc "Install Haproxy by Package"
     task :install_from_package, :roles => :haproxy do
       # http://www.zimbio.com/Ubuntu+Linux/articles/7Wwgp74q4ze/How+Install+HAProxy+Ubuntu+11+04
-      utilities.apt_update
       utilities.apt_install "haproxy"
       # in Ubuntu the /etc/init.d/haproxy script tries to start before networking and fails.
       sudo "update-rc.d -f haproxy remove"

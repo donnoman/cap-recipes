@@ -2,7 +2,7 @@
 
 Capistrano::Configuration.instance(true).load do
 
-  namespace :hlds do 
+  namespace :hlds do
 
     roles[:hlds]
     set :hlds_root, "/opt/hlds"
@@ -52,7 +52,6 @@ Capistrano::Configuration.instance(true).load do
       run "#{sudo} mkdir -p #{hlds_source} #{hlds_root}"
       utilities.addgroup "#{hlds_user};true"
       utilities.adduser "hlds" , :group => "hlds"
-      utilities.apt_update
       utilities.apt_install "#{hlds_packages}"
       run "cd #{hlds_source} && #{sudo} wget --tries=2 -c --progress=bar:force #{hlds_update_tool_url} && #{sudo} chmod +x hldsupdatetool.bin"
       utilities.run_with_input "cd #{hlds_source} && #{sudo} ./hldsupdatetool.bin", /decline:/, "yes\n"

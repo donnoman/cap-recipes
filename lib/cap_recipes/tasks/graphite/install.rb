@@ -36,7 +36,6 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Install what we can from apt"
     task :install_apt, :roles => :graphite do
-      utilities.apt_update
       utilities.apt_install %w[build-essential wget python-setuptools python-memcache python-sqlite apache2 libapache2-mod-python pkg-config python python-cairo-dev python-dev libcairo2-dev]
     end
 

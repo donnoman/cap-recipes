@@ -23,7 +23,6 @@ Capistrano::Configuration.instance(true).load do
         run "curl -L http://download.newrelic.com/548C16BF.gpg | #{sudo} apt-key add -"
         sudo "curl -L http://download.newrelic.com/debian/newrelic.list -o /etc/apt/sources.list.d/newrelic.list"
       end
-      utilities.apt_update
       utilities.apt_install 'newrelic-sysmond'
     end
 

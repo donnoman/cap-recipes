@@ -30,6 +30,7 @@ Capistrano::Configuration.instance(true).load do
 
     task :provision do
       logger.info "Provisioning Services"
+      utilities.apt_update
     end
 
   end
