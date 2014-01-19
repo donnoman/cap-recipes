@@ -1,0 +1,22 @@
+description "Jenkins JNLP slave upstart"
+author "Donovan Bray donnoman@donovanbray.com"
+
+# automatically start
+start on (hostname and syslog)
+
+stop on runlevel [016]
+
+# this doesn't work in the 10.04 upstart; had to use sudo -u
+# setuid jenkins
+# setgid jenkins
+
+respawn
+
+# After timeout in seconds it sends a kill -9
+kill timeout 120
+
+script
+    cd <%=jenkins_jnlp_slave_root%>
+    exec sudo -u <%=jenkins_jnlp_slave_user%> java -jar slave.jar <%=jenkins_jnlp_slave_jar_start_args%>  -jnlpUrl <%=jenkins_jnlp_master_url%>/computer/<%=jenkins_jnlp_slave_name%>/slave-agent.jnlp -secret <%=jenkins_jnlp_slave_secret%>
+end script
+
