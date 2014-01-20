@@ -17,6 +17,7 @@ Capistrano::Configuration.instance(true).load do
     set(:jenkins_jnlp_slave_upstart_file) {"/etc/init/#{jenkins_jnlp_slave_init}.conf"}
     set :jenkins_jnlp_slave_upstart_erb, File.join(File.dirname(__FILE__),'jnlp_slave.upstart.erb')
     set :jenkins_jnlp_slave_jar_start_args, nil
+    set :jenkins_jnlp_slave_java_args, "-Xmx256m -Djava.net.preferIPv4Stack=true"
     set(:jenkins_jnlp_master_url) { utilities.ask("jenkins_jnlp_master_url (http://yourserver:port)")}
     set :jenkins_jnlp_slave_name, "$(hostname -f)"
     set(:jenkins_jnlp_slave_secret) { utilities.ask("jenkins_jnlp_slave_secret")}
@@ -25,8 +26,8 @@ Capistrano::Configuration.instance(true).load do
     task :install, :roles => :jenkins_jnlp_slave do
       if jenkins_jnlp_slave_secret
         utilities.apt_install "openjdk-#{openjdk_version}-jre openjdk-#{openjdk_version}-jdk"
-        utilities.addgroup(jenkins_jnlp_slave_user, :system => true)
-        utilities.adduser(jenkins_jnlp_slave_user, :system => true, :home => jenkins_jnlp_slave_root)
+        utilities.addgroup("#{jenkins_jnlp_slave_user};true")
+        utilities.adduser(jenkins_jnlp_slave_user, :shell => "bin/false", :home => jenkins_jnlp_slave_root)
         sudo "mkdir -p #{jenkins_jnlp_slave_root}/logs"
         run "cd #{jenkins_jnlp_slave_root} && #{sudo} wget --tries=2 -c --progress=bar:force #{jenkins_jnlp_master_url}/jnlpJars/slave.jar"
         sudo "chown -R #{jenkins_jnlp_slave_user}:#{jenkins_jnlp_slave_user} #{jenkins_jnlp_slave_root}"
