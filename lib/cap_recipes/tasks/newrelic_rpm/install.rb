@@ -10,7 +10,7 @@ Capistrano::Configuration.instance(true).load do
     set(:newrelic_rpm_source_changes_command) {
       case scm
       when :git
-        %Q{#{source.command} --no-pager log #{newrelic_rpm_source_benchmark_revision}..#{latest_revision} --no-color --pretty=format:"%s - %an, %ad : %H"}
+        %Q{#{source.command} --no-pager log #{newrelic_rpm_source_benchmark_revision}..#{latest_revision} --no-color --merges --pretty=format:"%s - %an, %ad : %H"}
       else
         %Q{echo "no changes command implemented."}
       end
