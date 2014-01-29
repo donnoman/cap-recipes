@@ -3,7 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../utilities')
 Capistrano::Configuration.instance(true).load do
   namespace :unicorn do
 
-    set :unicorn_version, "4.6.2"
     set :unicorn_template_path, File.join(File.dirname(__FILE__),'unicorn.rb.erb')
     set :unicorn_god_path, File.join(File.dirname(__FILE__),'unicorn.god')
     set(:unicorn_user) {user}
@@ -52,7 +51,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc 'Installs unicorn'
     task :install, :roles => :app do
-      utilities.gem_install_only "unicorn", unicorn_version
+      logger.info "unicorn install doesn't do anything, make sure your Gemfile specifies a version of unicorn"
     end
 
     task :configure, :roles => :app do
