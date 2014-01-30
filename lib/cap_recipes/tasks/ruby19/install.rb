@@ -27,8 +27,8 @@ Capistrano::Configuration.instance(true).load do
     desc "add ruby debugger support"
     task :ruby_debugger, :except => { :no_ruby => true } do
       if ruby_debugger_support
-        run "#{sudo} gem install debugger-ruby_core_source --no-rdoc --no-ri -- --with-ruby-include=/usr/local/src/#{ruby_ver}"
-        run "#{sudo} gem install debugger-linecache --no-rdoc --no-ri -- --with-ruby-include=/usr/local/src/#{ruby_ver}"
+        utilities.gem_install("debugger-ruby_core_source -- --with-ruby-include=/usr/local/src/#{ruby_ver}")
+        utilities.gem_install("debugger-linecache -- --with-ruby-include=/usr/local/src/#{ruby_ver}")
       end
     end
 
