@@ -26,13 +26,17 @@ module Utilities
     ask(question).downcase.include? 'y'
   end
 
+  def gem_install_preamble
+    "#{base_ruby_path}/bin/gem install #{capture('gem -v').chomp[0] < "2" ? '-y' : ''} --no-rdoc --no-ri"
+  end
+
   # Uses the base ruby path to install gem(s), avoids installing the gem if it's already installed.
   # Installs the gems detailed in +package+, selecting version +version+ if
   # specified.
   def gem_install(package, version=nil)
     tries = 3
     begin
-      cmd = "#{sudo} #{base_ruby_path}/bin/gem install -y --no-rdoc --no-ri #{version ? '-v '+version.to_s : ''} #{package}"
+      cmd = "#{sudo} #{gem_install_preamble} #{version ? '-v '+version.to_s : ''} #{package}"
       wrapped_cmd = "if ! #{base_ruby_path}/bin/gem list '#{package}' | grep --silent -e '#{package}.*#{version}'; then #{cmd}; fi"
       run wrapped_cmd
       #send(run_method,wrapped_cmd)
@@ -47,7 +51,7 @@ module Utilities
   def gem_install_only(package, version=nil)
     tries = 3
     begin
-      run "if ! #{base_ruby_path}/bin/gem list '#{package}' | grep --silent -e '#{package} \(#{version}\)'; then #{sudo} #{base_ruby_path}/bin/gem uninstall --ignore-dependencies --executables --all #{package}; #{sudo} #{base_ruby_path}/bin/gem install -y --no-rdoc --no-ri #{version ? '-v '+version.to_s : ''} #{package}; fi"
+      run "if ! #{base_ruby_path}/bin/gem list '#{package}' | grep --silent -e '#{package} \(#{version}\)'; then #{sudo} #{base_ruby_path}/bin/gem uninstall --ignore-dependencies --executables --all #{package}; #{sudo} #{gem_install_preamble} #{version ? '-v '+version.to_s : ''} #{package}; fi"
     rescue Capistrano::Error
       tries -= 1
       retry if tries > 0
