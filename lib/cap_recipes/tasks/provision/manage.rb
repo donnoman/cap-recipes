@@ -28,10 +28,16 @@ Capistrano::Configuration.instance(true).load do
     roles[:app]
     roles[:db]
 
-    task :provision do
-      logger.info "Provisioning Services"
+    # This block allows us to add items to the very beginning of provisioning
+    # while allowing the consumer to freely override the deploy:provision task to add
+    # thier own non-framework items.
+    on :start, :only => "deploy:provision" do
       utilities.apt_update
       utilities.apt_install_by_command('add-apt-repository')
+    end
+
+    task :provision do
+      logger.info "Provisioning Services"
     end
 
   end
