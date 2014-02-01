@@ -66,10 +66,10 @@ worker_processes(( workers = ENV['UNICORN_WORKERS'].to_i ) > 0 ? workers : 4)
 # listen "/tmp/.sock", :backlog => 64
 # listen 3000, :tcp_nopush => true
 
-if File.exists?( shared_socket = File.expand_path('../../../shared/sockets', __FILE__) )
-  listen shared_socket + '/unicorn.sock', :backlog => 2048, :tries => -1
+if File.exists?( shared_socket = File.expand_path('../../../../shared/sockets/unicorn.sock', __FILE__) )
+  listen shared_socket, :backlog => 128, :tries => -1
 else
-  listen "<%=unicorn_backup_socket_location%>", :backlog => 2048, :tries => -1
+  listen File.expand_path('../../tmp/sockets/unicorn.sock', __FILE__), :backlog => 128, :tries => -1
 end
 
 # nuke workers after 30 seconds instead of 60 seconds (the default)
