@@ -32,6 +32,10 @@ Capistrano::Configuration.instance(true).load do
     # while allowing the consumer to freely override the deploy:provision task to add
     # thier own non-framework items.
     on :start, :only => "deploy:provision" do
+      deploy.provision_prerequisites
+    end
+
+    task :provision_prerequisites do
       utilities.apt_update
       utilities.apt_install_by_command('add-apt-repository')
     end
