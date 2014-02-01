@@ -40,5 +40,9 @@ Capistrano::Configuration.instance(true).load do
       end
     end
 
+    task :ensure_trust_github, :except => { :no_ruby => true } do
+      utilities.run_with_input("ssh -i ~/.ssh/id_rsa git@github.com;true", /\?/, "yes\n")
+    end
+
   end
 end
