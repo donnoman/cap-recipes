@@ -145,7 +145,6 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Write the application conf"
     task :configure, :roles => :app do
-      run "#{try_sudo} mkdir -p #{File.join(shared_path,'sockets')}"
       utilities.sudo_upload_template nginx_unicorn_app_conf_path, "#{nginx_unicorn_conf_dir}/sites-available/#{application}.conf"
       enable
     end
@@ -154,25 +153,6 @@ Capistrano::Configuration.instance(true).load do
     task :deconfigure, :roles => :app do
       disable
       sudo "rm -rf #{nginx_unicorn_conf_dir}/sites-available/#{application}.conf"
-    end
-
-    desc "nginx_unicorn finalize_update hook to ensure sockets directory is symlinked without using shared_children"
-    task :finalize_update, :roles => :app do
-      escaped_release = latest_release.to_s.shellescape
-      commands = []
-      commands << "chmod -R -- g+w #{escaped_release}" if fetch(:group_writable, true)
-      %w(sockets).map do |dir|
-        d = dir.shellescape
-        if (dir.rindex('/')) then
-          commands += ["rm -rf -- #{escaped_release}/#{d}",
-                       "mkdir -p -- #{escaped_release}/#{dir.slice(0..(dir.rindex('/'))).shellescape}"]
-        else
-          commands << "rm -rf -- #{escaped_release}/#{d}"
-        end
-        commands << "ln -s -- #{shared_path}/#{dir.split('/').last.shellescape} #{escaped_release}/#{d}"
-      end
-
-      run commands.join(' && ') if commands.any?
     end
 
     desc "Enable the application conf"

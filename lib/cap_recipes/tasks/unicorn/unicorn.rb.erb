@@ -48,7 +48,7 @@
   ENV['DISABLE_RACK_ATTACK'] = '1'
 <% end %>
 
-# unicorn will stash its original command-line at startup for the USR2 upgrades, and cleaning up old revisions will cause revision-specific installations of unicorn to go missing and upgrades to fail. If you find yourself in this situation and can’t afford downtime, you can override the existing unicorn executable path in the config file like this:
+# unicorn will stash its original command-line at startup for the USR2 upgrades, and cleaning up old revisions will cause revision-specific installations of unicorn to go missing and upgrades to fail. If you find yourself in this situation and can't afford downtime, you can override the existing unicorn executable path in the config file like this:
 # Then use HUP to reload, and then continue with the USR2+QUIT upgrade sequence.
 Unicorn::HttpServer::START_CTX[0] = "<%=current_path%>/bin/unicorn"
 
@@ -66,19 +66,13 @@ worker_processes(( workers = ENV['UNICORN_WORKERS'].to_i ) > 0 ? workers : 4)
 # listen "/tmp/.sock", :backlog => 64
 # listen 3000, :tcp_nopush => true
 
-if File.exists?( shared_socket = File.expand_path('../../../../shared/sockets/unicorn.sock', __FILE__) )
-  listen shared_socket, :backlog => 128, :tries => -1
+if File.exists?( shared_socket = <%=unicorn_socket_location%> )
+  listen shared_socket, :backlog => <%=unicorn_backlog%>, :tries => <%=unicorn_tries%>
 else
-  listen File.expand_path('../../tmp/sockets/unicorn.sock', __FILE__), :backlog => 128, :tries => -1
+  listen <%=unicorn_backup_socket_location%>, :backlog => <%=unicorn_backlog%>, :tries => <%=unicorn_tries%>
 end
 
-# nuke workers after 30 seconds instead of 60 seconds (the default)
-# if Rails.env.admin?
-  timeout 120
-# else
-# timeout 60
-# end
-
+timeout <%=unicorn_timeout%>
 
 # feel free to point this anywhere accessible on the filesystem
 # pid "/path/to/app/shared/pids/unicorn.pid"

@@ -8,11 +8,13 @@ Capistrano::Configuration.instance(true).load do
     set(:unicorn_user) {user}
     set(:unicorn_group) {user}
     set :unicorn_workers, 3
-    set :unicorn_backlog, 2048
+    set :unicorn_backlog, 128
     set :unicorn_tries, -1
-    set :unicorn_timeout, 30
+    set :unicorn_timeout, 120
     set(:unicorn_root) { current_path }
-    set :unicorn_backup_socket_location, %q{#{File.expand_path('../../tmp/sockets/unicorn.sock', __FILE__)}} #this IS CORRECTLY a non-interpolated string, to be evaled later.
+    set :unicorn_socket_location, %q{File.expand_path('../../../../shared/sockets/unicorn.sock', __FILE__)} #this IS CORRECTLY a non-interpolated string, to be evaled later.
+    set :unicorn_backup_socket_location, %q{File.expand_path('../../tmp/sockets/unicorn.sock', __FILE__)} #this IS CORRECTLY a non-interpolated string, to be evaled later.
+    set :unicorn_relative_socket_location, 'tmp/sockets'
     set :unicorn_watcher, nil
     set :unicorn_suppress_runner, false
     set :unicorn_suppress_configure, false
@@ -92,6 +94,26 @@ Capistrano::Configuration.instance(true).load do
       unicorn.stop
       god.remove  "#{unicorn_init_name}.god"
       god.restart
+    end
+
+    desc "unicorn finalize_update hook to ensure sockets directory is symlinked without using shared_children"
+    task :finalize_update, :roles => :app do
+      escaped_release = latest_release.to_s.shellescape
+      commands = []
+      commands << "chmod -R -- g+w #{escaped_release}" if fetch(:group_writable, true)
+      [unicorn_relative_socket_location].map do |dir|
+        d = dir.shellescape
+        if (dir.rindex('/')) then
+          commands += ["rm -rf -- #{escaped_release}/#{d}",
+                       "mkdir -p -- #{escaped_release}/#{dir.slice(0..(dir.rindex('/'))).shellescape}"]
+        else
+          commands << "rm -rf -- #{escaped_release}/#{d}"
+        end
+        commands << "mkdir -p -- #{shared_path}/#{dir.split('/').last.shellescape}"
+        commands << "ln -s -- #{shared_path}/#{dir.split('/').last.shellescape} #{escaped_release}/#{d}"
+      end
+
+      run commands.join(' && ') if commands.any?
     end
 
   end

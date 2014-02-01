@@ -5,5 +5,6 @@ Capistrano::Configuration.instance(true).load do
   after "deploy:start",   "unicorn:start"
   after "deploy:stop",    "unicorn:stop"
   after "deploy:restart", "unicorn:restart"
+  before "deploy:finalize_update", "unicorn:finalize_update"
   on :load, "unicorn:watcher"
 end
