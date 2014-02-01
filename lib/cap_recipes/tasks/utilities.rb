@@ -82,7 +82,7 @@ module Utilities
     sudo_run_compressed %Q{
       #{apt_get_preamble} install apt-file;
       apt-file update;
-      #{apt_get_preamble} install `apt-file --non-interactive --package-only --fixed-string search #{command}`
+      #{apt_get_preamble} install `apt-file --non-interactive --package-only search #{command}`
     }
   end
 
