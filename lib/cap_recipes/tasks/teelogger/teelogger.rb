@@ -38,6 +38,10 @@ class TeeLogWriter
     end
   end
 
+  def tty?
+    true
+  end
+
   private
 
 
