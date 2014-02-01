@@ -19,10 +19,11 @@ Capistrano::Configuration.instance(:must_exist).load do
     set :bundler_rubygems_minimum_ver, "1.8.25"
     set(:bundler_ver_latest) { JSON.parse(open("https://rubygems.org/api/v1/gems/bundler.json").read)['version'] }
     set(:bundler_ver) { utilities.ask("bundler_ver: (#{bundler_ver_latest})", bundler_ver_latest) }
-    set(:bundler_user) { user }
+    set :bundler_user, nil # don't use sudo by default.
     set :bundler_file, "Gemfile"
     set :bundler_binstubs, true
     set :bundler_clean, true
+    set :rake, "bundle exec rake"
 
     def bundle(path=nil)
       # Don't bother if there's no gemfile.
