@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = "cap-recipes"
-  s.version = "2.3.0"
+  s.version = "2.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2013-08-09"
-  s.description = "Battle-tested capistrano recipes for debian based distributions, passenger, apache, nginx, delayed_job, juggernaut, rubygems, backgroundrb, rails, riak, mongo and more"
-  s.email = "nesquena@gmail.com donnoman@donovanbray.com"
+  s.date = "2014-02-03"
+  s.description = "Battle-tested capistrano provisioning recipes for debian based distributions"
+  s.email = "donnoman@donovanbray.com nesquena@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE",
     "README.textile"
@@ -67,6 +67,7 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/chef_client/install.rb",
     "lib/cap_recipes/tasks/chef_client/manage.rb",
     "lib/cap_recipes/tasks/chef_server.rb",
+    "lib/cap_recipes/tasks/chef_server/client.rb.erb",
     "lib/cap_recipes/tasks/chef_server/hooks.rb",
     "lib/cap_recipes/tasks/chef_server/install.rb",
     "lib/cap_recipes/tasks/chef_server/install.sh.erb",
@@ -132,6 +133,13 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/hlds/motd_text.txt.erb",
     "lib/cap_recipes/tasks/hlds/server.cfg.erb",
     "lib/cap_recipes/tasks/hlds/steam_appid.txt.erb",
+    "lib/cap_recipes/tasks/hosts.rb",
+    "lib/cap_recipes/tasks/hosts/hooks.rb",
+    "lib/cap_recipes/tasks/hosts/install.rb",
+    "lib/cap_recipes/tasks/jenkins.rb",
+    "lib/cap_recipes/tasks/jenkins/hooks.rb",
+    "lib/cap_recipes/tasks/jenkins/install.rb",
+    "lib/cap_recipes/tasks/jenkins/jnlp_slave.upstart.erb",
     "lib/cap_recipes/tasks/juggernaut.rb",
     "lib/cap_recipes/tasks/juggernaut/hooks.rb",
     "lib/cap_recipes/tasks/juggernaut/manage.rb",
@@ -214,6 +222,13 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/nginx_unicorn/nginx_unicorn.init",
     "lib/cap_recipes/tasks/nginx_unicorn/nginx_unicorn.logrotate",
     "lib/cap_recipes/tasks/nginx_unicorn/stub_status.conf",
+    "lib/cap_recipes/tasks/nodejs.rb",
+    "lib/cap_recipes/tasks/nodejs/hooks.rb",
+    "lib/cap_recipes/tasks/nodejs/install.rb",
+    "lib/cap_recipes/tasks/nrpe.rb",
+    "lib/cap_recipes/tasks/nrpe/hooks.rb",
+    "lib/cap_recipes/tasks/nrpe/install.rb",
+    "lib/cap_recipes/tasks/nrpe/nrpe.cfg.erb",
     "lib/cap_recipes/tasks/openjdk/hooks.rb",
     "lib/cap_recipes/tasks/openjdk/install.rb",
     "lib/cap_recipes/tasks/passenger.rb",
@@ -312,6 +327,11 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/statsd/statsd.god",
     "lib/cap_recipes/tasks/statsd/statsd.init.sh",
     "lib/cap_recipes/tasks/statsd/statsd.js",
+    "lib/cap_recipes/tasks/stingray.rb",
+    "lib/cap_recipes/tasks/stingray/configure.recording.erb",
+    "lib/cap_recipes/tasks/stingray/hooks.rb",
+    "lib/cap_recipes/tasks/stingray/install.rb",
+    "lib/cap_recipes/tasks/stingray/install.recording.erb",
     "lib/cap_recipes/tasks/teelogger.rb",
     "lib/cap_recipes/tasks/teelogger/teelogger.rb",
     "lib/cap_recipes/tasks/thinking_sphinx.rb",
@@ -326,7 +346,6 @@ Gem::Specification.new do |s|
     "lib/cap_recipes/tasks/unicorn/install.rb",
     "lib/cap_recipes/tasks/unicorn/unicorn.god",
     "lib/cap_recipes/tasks/unicorn/unicorn.rb.erb",
-    "lib/cap_recipes/tasks/unicorn/unicorn.rb.sample",
     "lib/cap_recipes/tasks/utilities.rb",
     "lib/cap_recipes/tasks/whenever.rb",
     "lib/cap_recipes/tasks/whenever/hooks.rb",
@@ -351,27 +370,30 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = "cap-recipes"
   s.rubygems_version = "1.8.25"
-  s.summary = "Battle-tested capistrano recipes for debian based distributions"
+  s.summary = "Battle-tested capistrano provisioning recipes for debian based distributions"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<capistrano>, ["~> 2.0"])
+      s.add_runtime_dependency(%q<capistrano>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6"])
       s.add_development_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_runtime_dependency(%q<capistrano>, ["~> 2.0"])
     else
-      s.add_dependency(%q<capistrano>, ["~> 2.0"])
+      s.add_dependency(%q<capistrano>, [">= 0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6"])
       s.add_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_dependency(%q<capistrano>, ["~> 2.0"])
     end
   else
-    s.add_dependency(%q<capistrano>, ["~> 2.0"])
+    s.add_dependency(%q<capistrano>, [">= 0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6"])
     s.add_dependency(%q<rake>, ["~> 0.9.2"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
+    s.add_dependency(%q<capistrano>, ["~> 2.0"])
   end
 end
 
