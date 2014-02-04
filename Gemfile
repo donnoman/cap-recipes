@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "capistrano"
+gem 'capistrano', '~> 2.0'
 
 group :development, :test do
   gem "jeweler", "~> 1.6"

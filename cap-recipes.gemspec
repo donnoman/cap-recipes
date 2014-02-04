@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2014-02-03"
+  s.date = "2014-02-04"
   s.description = "Battle-tested capistrano provisioning recipes for debian based distributions"
   s.email = "donnoman@donovanbray.com nesquena@gmail.com"
   s.extra_rdoc_files = [
@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".bundle/config",
+    ".ruby-gemset.template",
+    ".ruby-version.template",
     ".rvmrc.template",
     "Gemfile",
     "Gemfile.lock",
@@ -376,24 +378,21 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<capistrano>, [">= 0"])
+      s.add_runtime_dependency(%q<capistrano>, ["~> 2.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6"])
       s.add_development_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_runtime_dependency(%q<capistrano>, ["~> 2.0"])
     else
-      s.add_dependency(%q<capistrano>, [">= 0"])
+      s.add_dependency(%q<capistrano>, ["~> 2.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6"])
       s.add_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_dependency(%q<capistrano>, ["~> 2.0"])
     end
   else
-    s.add_dependency(%q<capistrano>, [">= 0"])
+    s.add_dependency(%q<capistrano>, ["~> 2.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6"])
     s.add_dependency(%q<rake>, ["~> 0.9.2"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
-    s.add_dependency(%q<capistrano>, ["~> 2.0"])
   end
 end
 

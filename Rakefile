@@ -24,7 +24,6 @@ begin
     s.description = %Q{Battle-tested capistrano provisioning recipes for debian based distributions}
     s.authors = ["Nathan Esquenazi","Donovan Bray"]
     s.rubyforge_project = 'cap-recipes'
-    s.add_dependency 'capistrano', '~> 2.0'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
