@@ -1,5 +1,7 @@
 require 'fileutils'
 require 'open3'
+require 'json'
+require 'open-uri'
 
 module Utilities
   # utilities.config_gsub('/etc/example', /(.*)/im, "\\1")
@@ -17,6 +19,13 @@ module Utilities
     question = "\n" + question.join("\n") if question.respond_to?(:uniq)
     answer = Capistrano::CLI.ui.ask(space(question)).strip
     answer.empty? ? default : answer
+  end
+
+  # utilities.suggest_version(:ruby_ver, 'ruby-2.1.0')
+  def suggest_version(config_var,suggestion)
+    ver = utilities.ask("#{config_var}: [#{suggestion}] ?",suggestion)
+    logger.info %Q{*** To pin your provision to this version you should add "set :#{config_var}, '#{ver}'" to your deploy.rb}
+    ver
   end
 
   # utilities.yes?('Proceed with install?')
