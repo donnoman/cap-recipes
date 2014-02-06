@@ -385,7 +385,7 @@ module Utilities
       end
     end
     $stdout.sync = false
-    logger.trace "command finished in #{(elapsed * 1000).round}ms" if logger
+    logger.trace "\ncommand finished in #{(elapsed * 1000).round}ms" if logger
   end
 
   private
