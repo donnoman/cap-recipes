@@ -363,12 +363,12 @@ module Utilities
     tee = opts[:tee]
     redact = opts[:redact]
     redact_replacement = opts[:redact_replacment] || '-REDACTED-'
+    cmd = [shell,'-c "',cmd.gsub(/"/,'\"'),'" 2>&1'].join(' ')
     cmd_text = redact ? redact.inject(cmd.inspect){|ct,r| ct.gsub(r,redact_replacement)} : cmd.inspect
-    cmd_text.gsub!(/"/,'\"')
-    logger.trace %Q{executing locally: #{shell} -c "#{cmd_text}"} if logger
+    logger.trace %Q{executing locally: #{cmd_text}} if logger
     $stdout.sync = true
     elapsed = Benchmark.realtime do
-      Open3.popen3([shell,'-c "',cmd,'" 2>&1'].join(' ')) do |stdin, out, err, external|
+      Open3.popen3(cmd) do |stdin, out, err, external|
         # Create a thread to read from each stream
         { :out => out, :err => err }.each do |key, stream|
           Thread.new do
