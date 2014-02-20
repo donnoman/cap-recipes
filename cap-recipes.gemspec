@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2014-02-04"
+  s.date = "2014-02-20"
   s.description = "Battle-tested capistrano provisioning recipes for debian based distributions"
   s.email = "donnoman@donovanbray.com nesquena@gmail.com"
   s.extra_rdoc_files = [
@@ -366,7 +366,8 @@ Gem::Specification.new do |s|
     "spec/cap/all/Capfile",
     "spec/cap/helper.rb",
     "spec/cap_recipes_spec.rb",
-    "spec/spec_helper.rb"
+    "spec/spec_helper.rb",
+    "spec/tasks/teelogger_spec.rb"
   ]
   s.homepage = "http://github.com/donnoman/cap-recipes"
   s.require_paths = ["lib"]
@@ -382,17 +383,26 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, ["~> 1.6"])
       s.add_development_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_development_dependency(%q<psych>, ["~> 2.0"])
+      s.add_development_dependency(%q<rspec>, ["~> 2.14.0"])
+      s.add_development_dependency(%q<debugger>, [">= 0"])
     else
       s.add_dependency(%q<capistrano>, ["~> 2.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6"])
       s.add_dependency(%q<rake>, ["~> 0.9.2"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_dependency(%q<psych>, ["~> 2.0"])
+      s.add_dependency(%q<rspec>, ["~> 2.14.0"])
+      s.add_dependency(%q<debugger>, [">= 0"])
     end
   else
     s.add_dependency(%q<capistrano>, ["~> 2.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6"])
     s.add_dependency(%q<rake>, ["~> 0.9.2"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
+    s.add_dependency(%q<psych>, ["~> 2.0"])
+    s.add_dependency(%q<rspec>, ["~> 2.14.0"])
+    s.add_dependency(%q<debugger>, [">= 0"])
   end
 end
 

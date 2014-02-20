@@ -96,19 +96,16 @@ module Capistrano
   class CLI
     module Execute
       def handle_error(error) #:nodoc:
-        # redact the error even in the case of an abort
-        backtrace = error.backtrace
-        error = error.class.new(TeeLogWriter.redacted(error.message))
         case error
         when TeeLogWriter::NormalExit #used to force capistrano to end but without an error code.
           exit 0
         when Net::SSH::AuthenticationFailed
-          abort "authentication failed for `#{error.message}'"
+          abort "authentication failed for `#{TeeLogWriter.redacted(error.message)}'"
         when Capistrano::Error
-          abort(error.message)
+          abort(TeeLogWriter.redacted(error.message))
         else
-          puts error.message
-          puts backtrace
+          puts TeeLogWriter.redacted(error.message)
+          puts error.backtrace
           exit 1
         end
       end
