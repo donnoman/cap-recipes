@@ -1,8 +1,7 @@
-# ---- requirements
-require 'rubygems'
-require 'spec'
+require 'bundler/setup'
+Bundler.setup
 
-$LOAD_PATH << File.expand_path("../lib", File.dirname(__FILE__))
+require "capistrano"
 
 # ---- bugfix
 #`exit?': undefined method `run?' for Test::Unit:Module (NoMethodError)
@@ -14,3 +13,8 @@ module Test
     end
   end
 end
+
+RSpec.configure do |config|
+  # some (optional) config here
+end
+
