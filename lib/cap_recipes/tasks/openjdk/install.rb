@@ -8,7 +8,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "install java"
     task :install, :roles => :openjdk do
-      utilities.apt_install "openjdk-#{openjdk_version}-jre openjdk-#{openjdk_version}-jdk"
+      utilities.apt_install_from_ppa "ppa:openjdk/ppa","openjdk-#{openjdk_version}"
     end
 
   end
