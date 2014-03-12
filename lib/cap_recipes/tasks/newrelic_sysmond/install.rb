@@ -22,6 +22,7 @@ Capistrano::Configuration.instance(true).load do
         # If you are using a proxy that is configured with these keys and can't add them from the host itself you can set this to false.
         run "curl -L http://download.newrelic.com/548C16BF.gpg | #{sudo} apt-key add -"
         sudo "curl -L http://download.newrelic.com/debian/newrelic.list -o /etc/apt/sources.list.d/newrelic.list"
+        utilities.apt_update
       end
       utilities.apt_install 'newrelic-sysmond'
     end
