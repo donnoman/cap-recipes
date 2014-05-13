@@ -114,7 +114,7 @@ module Utilities
   def apt_install(packages)
     packages = packages.split(/\s+/) if packages.respond_to?(:split)
     packages = Array(packages)
-    sudo "#{apt_get_preamble} install #{packages.join(" ")}"
+    sudo_with_input("#{apt_get_preamble} install #{packages.join(" ")}", /\?/, "\n")
   end
 
   # utilities.apt_reinstall %w[package1 package2]
@@ -122,7 +122,7 @@ module Utilities
   def apt_reinstall(packages)
     packages = packages.split(/\s+/) if packages.respond_to?(:split)
     packages = Array(packages)
-    sudo "#{apt_get_preamble} --reinstall install #{packages.join(" ")}"
+    sudo_with_input("#{apt_get_preamble} --reinstall install #{packages.join(" ")}", /\?/, "\n")
   end
 
   # remove is identical to install except that packages are removed instead of installed. Note the
