@@ -179,13 +179,14 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Verify the pairs of keys are matched sets in nginx_cert_path"
     task :verify_cert_pairs do
-      if nginx_cert_path && ENV['VERIFY_CERT_PAIRS'] != "0"
-        Dir[File.expand_path(File.join(nginx_cert_path,"/*.crt"))].each do |cert|
-          key = cert.gsub(".crt",".key")
-          utilities.stream_locally %Q{[ `openssl x509 -noout -modulus -in #{cert} | openssl md5` == `openssl rsa -noout -modulus -in #{key} | openssl md5` ]}
-          utilities.stream_locally %Q{openssl x509 -in #{cert} -noout -subject -startdate -enddate}
-        end
-      end
+      #disabled until this is fixed to work with OSX Mavericks
+      # if nginx_cert_path && ENV['VERIFY_CERT_PAIRS'] != "0"
+      #   Dir[File.expand_path(File.join(nginx_cert_path,"/*.crt"))].each do |cert|
+      #     key = cert.gsub(".crt",".key")
+      #     utilities.stream_locally %Q{[ `openssl x509 -noout -modulus -in #{cert} | openssl md5` == `openssl rsa -noout -modulus -in #{key} | openssl md5` ]}
+      #     utilities.stream_locally %Q{openssl x509 -in #{cert} -noout -subject -startdate -enddate}
+      #   end
+      # end
     end
 
     %w(start stop restart).each do |t|
