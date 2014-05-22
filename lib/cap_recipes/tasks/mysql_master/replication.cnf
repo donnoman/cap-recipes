@@ -6,7 +6,7 @@
 server-id                       = <%=mysql_master_server_id%>
 auto_increment_increment        = <%=mysql_master_increment_id%>
 auto_increment_offset           = <%=mysql_master_offset_id%>
-expire_logs_days                = 20
+expire_logs_days                = 30
 max_binlog_size                 = 1G
 binlog_format                   = MIXED
 log-slave-updates               = TRUE

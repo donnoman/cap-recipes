@@ -86,6 +86,10 @@ Capistrano::Configuration.instance(true).load do
       mysql.start
     end
 
+    task :set_root_password, :roles => [:mysqld] do
+      run "#{sudo} mysqladmin -u root password #{TeeLogWriter.redact(mysql_admin_password)}"
+    end
+
     desc "Install Mysql Developement Libraries"
     task :install_client_libs, :except => {:no_release => true} do
       utilities.apt_install "libmysqlclient-dev"
