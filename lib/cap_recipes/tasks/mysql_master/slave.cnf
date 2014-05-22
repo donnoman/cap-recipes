@@ -1,7 +1,7 @@
 [mysqld]
 
 server-id                       = <%=mysql_slave_server_id%>
-expire_logs_days                = 20
+expire_logs_days                = 30
 max_binlog_size                 = 1G
 binlog_format                   = MIXED
 log-slave-updates               = TRUE
