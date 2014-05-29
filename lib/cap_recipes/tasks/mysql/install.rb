@@ -35,15 +35,15 @@ Capistrano::Configuration.instance(true).load do
       use_sudo = opts[:use_sudo] || true
       command = []
       command << "#{sudo}" if use_sudo
-      command << opts[:mysql] || "mysql"
+      command << (opts[:mysql] || "mysql")
       command << "-u#{opts[:user]}" if opts[:user]
-      command << "-p#{opts[:pass]}" if opts[:pass]
+      command << "-p" if opts[:pass]
       command << "-h#{opts[:host]}" if opts[:host]
       command << "-P#{opts[:port]}" if opts[:port]
       command << "--force" if opts[:force]
       command << "-e \"#{cmd}\"" unless cmd.nil?
       command = command.join(" ")
-      run(command) if opts[:run] != false
+      utilities.run_with_input(command, /^Enter password:/, opts[:pass]) if opts[:run] != false
       command
     end
 
