@@ -1,13 +1,12 @@
 # encoding: utf-8
 
 $:.unshift File.expand_path('../lib', __FILE__)
-require 'cap-recipes/version'
+require 'cap_recipes/version'
 
 Gem::Specification.new do |s|
   s.name          = "cap-recipes"
   s.version       = Cap::Recipes::VERSION
   s.authors       = ["Nathan Esquenazi", "Donovan Bray"]
-  s.date = "2014-02-20"
   s.email         = ["donovan@homerun.com"]
   s.homepage      = "https://github.com//cap-recipes"
   s.summary       = "capistrano 2 provisioning recipes"
