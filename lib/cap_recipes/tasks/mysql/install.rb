@@ -31,19 +31,19 @@ Capistrano::Configuration.instance(true).load do
     set :mysql_data_dir, "/var/lib/mysql"
 
     def mysql_client_cmd(cmd,opts={})
-
-      use_sudo = opts[:use_sudo] || true
+      mysql_user = opts[:user] || "root"
+      mysql_pass = opts[:pass] || (mysql_admin_password if mysql_user == "root")
       command = []
-      command << "#{sudo}" if use_sudo
+      command << "#{sudo}" if opts[:use_sudo]
       command << (opts[:mysql] || "mysql")
-      command << "-u#{opts[:user]}" if opts[:user]
-      command << "-p" if opts[:pass]
+      command << "-u#{mysql_user}" if mysql_user
+      command << "-p" if mysql_pass
       command << "-h#{opts[:host]}" if opts[:host]
       command << "-P#{opts[:port]}" if opts[:port]
       command << "--force" if opts[:force]
       command << "-e \"#{cmd}\"" unless cmd.nil?
       command = command.join(" ")
-      utilities.run_with_input(command, /^Enter password:/, opts[:pass]) if opts[:run] != false
+      utilities.run_with_input(command, /^Enter password:/, mysql_pass) if opts[:run] != false
       command
     end
 
