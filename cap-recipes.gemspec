@@ -15,4 +15,5 @@ Gem::Specification.new do |s|
   s.platform      = Gem::Platform::RUBY
   s.require_paths = ['lib']
   s.rubyforge_project = '[none]'
+  s.add_dependency 'capistrano', '~>2.0'
 end
