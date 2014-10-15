@@ -24,6 +24,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "install ruby"
     task :install, :except => {:no_ruby => true} do
+      utilities.apt_update
       utilities.apt_install %w[build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool]
       sudo "mkdir -p /usr/local/src/"
       run "#{sudo} rm -rf /usr/local/src/#{ruby_ver}" #make clean is not allowing a re-install  #http://www.ruby-forum.com/topic/4409005
