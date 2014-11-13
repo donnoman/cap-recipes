@@ -14,7 +14,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Restart SSH"
     task :restart do
-      sudo "/etc/init.d/ssh restart"
+      sudo "service ssh restart"
     end
   end
 end
