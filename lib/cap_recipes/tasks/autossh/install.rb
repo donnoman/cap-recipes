@@ -1,10 +1,11 @@
 Capistrano::Configuration.instance(true).load do
 
   namespace :autossh do
-  	roles[:autossh]
+    roles[:autossh]
     # roles[:autossh_slave] #not all mysql slaves should be autossh'd
     # roles[:autossh_master] #not all mysql masters should be autossh'd
     set :autossh_init, File.join(File.dirname(__FILE__),'autossh.sh')
+    set :autossh_default_remote_ssh_port, "22"
     set(:autossh_default_remote_user) { utilities.ask("autossh_default_remote_user") }
     set(:autossh_default_remote_host) { utilities.ask("autossh_default_remote_host") }
     set(:autossh_default_remote_private_key) { utilities.ask("autossh_default_remote_private_key") }
@@ -41,7 +42,7 @@ Capistrano::Configuration.instance(true).load do
     end
 
     desc "Setup and Configure AutoSSH for master"
-    task :setup_layout, :roles => :autossh do
+    task :setup_layout, :roles => [:autossh] do
       with_layout do
         utilities.sudo_upload_template autossh_init, "/etc/init.d/#{autossh_name}",  :mode => "755", :owner => 'root:root'
         sudo "update-rc.d -f #{autossh_name} defaults"
@@ -88,6 +89,7 @@ Capistrano::Configuration.instance(true).load do
     def with_layout
       autossh_layout.each do |layout|
         set :autossh_name,                        layout[:name]                         || autossh_default_name
+        set :autossh_remote_ssh_port,             layout[:remote_ssh_port]              || autossh_default_remote_ssh_port
         set :autossh_remote_user,                 layout[:remote_user]                  || autossh_default_remote_user
         set :autossh_remote_host,                 layout[:remote_host]                  || autossh_default_remote_host
         set :autossh_remote_target_host,          layout[:remote_target_host]           || autossh_default_remote_target_host

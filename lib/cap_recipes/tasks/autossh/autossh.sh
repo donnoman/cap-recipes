@@ -35,12 +35,13 @@ REMOTEHOST=<%=autossh_remote_host%>
 REMOTETARGET=<%=autossh_remote_target_host%>
 REMOTETARGET_PORT=<%=autossh_remote_target_port%>
 REMOTE_PRIVATE_KEY_LOCATION=<%=autossh_remote_private_key_location%>
+REMOTE_SSH_PORT=<%=autossh_remote_ssh_port%>
 
 export AUTOSSH_PIDFILE=${PIDFILE}
 
 test -x $DAEMON || exit 0
 
-DAEMON_ARGS="-M ${MPORT} -f -N -T -L ${PORT}:${REMOTETARGET}:${REMOTETARGET_PORT} -i ${REMOTE_PRIVATE_KEY_LOCATION} -o TCPKeepAlive=yes -o ServerAliveInterval=30 ${REMOTEUSER}@${REMOTEHOST}"
+DAEMON_ARGS="-M ${MPORT} -f -N -T -L ${PORT}:${REMOTETARGET}:${REMOTETARGET_PORT} -i ${REMOTE_PRIVATE_KEY_LOCATION} -o TCPKeepAlive=yes -o ServerAliveInterval=30 ${REMOTEUSER}@${REMOTEHOST} -p ${REMOTE_SSH_PORT}"
 
 echo "COMMAND: ${DAEMON} ${DAEMON_ARGS}"
 
