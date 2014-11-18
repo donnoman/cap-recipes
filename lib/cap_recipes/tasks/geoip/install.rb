@@ -10,11 +10,12 @@ Capistrano::Configuration.instance(true).load do
     set(:geoip_product_ids) { utilities.ask('GeoIP ProductIds?') }
     set(:geoip_conf_erb) { File.join(File.dirname(__FILE__),'GeoIP.conf.erb') }
     set(:geoip_cron_erb) { File.join(File.dirname(__FILE__),'geoip.cron.erb') }
+    set :geoip_database_dir, "/usr/share/GeoIP"
 
     desc "install geoip support"
     task :install, :except => {:no_release => true } do
       utilities.apt_install "geoip-bin libgeoip-dev"
-      run "#{sudo} mkdir -p /usr/share/GeoIP"
+      run "#{sudo} mkdir -p #{geoip_database_dir}"
       setup
       update
     end
@@ -27,7 +28,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "update geoip"
     task :update, :except => {:no_release => true } do
-      run "#{sudo} sh -c 'echo \"geoipupdate\" | at now + 1 min'" #don't wait for it.
+      run %Q{#{sudo} bash -c "geoipupdate -d #{geoip_database_dir}";true}
     end
 
   end
