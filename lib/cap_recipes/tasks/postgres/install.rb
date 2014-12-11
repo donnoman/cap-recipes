@@ -33,27 +33,17 @@ Capistrano::Configuration.instance(true).load do
     end
 
     task :setup, :roles => [:postgres] do
-    #   utilities.sudo_upload_template postgres_conf, postgres_conf_path, :mode => "644", :owner => 'root:root'
+      #no-op on purpose
     end
 
     task :createuser, :roles => :postgres do
       postgres_client_cmd "CREATE USER #{postgres_username} WITH PASSWORD '#{postgres_password}' CREATEDB;", :force => true
     end
 
-    # task :set_root_password, :roles => [:postgres] do
-    #   run "#{sudo} postgresadmin -u root password #{TeeLogWriter.redact(postgres_admin_password)}"
-    # end
-
     desc "Install postgres Developement Libraries"
     task :install_client_libs, :except => {:no_release => true} do
       utilities.apt_install "postgresql-client-#{postgres_ver} libpq-dev"
     end
-
-    # desc "Setup the postgres Data and Log directories"
-    # task :setup_data_dir, :roles => [:postgres] do
-    #   sudo "mkdir -p #{postgres_data_dir}"
-    #   sudo "chown -R  postgres:postgres #{postgres_data_dir}"
-    # end
 
   end
 
