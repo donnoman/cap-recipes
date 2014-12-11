@@ -5,37 +5,39 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :postgres do
     roles[:postgres]
-    # set(:postgres_admin_username) { "postgres"}
-    # set(:postgres_admin_password) { utilities.ask "postgres_admin_password:"}
-    # set :postgres_bind_address, "127.0.0.1" # "0.0.0.0" for all interfaces.
-    # set :postgres_conf, File.join(File.dirname(__FILE__),'my.cnf.erb')
-    # set :postgres_conf_path, "/etc/postgres/my.cnf"
-    # set :postgres_data_dir, "/var/lib/postgres"
+    set(:postgres_ver) {"8.4"}
+    set(:postgres_admin_username) { "postgres" }
+    set(:postgres_admin_password) { nil }
+    set(:postgres_username) { utilities.ask "postgres_username:" }
+    set(:postgres_password) { utilities.ask "postgres_password:" }
 
-    # def postgres_client_cmd(cmd,opts={})
-    #   postgres_user = opts[:user] || "root"
-    #   postgres_pass = opts[:pass] || (postgres_admin_password if postgres_user == "root")
-    #   command = []
-    #   command << "#{sudo}" if opts[:use_sudo]
-    #   command << (opts[:postgres] || "postgres")
-    #   command << "-u#{postgres_user}" if postgres_user
-    #   command << "-p" if postgres_pass
-    #   command << "-h#{opts[:host]}" if opts[:host]
-    #   command << "-P#{opts[:port]}" if opts[:port]
-    #   command << "--force" if opts[:force]
-    #   command << "-e \"#{cmd}\"" unless cmd.nil?
-    #   command = command.join(" ")
-    #   utilities.run_with_input(command, /^Enter password:/, postgres_pass) if opts[:run] != false
-    #   command
-    # end
+    def postgres_client_cmd(cmd,opts={})
+      postgres_user = opts[:user] || postgres_admin_username
+      postgres_pass = opts[:pass] || (postgres_admin_password if postgres_user == postgres_admin_username)
+      command = []
+      command << "#{sudo :as => postgres_user}"
+      command << (opts[:psql] || "psql")
+      command << "-U #{postgres_user}" if postgres_user
+      command << "-W" if postgres_pass
+      command << "-h #{opts[:host]}" if opts[:host]
+      command << "-p #{opts[:port]}" if opts[:port]
+      command << "-c \"#{cmd}\"" unless cmd.nil?
+      command << ";true" if opts[:force]
+      command = command.join(" ")
+      utilities.run_with_input(command, /^Password/, postgres_pass)
+    end
 
     desc "Install postgres-server"
     task :install, :roles => :postgres do
-      utilities.apt_install "postgresql postgresql-contrib"
+      utilities.apt_install "postgresql-#{postgres_ver} postgresql-contrib-#{postgres_ver}"
     end
 
     task :setup, :roles => [:postgres] do
     #   utilities.sudo_upload_template postgres_conf, postgres_conf_path, :mode => "644", :owner => 'root:root'
+    end
+
+    task :createuser, :roles => :postgres do
+      postgres_client_cmd "CREATE USER #{postgres_username} WITH PASSWORD '#{postgres_password}' CREATEDB;", :force => true
     end
 
     # task :set_root_password, :roles => [:postgres] do
@@ -44,7 +46,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Install postgres Developement Libraries"
     task :install_client_libs, :except => {:no_release => true} do
-      utilities.apt_install "postgresql-client libpq-dev"
+      utilities.apt_install "postgresql-client-#{postgres_ver} libpq-dev"
     end
 
     # desc "Setup the postgres Data and Log directories"
