@@ -47,8 +47,8 @@ Capistrano::Configuration.instance(true).load do
     end
 
     task :createdatabases, :roles => :postgres do
-      postgres_databases.each do |schema|
-        postgres_client_cmd "CREATE DATABASE #{schema};", :force => true
+      postgres_databases.each do |db|
+        postgres_client_cmd "CREATE DATABASE #{db};", :force => true
       end
     end
 
