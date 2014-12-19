@@ -10,6 +10,8 @@ Capistrano::Configuration.instance(true).load do
     set(:postgres_admin_password) { nil }
     set(:postgres_username) { utilities.ask "postgres_username:" }
     set(:postgres_password) { utilities.ask "postgres_password:" }
+    set(:postgres_database) { utilities.ask "postgres_database:" }
+    set(:postgres_databases) { [postgres_database].flatten }
 
     def postgres_client_cmd(cmd,opts={})
       postgres_user = opts[:user] || postgres_admin_username
@@ -33,11 +35,21 @@ Capistrano::Configuration.instance(true).load do
     end
 
     task :setup, :roles => [:postgres] do
-      #no-op on purpose
+      #no-op on purpose, nothing to do yet.
     end
 
-    task :createuser, :roles => :postgres do
+    task :createuser, :roles => :postgres, :once => true do
       postgres_client_cmd "CREATE USER #{postgres_username} WITH PASSWORD '#{postgres_password}' CREATEDB;", :force => true
+    end
+
+    task :createdatabase do
+      createdatabases
+    end
+
+    task :createdatabases, :roles => :postgres, :once => true do
+      postgres_databases.each do |schema|
+        postgres_client_cmd "CREATE DATABASE #{schema};", :force => true
+      end
     end
 
     desc "Install postgres Developement Libraries"
