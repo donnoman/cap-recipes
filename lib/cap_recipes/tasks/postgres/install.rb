@@ -38,7 +38,7 @@ Capistrano::Configuration.instance(true).load do
       #no-op on purpose, nothing to do yet.
     end
 
-    task :createuser, :roles => :postgres, :once => true do
+    task :createuser, :roles => :postgres do
       postgres_client_cmd "CREATE USER #{postgres_username} WITH PASSWORD '#{postgres_password}' CREATEDB;", :force => true
     end
 
@@ -46,7 +46,7 @@ Capistrano::Configuration.instance(true).load do
       createdatabases
     end
 
-    task :createdatabases, :roles => :postgres, :once => true do
+    task :createdatabases, :roles => :postgres do
       postgres_databases.each do |schema|
         postgres_client_cmd "CREATE DATABASE #{schema};", :force => true
       end
