@@ -52,6 +52,10 @@ Capistrano::Configuration.instance(true).load do
       end
     end
 
+    task :setdatabaseowner, :roles => :postgres do
+      postgres_client_cmd "ALTER DATABASE #{postgres_database} OWNER TO #{postgres_username};"
+    end
+
     desc "Install postgres Developement Libraries"
     task :install_client_libs, :except => {:no_release => true} do
       utilities.apt_install "postgresql-client-#{postgres_ver} libpq-dev"
