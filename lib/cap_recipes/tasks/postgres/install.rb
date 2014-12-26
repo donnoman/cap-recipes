@@ -5,9 +5,9 @@ Capistrano::Configuration.instance(true).load do
 
   namespace :postgres do
     roles[:postgres]
-    set(:postgres_ver) {"8.4"}
-    set(:postgres_admin_username) { "postgres" }
-    set(:postgres_admin_password) { nil }
+    set :postgres_ver, "8.4"
+    set :postgres_admin_username, "postgres"
+    set :postgres_admin_password, nil
     set(:postgres_username) { utilities.ask "postgres_username:" }
     set(:postgres_password) { utilities.ask "postgres_password:" }
     set(:postgres_database) { utilities.ask "postgres_database:" }
