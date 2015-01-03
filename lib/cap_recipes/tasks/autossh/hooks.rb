@@ -1,4 +1,4 @@
 # @author Donovan Bray <donnoman@donovanbray.com>
 Capistrano::Configuration.instance(true).load do
-  after "autossh:install", "autossh:setup"
+  after "autossh:install", "autossh:setup", "autossh:restart"
 end
