@@ -42,6 +42,7 @@ Capistrano::Configuration.instance(true).load do
       command << "-P#{opts[:port]}" if opts[:port]
       command << "--force" if opts[:force]
       command << "-e \"#{cmd}\"" unless cmd.nil?
+      command << opts[:append] if opts[:append]
       command = command.join(" ")
       utilities.run_with_input(command, /^Enter password:/, mysql_pass) if opts[:run] != false
       command
