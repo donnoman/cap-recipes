@@ -12,9 +12,11 @@ Capistrano::Configuration.instance(true).load do
       restart
     end
 
-    desc "Restart SSH"
-    task :restart do
-      sudo "service ssh restart"
+    %w(start restart).each do |t|
+      desc "#{t} SSH"
+      task t.to_sym do
+        sudo "service ssh #{t}"
+      end
     end
   end
 end

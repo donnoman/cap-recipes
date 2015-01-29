@@ -74,6 +74,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       run "rm -rf #{bundler_dir}"
     end
 
+    desc "bundler version"
+    task :version, :except => {:no_release => true} do
+      run "#{bundler_exec} --version"
+    end
+
   end
 
 end
