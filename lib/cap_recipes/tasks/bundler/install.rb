@@ -30,7 +30,9 @@ Capistrano::Configuration.instance(:must_exist).load do
       # do as much as possible in a single 'run' for speed.
       # had to remove the bundle check in order to always create the binstubs
       # use the save_bundle task to 'memorialize' a good bundle
+      # Use the configured version of bundler even if it isn't the latest bundler installed.
       args = bundler_opts.dup
+      args << "_#{bundler_ver}_"
       args << "--path #{path}" unless path.to_s.empty? || bundler_opts.include?("--system")
       args << "--gemfile=#{bundler_file}" unless bundler_file == "Gemfile"
       args << "--binstubs" if bundler_binstubs
@@ -56,7 +58,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     desc "Setup system to use bundler"
     task :install, :except => { :no_release => true } do
       update_rubygems
-      utilities.gem_install_only "bundler", bundler_ver
+      utilities.gem_install "bundler", bundler_ver
     end
 
     desc "Save the bundle to initialize the next bundle run"
@@ -75,9 +77,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       run "rm -rf #{bundler_dir}"
     end
 
-    desc "bundler version"
+    desc "installed bundler version"
     task :version, :except => {:no_release => true} do
+      logger.info "Configured Bundler Version: #{bundler_ver}"
+      run "gem list bundler"
       run "#{bundler_exec} --version"
+      run "#{bundler_exec} _#{bundler_ver}_ --version"
     end
 
   end
