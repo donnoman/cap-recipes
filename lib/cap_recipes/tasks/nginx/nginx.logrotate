@@ -13,6 +13,6 @@
     fi; \
   endscript
   postrotate
-    [ ! -f /var/run/<%=nginx_init_d%>.pid ] || kill -USR1 `cat /var/run/<%=nginx_init_d%>.pid`
+    [ ! -f <%=nginx_pid_file%> ] || kill -USR1 `cat <%=nginx_pid_file%>`
   endscript
 }
