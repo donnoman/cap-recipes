@@ -1,4 +1,5 @@
 Capistrano::Configuration.instance(true).load do
+  # Denyhosts has been removed in Ubuntu 14.04 in favor of fail2ban
 
   namespace :denyhosts do
     set :denyhosts_root, "/var/lib/denyhosts"
@@ -7,6 +8,7 @@ Capistrano::Configuration.instance(true).load do
 
     desc "Install Monit"
     task :install, :except => {:no_denyhosts => true} do
+      logger.info "DEPRECATED: Denyhosts has been removed in Ubuntu 14.04 in favor of fail2ban"
       utilities.apt_install "denyhosts"
     end
 
