@@ -13,7 +13,7 @@ Capistrano::Configuration.instance(true).load do
       when :debian64
         "http://rubyenterpriseedition.googlecode.com/files/#{ree_ver}_amd64_debian6.0.deb"
       when :ubuntu64
-        "http://rubyenterpriseedition.googlecode.com/files/#{}_amd64_ubuntu10.04.deb"
+        "http://rubyenterpriseedition.googlecode.com/files/#{ree_ver}_amd64_ubuntu10.04.deb"
       else
         raise Capistrano::Error "Unhandled target_os in :ree"
       end
